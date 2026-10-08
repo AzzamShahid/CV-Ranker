@@ -1,0 +1,17 @@
+Usman Ali
+Junior Developer
+
+Skills:
+Python
+PostgreSQL
+Git
+REST APIs
+
+Experience:
+Developed REST APIs using Python.
+Maintained PostgreSQL databases.
+Used Git for source control.
+Currently learning Django.
+No professional experience with Redis.
+Basic exposure to Docker.
+Interested in learning Kubernetes.

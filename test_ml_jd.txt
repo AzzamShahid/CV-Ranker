@@ -1,0 +1,23 @@
+Machine Learning Engineer
+
+Job Summary:
+We are looking for an Applied Machine Learning Engineer to build intelligent applications and machine-learning workflows.
+
+Required Skills:
+- Python
+- Machine Learning
+- Deep Learning
+- TensorFlow or PyTorch
+- Natural Language Processing
+- LLM integrations
+- LangChain
+- Model evaluation
+- AI application development
+
+Preferred Skills:
+- LangGraph
+- Medical imaging
+- Time-series forecasting
+- Google Cloud
+- Node.js
+- Firebase

@@ -1,0 +1,53 @@
+CV Ranker validation
+====================
+
+Supervisor-approved architecture retained:
+JD -> YAKE -> JD LLM -> frozen requirements -> CV LLM -> Python evidence validation -> Python scoring -> ranking
+
+Live JD grounding fix
+---------------------
+A live qwen2.5:3b trace exposed that the model could return evidence such as
+"Required Skills: Django" while the JD stored the section heading and item on
+separate lines. The previous sanitizer normalized the text for existence checks,
+then rejected most rows as semantically/source invalid, shrinking the denominator.
+
+The sanitizer now:
+- deterministically strips known requirement-section prefixes from LLM evidence;
+- recovers the exact JD source line when the model formats a quote across a heading;
+- preserves LLM semantic interpretation while Python verifies real source evidence;
+- still rejects unrelated company prose and obvious "not required" statements;
+- avoids the unnecessary corrective JD call when evidence can be recovered safely.
+
+Regression reproducing the live trace:
+- 8 required backend skills + 4 preferred skills
+- LLM evidence formatted as "Required Skills: <skill>" / "Preferred Skills: <skill>"
+- result: all 12 frozen, one LLM call, zero correction warnings
+
+Additional trust-guard fixes retained:
+- Java != JavaScript, SQL != NoSQL, C != Communication, Go != Good, R != R&D
+- contextual cross-line learning/negation
+- unrelated evidence rejection
+- prompt/instruction-like evidence rejection
+- same-requirement contradiction downgrade
+- Node.js fallback context safety
+- sentence/clause-local tone handling
+- direct negation/learning/interest/theoretical/coursework safeguards
+- OR alternatives including shared trailing "experience"
+- context-budget recheck on structured-output retry
+
+Validation in clean working tree:
+- pytest: 99 passed
+- compileall: PASS
+- backend deterministic demo: PASS (12 frozen requirements)
+- HR deterministic demo: PASS (8 frozen requirements)
+- fallback trace demo: PASS
+
+No verifier, embeddings, vector search, transferable scoring, agents, or LLM-generated scores are active.
+
+Runtime denominator fail-safe
+----------------------------
+If qwen2.5:3b returns an empty or catastrophically incomplete JD extraction after
+the single correction attempt, and the JD contains explicit Required/Preferred
+sections, the ranker now switches visibly to `fallback_structural_after_llm`.
+This prevents both hard failure and misleading denominators such as 1/1 or 2/12.
+The normal path remains YAKE -> JD LLM -> frozen requirements.

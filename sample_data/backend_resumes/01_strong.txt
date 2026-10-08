@@ -1,0 +1,24 @@
+Ayesha Khan
+Backend Developer
+
+Skills:
+Python
+Django
+PostgreSQL
+Docker
+Git
+REST APIs
+JavaScript
+AWS
+FastAPI
+Node.js
+
+Experience:
+Developed REST APIs using Python and Django for internal business applications.
+Designed and maintained PostgreSQL databases.
+Containerized backend applications using Docker.
+Used Git for source control and collaborative development.
+Integrated backend APIs with JavaScript-based frontend applications.
+Deployed backend services on AWS.
+No professional experience with Redis.
+Currently learning Kubernetes through personal practice.

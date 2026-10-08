@@ -1,0 +1,53 @@
+SYED MUHAMMAD WAJAHAT HAIDER NAQVI 
+AI/ML Engineer | Applied AI Developer | AI Product Engineer 
+Multan, Pakistan | +92 316 6256 593 | naqviihaider@gmail.com | LinkedIn 
+PROFESSIONAL SUMMARY 
+Computer Science graduate focused on applied AI/ML, LLM/NLP systems, medical AI, and full-stack AI products. Built 
+ClearAid AI (USAII Global AI Hackathon 2026 Finalist), KaamWala AI (AI Seekho 2026 Google Antigravity Special Mention), 
+and PsycheMetric (FYP mental-health platform). Experienced with Python, ML/DL, NLP, LLM integrations, medical 
+imaging, forecasting, and production-oriented AI workflows. 
+EDUCATION 
+Bachelor of Science (Hons) in Computer Science | Muhammad Nawaz Sharif University of Engineering and Technology, 
+Multan | 2022 - 2026 (Completed) 
+Intermediate in Computer Science | Army Public School and College, Multan | 2018 – 2020 
+Matriculation | Army Public School and College, Multan | 2016 – 2018 
+TECHNICAL SKILLS 
+Programming: Python, C++, Java, JavaScript/TypeScript, Dart 
+AI/ML: TensorFlow, PyTorch, Scikit-learn, Pandas, NumPy, CNNs, NLP, time-series forecasting, medical imaging, model 
+evaluation 
+LLM/AI Tools: Gemini API, LangChain, LangGraph, CrewAI, Coqui TTS, Unsloth, LoRA, Weights & Biases 
+Full Stack/Cloud: Next.js, Node.js/Express, Flutter, Supabase, Firebase/Firestore, Google Cloud Storage, Cloud Run, 
+Upstash Redis 
+PROFESSIONAL EXPERIENCE 
+Machine Learning Intern (Advanced) | ARCH Technologies, Islamabad | May 2025 - July 2025 
+●​Completed applied ML projects in medical imaging, voice cloning, time-series forecasting, and LLM fine-tuning. 
+●​Built brain-tumor segmentation workflow using MedSAM/SAM-style prompting on BraTS MRI data; prepared NIfTI 
+slices, masks, visualizations, and inference flow. 
+●​Implemented Coqui TTS voice-cloning prototype, Ethereum ARIMA/Auto ARIMA forecasting with RMSE/MAPE, and 
+LLaMA 3.2 3B medical CoT fine-tuning using LoRA/4-bit quantization. 
+AI PROJECTS 
+ClearAid AI - AI Benefits Navigator and Decision-Support Platform | USAII Global AI Hackathon 2026 Finalist | Next.js, 
+Supabase, Gemini API, Upstash Redis 
+●​Built a source-first AI pipeline that converts user intake into structured facts, detects needs across 
+benefits/housing/healthcare/food/crisis/employment/education, and ranks support pathways by urgency, missing 
+information, complexity, and document readiness. 
+●​Delivered ranked next steps, document checklists, and human-helper summaries with safety disclaimers and 
+official-source verification framing. 
+KaamWala AI - AI Service Orchestrator for the Informal Economy | AI Seekho 2026 Google Antigravity Special Mention | 
+Gemini, LangChain/LangGraph, CrewAI, Node.js 
+●​Created an agentic service-matching workflow for Roman Urdu/English requests; extracts intent, service category, 
+location, time, and urgency, then ranks providers using distance, quality signals, availability, and fallback discovery. 
+●​Supports structured booking flow and SMS-style communication templates for informal economy service access. 
+PsycheMetric - AI Mental Health and Care Management Platform | Final Year Project | Flutter, Firebase/Firestore, GCS, 
+Cloud Run, Node/Express 
+●​Designed multi-role mental-health platform for users, psychologists, admins, and governance reviewers with 
+assessments, mood tracking, reports, sessions, and case-management workflows. 
+●​Built psychologist workflows for dashboards, appointments, referrals, document approval, profile management, and 
+secure health-portfolio access. 
+ACHIEVEMENTS, PUBLICATION & LEADERSHIP 
+●​Finalist - USAII Global AI Hackathon 2026 (Undergraduate Level) for ClearAid AI; Special Mention - AI Seekho 2026 
+Google Antigravity National Hackathon for KaamWala AI. 
+●​Publication: VGG-Based Multiclass Classification for Lung Cancer, The Research of Medical Science Review, Volume 3 
+Issue 11, 2025. DOI: 10.5281/zenodo.17539597 
+●​Leadership: President - Artificial Intelligence Community of Pakistan (AICP), MNSUET; Administration Lead - Devsinc 
+Core Team Multan; President - CBS, MNSUET; President - General Committee, Computer Science Students. 

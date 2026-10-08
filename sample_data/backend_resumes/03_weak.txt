@@ -1,0 +1,15 @@
+Sara Noor
+Frontend Developer
+
+Skills:
+JavaScript
+React
+Git
+HTML
+CSS
+
+Experience:
+Built frontend interfaces using JavaScript and React.
+Used Git for source control.
+Basic exposure to Docker through a university project.
+Interested in learning Python backend development.

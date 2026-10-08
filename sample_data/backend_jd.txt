@@ -1,0 +1,21 @@
+Junior Backend Developer
+
+We are hiring a Junior Backend Developer to build and maintain internal business applications.
+
+Required Skills:
+Python
+Django
+PostgreSQL
+Docker
+Git
+REST APIs
+Redis
+JavaScript
+
+Preferred Skills:
+AWS
+Kubernetes
+FastAPI
+Node.js
+
+The developer will maintain backend services, integrate with frontend applications, and work with relational databases.

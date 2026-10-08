@@ -1,0 +1,19 @@
+Bilal Ahmed
+Software Developer
+
+Technical Skills:
+Python
+PostgreSQL
+Docker
+Git
+REST APIs
+JavaScript
+
+Experience:
+Built Python backend services and REST APIs.
+Created and maintained PostgreSQL databases.
+Used Docker to package applications.
+Used Git for version control.
+Worked with JavaScript-based web applications.
+No experience with Django.
+No experience with Redis.

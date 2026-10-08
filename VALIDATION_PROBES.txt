@@ -1,0 +1,27 @@
+PASS | Java does not match JavaScript
+PASS | SQL does not match NoSQL
+PASS | C does not match Communication
+PASS | Go does not match Good
+PASS | Docker rejects Git evidence
+PASS | one-word Python cannot erase learning context
+PASS | standalone listed Python still allowed
+PASS | alias tone ignores unrelated Redis negation
+PASS | negation: I have not used Docker.
+PASS | negation: Haven't used Docker.
+PASS | negation: Never worked on Docker.
+PASS | negation: Docker: none
+PASS | negation: Did not use Docker in production.
+PASS | negation: Not used Docker.
+PASS | assessor rejects unrelated real quote | mode=llm_assessed
+PASS | minimal quote corrected to uncertain | calls=2
+PASS | JD alias survives source abbreviation | ['Natural Language Processing', 'PostgreSQL', 'TensorFlow or PyTorch']
+PASS | Postgres/PostgreSQL deduplicate | ['Natural Language Processing', 'PostgreSQL', 'TensorFlow or PyTorch']
+PASS | OR alternatives remain one requirement | ['Natural Language Processing', 'PostgreSQL', 'TensorFlow or PyTorch']
+PASS | inline compact required list splits correctly | ['Python', 'Docker', 'Git', 'TensorFlow or PyTorch']
+PASS | fallback OR line stays whole
+PASS | fallback OR matches either option
+PASS | degree comma line remains whole | Bachelor's degree in Computer Science, IT, or related field
+PASS | oversize prompt detected before send
+PASS | oversize prompt raises clear context error
+PASS | uploaded Naqvi PDF strong-AI fallback regression is strong | 8/9 | [('Python', 'matched'), ('Machine Learning', 'matched'), ('Deep Learning', 'matched'), ('TensorFlow or PyTorch', 'matched'), ('Natural Language Processing', 'matched'), ('LLM integrations', 'matched'), ('LangChain', 'matched'), ('Model evaluation', 'matched'), ('AI application development', 'not_matched')]
+ALL ADVERSARIAL PROBES PASSED
