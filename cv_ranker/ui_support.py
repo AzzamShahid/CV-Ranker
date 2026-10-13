@@ -1,4 +1,5 @@
 import json
+import html
 import re
 from pathlib import Path
 
@@ -90,7 +91,27 @@ def ranking_rows(report: RankingReport) -> list[dict[str, object]]:
                     else None
                 ),
                 "Score basis": item.score_basis,
+                "HR gate status": item.eligibility.status,
                 "Evaluation mode": item.evaluation_mode,
             }
         )
     return rows
+
+
+def highlighted_source_html(source_text: str, term: str | None) -> str:
+    """HTML-escape untrusted resume text and highlight only the literal source term.
+
+    No semantic lookup or skill catalog is used. If no actual source phrase is
+    available, show the full line without pretending to know its matching span.
+    """
+    if not term:
+        return html.escape(source_text)
+    pattern = re.compile(r"(?<![\w+#&])" + re.escape(term) + r"(?![\w+#&])", re.IGNORECASE)
+    parts = []
+    last = 0
+    for hit in pattern.finditer(source_text):
+        parts.append(html.escape(source_text[last:hit.start()]))
+        parts.append("<mark>" + html.escape(hit.group()) + "</mark>")
+        last = hit.end()
+    parts.append(html.escape(source_text[last:]))
+    return "".join(parts)

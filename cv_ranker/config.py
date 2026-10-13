@@ -9,6 +9,12 @@ class Settings:
     yake_dedup_threshold: float = 0.90
     max_requirements: int = 30
     assessment_batch_size: int = 20
+    second_look_unmatched: bool = True
+    focused_abbreviation_retry: bool = True
+    exact_initialism_guard: bool = False
+    approved_aliases_path: str | None = None
+    llm_type_review: bool = False
+    eligibility_policy_path: str | None = None
     llm_retries: int = 1
     ollama_num_ctx: int = 8192
     ollama_num_predict: int = 2048

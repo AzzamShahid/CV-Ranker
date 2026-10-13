@@ -42,11 +42,26 @@ def extract_text(path: str | Path) -> str:
         except ImportError as exc:
             raise DocumentError("python-docx is required for DOCX files.") from exc
         try:
+            from docx.table import Table
+            from docx.text.paragraph import Paragraph
+
             doc = Document(path)
-            parts = [p.text for p in doc.paragraphs]
-            for table in doc.tables:
-                for row in table.rows:
-                    parts.append(" | ".join(cell.text for cell in row.cells))
+            parts: list[str] = []
+            # Preserve the actual DOCX body order. ``doc.paragraphs`` followed by
+            # ``doc.tables`` destroys interleaving and can move Skills/Experience
+            # evidence into the wrong context.
+            for child in doc.element.body.iterchildren():
+                tag = child.tag.rsplit("}", 1)[-1]
+                if tag == "p":
+                    value = Paragraph(child, doc).text
+                    if value.strip():
+                        parts.append(value)
+                elif tag == "tbl":
+                    table = Table(child, doc)
+                    for row in table.rows:
+                        value = " | ".join(cell.text for cell in row.cells)
+                        if value.strip():
+                            parts.append(value)
             text = "\n".join(parts)
         except Exception as exc:
             raise DocumentError(f"Could not read DOCX {path.name}: {exc}") from exc

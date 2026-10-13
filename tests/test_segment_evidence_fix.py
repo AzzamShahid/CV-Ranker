@@ -48,7 +48,7 @@ def test_segment_ids_accept_short_obvious_evidence_without_quote_copying():
     assert mode == "llm_assessed"
 
 
-def test_direct_source_guard_corrects_small_model_false_negatives_for_direct_aliases():
+def test_direct_source_guard_recovers_only_literal_or_explicit_or_evidence():
     requirements = [
         req("R001", "Python"),
         req("R002", "Machine Learning"),
@@ -66,7 +66,15 @@ def test_direct_source_guard_corrects_small_model_false_negatives_for_direct_ali
     ])
     out, mode, warnings = assess_resume(resume_text=NAQVI_LIKE, requirements=requirements, llm=FakeLLM(response))
     statuses = {a.requirement_id: a.status for a in out}
-    assert [statuses[f"R{i:03d}"] for i in range(1, 9)] == ["matched"] * 8
+    # Python has no semantic alias dictionary. ML/DL/NLP need Qwen semantic judgment.
+    assert statuses["R001"] == "matched"
+    assert statuses["R002"] == "not_matched"  # title-only "Machine Learning Intern" is not auto-credit
+    assert statuses["R003"] == "not_matched"
+    assert statuses["R004"] == "matched"
+    assert statuses["R005"] == "not_matched"
+    assert statuses["R006"] == "matched"
+    assert statuses["R007"] == "matched"
+    assert statuses["R008"] == "matched"
     assert statuses["R009"] == "not_matched"
     assert mode == "mixed"
     assert any("direct source guard corrected" in w for w in warnings)

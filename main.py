@@ -27,6 +27,14 @@ def build_parser() -> argparse.ArgumentParser:
         default=30,
         help="Maximum frozen JD requirements retained for ranking",
     )
+    parser.add_argument("--exact-initialism", action="store_true",
+                        help="Opt in to literal initialism recovery (e.g. Natural Language Processing -> NLP)")
+    parser.add_argument("--approved-aliases", default=None, metavar="FILE.json",
+                        help="Optional human-reviewed, job-specific equivalence file (never auto-inferred)")
+    parser.add_argument("--eligibility-policy", default=None, metavar="FILE.json",
+                        help="Optional HR-reviewed gates bound to exact JD SHA256; no gates by default")
+    parser.add_argument("--llm-type-review", action="store_true",
+                        help="Experimental: ask Qwen to suggest types for ambiguous JD criteria; suggestions remain review-needed")
     parser.add_argument("--no-llm", action="store_true", help="Use deterministic fallback only")
     parser.add_argument("--details", action="store_true", help="Print per-requirement evidence")
     return parser
@@ -44,6 +52,10 @@ def main() -> int:
             model_name=args.model,
             yake_top_k=args.top_keywords,
             max_requirements=args.max_requirements,
+            exact_initialism_guard=args.exact_initialism,
+            approved_aliases_path=args.approved_aliases,
+            llm_type_review=args.llm_type_review,
+            eligibility_policy_path=args.eligibility_policy,
         )
         ranker = CVRanker(settings=settings, use_llm=not args.no_llm)
         report = ranker.run(Path(args.jd), resumes)

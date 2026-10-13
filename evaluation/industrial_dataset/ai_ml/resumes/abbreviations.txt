@@ -1,0 +1,7 @@
+Candidate profile for AI and Machine Learning Engineer.
+
+Python
+TensorFlow
+NLP
+3 years of Python experience.
+GCP

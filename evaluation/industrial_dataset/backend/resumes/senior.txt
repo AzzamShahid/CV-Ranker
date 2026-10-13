@@ -1,0 +1,7 @@
+Candidate profile for Backend Software Engineer.
+
+Python
+Django
+PostgreSQL
+4 years of Python experience.
+Docker

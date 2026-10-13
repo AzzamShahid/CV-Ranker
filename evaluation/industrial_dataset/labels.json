@@ -1,0 +1,1559 @@
+{
+  "schema_version": 1,
+  "dataset_id": "phase7e-synthetic-v1",
+  "label_origin": "manually_authored_synthetic_scenarios_not_external_adjudication",
+  "scenarios": [
+    {
+      "id": "backend",
+      "department": "backend",
+      "jd_path": "backend/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Python",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "Django",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R003",
+          "name": "PostgreSQL",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R004",
+          "name": "3+ years of Python experience",
+          "priority": "required",
+          "category": "experience"
+        },
+        {
+          "id": "R005",
+          "name": "Docker",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "senior",
+          "resume_path": "backend/resumes/senior.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Python"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Django"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "PostgreSQL"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "4 years of Python experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Docker"
+            }
+          ]
+        },
+        {
+          "id": "junior",
+          "resume_path": "backend/resumes/junior.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Python"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Django"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "PostgreSQL"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "1 year of Python experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "learning",
+          "resume_path": "backend/resumes/learning.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Python"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning Django."
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "PostgreSQL"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of Python experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "other_stack",
+          "resume_path": "backend/resumes/other_stack.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R002",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "4 years of Java experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Docker"
+            }
+          ]
+        },
+        {
+          "id": "negated",
+          "resume_path": "backend/resumes/negated.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "No experience with Python."
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Django"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "PostgreSQL"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "No Python work experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "uncertain",
+              "evidence_quote": "Preparing for Docker certification."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ai_ml",
+      "department": "ai_ml",
+      "jd_path": "ai_ml/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Python",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "PyTorch or TensorFlow",
+          "priority": "required",
+          "category": "compound"
+        },
+        {
+          "id": "R003",
+          "name": "Natural Language Processing",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R004",
+          "name": "2+ years of Python experience",
+          "priority": "required",
+          "category": "experience"
+        },
+        {
+          "id": "R005",
+          "name": "Google Cloud",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "full",
+          "resume_path": "ai_ml/resumes/full.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Python"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "PyTorch"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Natural Language Processing"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of Python experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Google Cloud"
+            }
+          ]
+        },
+        {
+          "id": "abbreviations",
+          "resume_path": "ai_ml/resumes/abbreviations.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Python"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "TensorFlow"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "NLP"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of Python experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "GCP"
+            }
+          ]
+        },
+        {
+          "id": "studying",
+          "resume_path": "ai_ml/resumes/studying.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Python"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning TensorFlow."
+            },
+            {
+              "requirement_id": "R003",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning Natural Language Processing."
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "1 year of Python experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "different",
+          "resume_path": "ai_ml/resumes/different.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "R programming"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "not_matched",
+              "evidence_quote": "Keras"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": "Computer vision"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "4 years of R experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "unscoped_years",
+          "resume_path": "ai_ml/resumes/unscoped_years.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Python"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "PyTorch"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "NLP"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "uncertain",
+              "evidence_quote": "4 years of professional experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hr",
+      "department": "hr",
+      "jd_path": "hr/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Recruitment",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "Payroll",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R003",
+          "name": "Employee relations",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R004",
+          "name": "3+ years of HR experience",
+          "priority": "required",
+          "category": "experience"
+        },
+        {
+          "id": "R005",
+          "name": "Excel",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "full",
+          "resume_path": "hr/resumes/full.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Recruitment"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Payroll"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Employee relations"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "4 years of HR experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Excel"
+            }
+          ]
+        },
+        {
+          "id": "junior",
+          "resume_path": "hr/resumes/junior.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Recruitment"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Payroll"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "2 years of HR experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Excel"
+            }
+          ]
+        },
+        {
+          "id": "learning",
+          "resume_path": "hr/resumes/learning.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Recruitment"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning Payroll."
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Employee relations"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "5 years of HR experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "different",
+          "resume_path": "hr/resumes/different.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "Sales"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "not_matched",
+              "evidence_quote": "Marketing"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": "Customer service"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "3 years in marketing."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Excel"
+            }
+          ]
+        },
+        {
+          "id": "general_tenure",
+          "resume_path": "hr/resumes/general_tenure.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Recruitment"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Payroll"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Employee relations"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "uncertain",
+              "evidence_quote": "5 years of professional experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "finance",
+      "department": "finance",
+      "jd_path": "finance/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Financial reporting",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "Accounts payable",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R003",
+          "name": "Microsoft Excel",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R004",
+          "name": "Bachelor's degree in Accounting",
+          "priority": "required",
+          "category": "education"
+        },
+        {
+          "id": "R005",
+          "name": "QuickBooks",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "full",
+          "resume_path": "finance/resumes/full.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Financial reporting"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Accounts payable"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Microsoft Excel"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "BSc Accounting, graduated 2022."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "QuickBooks"
+            }
+          ]
+        },
+        {
+          "id": "in_progress",
+          "resume_path": "finance/resumes/in_progress.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Financial reporting"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Accounts payable"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Microsoft Excel"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "uncertain",
+              "evidence_quote": "Currently pursuing BSc Accounting."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "wrong_degree",
+          "resume_path": "finance/resumes/wrong_degree.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Financial reporting"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Accounts payable"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Microsoft Excel"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "BSc Chemistry, graduated 2019."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "negated",
+          "resume_path": "finance/resumes/negated.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "No experience with financial reporting."
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Accounts payable"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Microsoft Excel"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "BSc Accounting, graduated 2023."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "learning",
+          "resume_path": "finance/resumes/learning.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Financial reporting"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning accounts payable."
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Microsoft Excel"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "BSc Accounting, graduated 2021."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "QuickBooks"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "manufacturing",
+      "department": "manufacturing",
+      "jd_path": "manufacturing/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Production planning",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "Quality control",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R003",
+          "name": "Preventive maintenance",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R004",
+          "name": "4+ years of production experience",
+          "priority": "required",
+          "category": "experience"
+        },
+        {
+          "id": "R005",
+          "name": "SAP",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "full",
+          "resume_path": "manufacturing/resumes/full.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Production planning"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Quality control"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Preventive maintenance"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "6 years of production experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "SAP"
+            }
+          ]
+        },
+        {
+          "id": "short",
+          "resume_path": "manufacturing/resumes/short.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Production planning"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Quality control"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Preventive maintenance"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "2 years of production experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "training",
+          "resume_path": "manufacturing/resumes/training.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Production planning"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "uncertain",
+              "evidence_quote": "Currently training in quality control."
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Preventive maintenance"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "5 years of production experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "different",
+          "resume_path": "manufacturing/resumes/different.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "Customer logistics"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "5 years of retail experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "SAP"
+            }
+          ]
+        },
+        {
+          "id": "unscoped",
+          "resume_path": "manufacturing/resumes/unscoped.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Production planning"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Quality control"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Preventive maintenance"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "uncertain",
+              "evidence_quote": "7 years of professional experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "procurement",
+      "department": "procurement",
+      "jd_path": "procurement/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Vendor management",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "Purchase orders",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R003",
+          "name": "Inventory management",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R004",
+          "name": "3+ years of procurement experience",
+          "priority": "required",
+          "category": "experience"
+        },
+        {
+          "id": "R005",
+          "name": "SAP",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "full",
+          "resume_path": "procurement/resumes/full.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Vendor management"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Purchase orders"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Inventory management"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "4 years of procurement experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "SAP"
+            }
+          ]
+        },
+        {
+          "id": "junior",
+          "resume_path": "procurement/resumes/junior.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Vendor management"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Purchase orders"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Inventory management"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "1 year of procurement experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "training",
+          "resume_path": "procurement/resumes/training.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning vendor management."
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Purchase orders"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Inventory management"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of procurement experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "other",
+          "resume_path": "procurement/resumes/other.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "Account management"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": "Warehouse cleaning"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "4 years of sales experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "SAP"
+            }
+          ]
+        },
+        {
+          "id": "unscoped",
+          "resume_path": "procurement/resumes/unscoped.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Vendor management"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Purchase orders"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Inventory management"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "uncertain",
+              "evidence_quote": "5 years of total professional experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "customer_support",
+      "department": "customer_support",
+      "jd_path": "customer_support/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Customer support",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "Ticket management",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R003",
+          "name": "CRM",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R004",
+          "name": "2+ years of customer support experience",
+          "priority": "required",
+          "category": "experience"
+        },
+        {
+          "id": "R005",
+          "name": "Zendesk",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "full",
+          "resume_path": "customer_support/resumes/full.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Customer support"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Ticket management"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "CRM"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of customer support experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Zendesk"
+            }
+          ]
+        },
+        {
+          "id": "short",
+          "resume_path": "customer_support/resumes/short.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Customer support"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Ticket management"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "CRM"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "1 year of customer support experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "learning",
+          "resume_path": "customer_support/resumes/learning.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Customer support"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning ticket management."
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "CRM"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "2 years of customer support experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "other",
+          "resume_path": "customer_support/resumes/other.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "Customer sales"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "4 years of warehouse experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Zendesk"
+            }
+          ]
+        },
+        {
+          "id": "unscoped",
+          "resume_path": "customer_support/resumes/unscoped.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Customer support"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Ticket management"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "CRM"
+            },
+            {
+              "requirement_id": "R004",
+              "status": "uncertain",
+              "evidence_quote": "4 years of overall employment."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "healthcare",
+      "department": "healthcare",
+      "jd_path": "healthcare/jd.txt",
+      "requirements": [
+        {
+          "id": "R001",
+          "name": "Patient care",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R002",
+          "name": "Vital signs monitoring",
+          "priority": "required",
+          "category": "skill"
+        },
+        {
+          "id": "R003",
+          "name": "Valid nursing license",
+          "priority": "required",
+          "category": "license"
+        },
+        {
+          "id": "R004",
+          "name": "2+ years of nursing experience",
+          "priority": "required",
+          "category": "experience"
+        },
+        {
+          "id": "R005",
+          "name": "Electronic health records",
+          "priority": "preferred",
+          "category": "skill"
+        }
+      ],
+      "candidates": [
+        {
+          "id": "full",
+          "resume_path": "healthcare/resumes/full.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Patient care"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Vital signs monitoring"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "matched",
+              "evidence_quote": "Active valid nursing license."
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of nursing experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Electronic health records"
+            }
+          ]
+        },
+        {
+          "id": "unknown_status",
+          "resume_path": "healthcare/resumes/unknown_status.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Patient care"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Vital signs monitoring"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "uncertain",
+              "evidence_quote": "Nursing license."
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of nursing experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "expired",
+          "resume_path": "healthcare/resumes/expired.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "matched",
+              "evidence_quote": "Patient care"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Vital signs monitoring"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": "Expired nursing license."
+            },
+            {
+              "requirement_id": "R004",
+              "status": "matched",
+              "evidence_quote": "3 years of nursing experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "studying",
+          "resume_path": "healthcare/resumes/studying.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "uncertain",
+              "evidence_quote": "Currently learning patient care."
+            },
+            {
+              "requirement_id": "R002",
+              "status": "matched",
+              "evidence_quote": "Vital signs monitoring"
+            },
+            {
+              "requirement_id": "R003",
+              "status": "uncertain",
+              "evidence_quote": "Nursing license application pending."
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "1 year of nursing experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "not_matched",
+              "evidence_quote": null
+            }
+          ]
+        },
+        {
+          "id": "different",
+          "resume_path": "healthcare/resumes/different.txt",
+          "labels": [
+            {
+              "requirement_id": "R001",
+              "status": "not_matched",
+              "evidence_quote": "Dental customer service"
+            },
+            {
+              "requirement_id": "R002",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R003",
+              "status": "not_matched",
+              "evidence_quote": null
+            },
+            {
+              "requirement_id": "R004",
+              "status": "not_matched",
+              "evidence_quote": "3 years of reception experience."
+            },
+            {
+              "requirement_id": "R005",
+              "status": "matched",
+              "evidence_quote": "Electronic health records"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

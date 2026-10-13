@@ -1,0 +1,6 @@
+Skills
+Python
+PyTorch
+Docker
+Experience
+Currently learning Django.

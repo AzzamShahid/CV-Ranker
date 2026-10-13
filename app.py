@@ -1,13 +1,18 @@
 import tempfile
+import json
 from pathlib import Path
 
 import streamlit as st
 
 from cv_ranker import CVRanker, Settings
+from cv_ranker.build_info import BUILD_ID, ASSESSMENT_PROTOCOL
+from cv_ranker.runtime_check import assert_runtime_current
 from cv_ranker.documents import DocumentError
 from cv_ranker.schemas import RankingReport
+from cv_ranker.text_utils import phrase_present, requirement_options
 from cv_ranker.ui_support import (
     ranking_rows,
+    highlighted_source_html,
     report_json_bytes,
     save_uploaded_bytes,
 )
@@ -18,12 +23,22 @@ SUPPORTED_UPLOAD_TYPES = ["txt", "md", "pdf", "docx"]
 MAX_RESUMES = 25
 MAX_FILE_BYTES = 10 * 1024 * 1024
 
+# Fail fast if this app file is mixed with stale cv_ranker modules.
+try:
+    _RUNTIME = assert_runtime_current()
+except RuntimeError as exc:
+    st.error(f"CV Ranker runtime mismatch: {exc}")
+    st.error("Delete/replace the old project files completely, keep only .venv, then start run_ui.cmd again.")
+    st.stop()
+
 st.set_page_config(
     page_title="Explainable CV Ranker",
     page_icon="📄",
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+st.caption(f"Build: {BUILD_ID} • Assessment protocol: {ASSESSMENT_PROTOCOL} • Package: {_RUNTIME['package_path']}")
 
 st.markdown(
     """
@@ -63,11 +78,19 @@ def _run_ranker(
     use_llm: bool,
     label: str,
     ephemeral_sources: bool = False,
+    exact_initialism: bool = False,
+    approved_aliases_path: str | None = None,
+    eligibility_policy_path: str | None = None,
+    llm_type_review: bool = False,
 ) -> None:
     settings = Settings(
         model_name=model_name,
         yake_top_k=top_keywords,
         max_requirements=max_requirements,
+        exact_initialism_guard=exact_initialism,
+        approved_aliases_path=approved_aliases_path,
+        eligibility_policy_path=eligibility_policy_path,
+        llm_type_review=llm_type_review,
     )
     ranker = CVRanker(settings=settings, use_llm=use_llm)
     report = ranker.run(jd_path, resume_paths)
@@ -112,7 +135,7 @@ def _render_results(report: RankingReport) -> None:
     mode_caption = st.session_state.get("ranking_label", "Last run")
     actual_modes = ", ".join(sorted({c.evaluation_mode for c in successful})) or "none"
     st.caption(
-        f"{mode_caption} • JD validation: {report.jd_validation_mode} • "
+        f"{mode_caption} • Build: {report.build_id} • JD validation: {report.jd_validation_mode} • "
         f"Actual candidate evaluation mode(s): {actual_modes} • "
         "Primary rank is calculated deterministically in Python. Equal primary scores share a rank; filename only orders tied rows for display."
     )
@@ -213,6 +236,10 @@ def _render_results(report: RankingReport) -> None:
                 )
             if candidate.score_basis:
                 st.caption(f"Score basis: {candidate.score_basis}")
+            st.markdown(f"**HR-selected criteria:** `{candidate.eligibility.status}`")
+            st.caption("This is a document-evidence screening result, not a hiring or legal eligibility decision.")
+            for issue in candidate.eligibility.issues:
+                st.caption(issue)
 
             if candidate.errors:
                 with st.expander("Candidate warnings / errors", expanded=True):
@@ -236,32 +263,145 @@ def _render_results(report: RankingReport) -> None:
                     f"{icon} {requirement.name} — {assessment.status.replace('_', ' ').title()}"
                 )
                 with st.expander(title, expanded=assessment.status != "matched"):
-                    st.markdown(f"**Priority:** `{requirement.priority}`")
+                    st.markdown(f"**Priority:** `{requirement.priority}` | **JD type:** `{requirement.constraint.kind}`")
+                    if requirement.constraint.requires_review:
+                        st.caption("Requirement typing flagged for review; CV claims do not establish legal eligibility.")
                     st.markdown("**JD evidence**")
                     st.code(requirement.jd_evidence, language=None)
-                    st.markdown("**Resume evidence**")
+                    if assessment.compound_check:
+                        check = assessment.compound_check
+                        st.markdown(f"**Compound requirement:** `{check.operator}` → `{check.outcome}`")
+                        st.caption(check.explanation)
+                        for component in check.components:
+                            ids = ", ".join(e.segment_id for e in component.evidence) or "not evidenced"
+                            st.caption(f"{component.name}: {component.status} · {ids} · {component.reason}")
+                    if assessment.experience_check:
+                        check = assessment.experience_check
+                        st.markdown(f"**Experience check:** `{check.outcome}` | "
+                                    f"Minimum `{check.minimum_years}` years | "
+                                    f"Subject `{check.subject or 'general'}`")
+                        st.caption(check.explanation)
+                        for claim in check.claims:
+                            st.caption(f"{claim.segment_id} · {claim.lower_years}–"
+                                       f"{claim.upper_years if claim.upper_years is not None else 'open'} years "
+                                       f"· {claim.tone} · {claim.scope}")
+                    if assessment.qualification_check:
+                        check = assessment.qualification_check
+                        st.markdown(f"**Qualification claim check:** `{check.kind}` — `{check.outcome}`")
+                        st.caption(check.explanation)
+                        st.caption("Checks resume statements only; credential authenticity is not independently verified.")
+                        for claim in check.claims:
+                            st.caption(f"{claim.segment_id} · {claim.state} · {claim.quote}")
+                    st.markdown("**Resume source evidence**")
                     if assessment.evidence:
-                        st.code(assessment.evidence, language=None)
+                        if assessment.evidence_ids:
+                            st.caption("Source segment(s): " + ", ".join(assessment.evidence_ids))
+                        if assessment.evidence_segments:
+                            for cited in assessment.evidence_segments:
+                                st.caption(f"{cited.segment_id} · {cited.section.title()} section · full source line")
+                                # The resume is untrusted: highlighted_source_html
+                                # escapes it before Streamlit renders safe markup.
+                                fallback_term = next(
+                                    (opt for opt in requirement_options(requirement.name)
+                                     if phrase_present(opt, cited.text)), None
+                                )
+                                highlighted = highlighted_source_html(
+                                    cited.text, assessment.matched_term or fallback_term
+                                )
+                                st.markdown(
+                                    '<div style="white-space:pre-wrap;overflow-wrap:anywhere;'
+                                    'padding:0.75rem;border:1px solid #8884;border-radius:0.4rem">'
+                                    + highlighted + '</div>', unsafe_allow_html=True
+                                )
+                        else:
+                            st.code(assessment.evidence, language=None)
                         if assessment.matched_term:
-                            st.caption(f"Direct alias / OR term used: {assessment.matched_term}")
+                            st.caption(f"Matched source term/phrase: {assessment.matched_term}")
+                        if assessment.reviewed_alias_by:
+                            st.warning(
+                                f"This match uses a reviewer-approved JD equivalence "
+                                f"({assessment.reviewed_alias_by}), not a Qwen-only semantic judgment."
+                            )
                     else:
                         st.write("No source evidence was accepted.")
 
     with tab_requirements:
+        st.caption(
+            "For an equivalence file, copy the exact frozen Requirement name shown below. "
+            "Only an authorized reviewer should add an alias, identity, and review rationale. "
+            "No aliases are pre-approved. Rerun with your reviewed JSON after saving it."
+        )
+        st.download_button(
+            "Download blank reviewed-equivalence JSON template",
+            data=json.dumps({"schema_version": 1, "approvals": []}, indent=2),
+            file_name="reviewed_equivalences_template.json",
+            mime="application/json",
+        )
         requirement_rows = [
             {
                 "ID": r.requirement_id,
                 "Priority": r.priority,
                 "Requirement": r.name,
                 "JD evidence": r.jd_evidence,
+                "Type": r.constraint.kind,
+                "Logical form": r.constraint.operator,
+                "Minimum years": r.constraint.minimum_years,
+                "Subject": r.constraint.subject,
+                "Degree level": r.constraint.degree_level,
+                "Study field": r.constraint.field_of_study,
+                "JD lines": ", ".join(map(str, r.constraint.source_line_numbers)),
+                "Typing origin": r.constraint.origin,
+                "Review needed": r.constraint.requires_review,
             }
             for r in report.requirements
         ]
         st.dataframe(requirement_rows, use_container_width=True, hide_index=True)
+        st.caption(
+            "Simple JD-explicit AND/OR clauses are evaluated from independently cited literal resume evidence. "
+            "Complex conditions still require manual review. Each frozen compound clause is one scoring unit."
+        )
+        st.markdown("**Employer-selected eligibility policy template**")
+        st.caption("Select exact frozen REQUIRED requirement names and complete reviewer information. "
+                   "This is an approval declaration, not authenticated HR authorization.")
+        required_names = [r.name for r in report.requirements if r.priority == "required"]
+        st.download_button(
+            "Download eligibility-policy template for this JD",
+            data=json.dumps({"schema_version": 1, "jd_sha256": report.jd_sha256,
+                             "reviewed_by": "REPLACE WITH AUTHORIZED REVIEWER",
+                             "gates": [{"requirement": required_names[0],
+                                        "reason": "REPLACE WITH JOB-SPECIFIC HR RATIONALE"}] if required_names else []}, indent=2),
+            file_name="eligibility_policy_template.json", mime="application/json",
+            disabled=not bool(required_names),
+        )
 
     with tab_diagnostics:
+        if report.approved_aliases:
+            st.warning(
+                f"{len(report.approved_aliases)} HR-reviewed equivalence(s) were supplied "
+                "and are not Qwen-verified semantic claims."
+            )
+            st.json({"approvals": report.approved_aliases,
+                     "source_sha256": report.approved_aliases_sha256})
+        if report.eligibility_policy_sha256:
+            st.json({"eligibility_policy_sha256": report.eligibility_policy_sha256,
+                     "reviewed_by": report.eligibility_policy_reviewed_by,
+                     "gates": report.eligibility_gates})
+        st.markdown(f"**JD SHA256:** `{report.jd_sha256}`")
         st.markdown(f"**JD source:** `{report.job_description_source}`")
         st.markdown(f"**JD validation mode:** `{report.jd_validation_mode}`")
+        if report.jd_diagnostics:
+            recovered = [
+                event for event in report.jd_diagnostics
+                if event.get("status") == "restored_from_explicit_source"
+            ]
+            if recovered:
+                st.warning(
+                    f"{len(recovered)} explicit JD requirement(s) were restored from the "
+                    "original source instead of being accepted as LLM-validated."
+                )
+            with st.expander("JD requirement grounding trace", expanded=False):
+                st.caption("Initial model rows, rejected/renamed proposals, source items, and final denominator.")
+                st.json(report.jd_diagnostics)
         st.markdown(f"**YAKE candidates:** {len(report.yake_candidates)}")
         if report.yake_candidates:
             st.dataframe(
@@ -296,6 +436,18 @@ with st.sidebar:
     model_name = st.text_input("Ollama model", value="qwen2.5:3b")
     top_keywords = st.slider("YAKE candidate phrases", 10, 200, 40, 10)
     max_requirements = st.slider("Maximum frozen requirements", 5, 100, 30, 5)
+    exact_initialism = st.checkbox(
+        "Experimental exact-initialism matching (e.g., NLP)",
+        value=False,
+        help=("Only matches 3–5 capitalized words to their literal initialism in "
+              "a source-qualified CV segment. Does not infer Google Cloud = GCP, "
+              "or use a skill dictionary. Changes will be marked mixed/diagnostic."),
+    )
+    llm_type_review = st.checkbox(
+        "Experimental Qwen suggestions for ambiguous JD types",
+        value=False,
+        help="Only suggests types for unclear requirement text. Does not modify the JD, eligibility, or ranking score; all suggestions remain review-needed.",
+    )
     st.caption(r"Run `.\.venv\Scripts\python.exe doctor.py --live` before an AI-backed presentation.")
 
 st.subheader("1. Job description")
@@ -320,6 +472,23 @@ else:
         type=SUPPORTED_UPLOAD_TYPES,
         accept_multiple_files=False,
     )
+
+st.subheader("Optional HR-reviewed equivalences")
+alias_file_upload = st.file_uploader(
+    "Upload reviewer-approved JD-specific equivalences (JSON)",
+    type=["json"],
+    help=("No built-in synonym table. A reviewer must explicitly approve every "
+          "same-item equivalence for THIS JD. A CV must still quote the alias in credible evidence."),
+)
+st.caption("Only reviewer-authorized mappings are used; the full approval record is included in the JSON report.")
+
+st.subheader("Optional employer-selected eligibility gates")
+eligibility_file_upload = st.file_uploader(
+    "Upload HR-reviewed eligibility policy (JSON)", type=["json"], key="eligibility_policy",
+    help="After an initial run, download the exact JD-bound policy template in the JD requirements tab. "
+         "Without this file no eligibility gates are imposed."
+)
+st.caption("HR gates never change match percentages or ranking positions; they flag document-evidence satisfaction and review requirements.")
 
 st.subheader("2. Candidate resumes")
 resume_uploads = st.file_uploader(
@@ -356,6 +525,10 @@ if run_clicked:
         input_error = "The JD file exceeds the 10 MB demo limit."
     elif any(getattr(uploaded, "size", 0) > MAX_FILE_BYTES for uploaded in resume_uploads):
         input_error = "One or more resume files exceed the 10 MB demo limit."
+    elif alias_file_upload is not None and getattr(alias_file_upload, "size", 0) > 64 * 1024:
+        input_error = "Reviewer approval file exceeds the 64 KB limit."
+    elif eligibility_file_upload is not None and getattr(eligibility_file_upload, "size", 0) > 64 * 1024:
+        input_error = "Eligibility policy exceeds the 64 KB limit."
 
     if input_error:
         st.error(input_error)
@@ -388,6 +561,16 @@ if run_clicked:
                         for index, uploaded in enumerate(resume_uploads, start=1)
                     ]
 
+                    aliases_path = None
+                    if alias_file_upload is not None:
+                        aliases_path = str(temp_root_path / "approved_equivalences.json")
+                        Path(aliases_path).write_bytes(alias_file_upload.getvalue())
+
+                    eligibility_path = None
+                    if eligibility_file_upload is not None:
+                        eligibility_path = str(temp_root_path / "eligibility_policy.json")
+                        Path(eligibility_path).write_bytes(eligibility_file_upload.getvalue())
+
                     _run_ranker(
                         jd_path=jd_path,
                         resume_paths=resume_paths,
@@ -395,6 +578,10 @@ if run_clicked:
                         top_keywords=top_keywords,
                         max_requirements=max_requirements,
                         use_llm=use_llm,
+                        exact_initialism=exact_initialism,
+                        approved_aliases_path=aliases_path,
+                        eligibility_policy_path=eligibility_path,
+                        llm_type_review=llm_type_review,
                         label=(
                             "Uploaded documents • local LLM requested"
                             if use_llm

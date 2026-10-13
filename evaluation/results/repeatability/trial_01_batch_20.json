@@ -1,0 +1,575 @@
+{
+  "scope": "assessment",
+  "model": "qwen2.5:3b",
+  "assessment_batch_size": 20,
+  "build_id": "batch-repeatability-2026-10-08",
+  "assessment_protocol": "segment_ids_semantic_llm",
+  "benchmark_data_sha256": "17b22fa24916c530d6c7c2802d535d8af5f945e20a258e7f8ec0bc093c02bb8b",
+  "measurement_quality": {
+    "valid_live_llm_measurement": false,
+    "expected_mode": "llm_assessed",
+    "mode_counts": {
+      "llm_assessed": 10,
+      "mixed": 11
+    },
+    "non_llm_or_mixed_rows": [
+      "negative_learning_related/R001 (mixed)",
+      "negative_learning_related/R002 (mixed)",
+      "negative_learning_related/R003 (mixed)",
+      "negative_learning_related/R004 (mixed)",
+      "negative_learning_related/R005 (mixed)",
+      "title_degree_safety/R001 (mixed)",
+      "title_degree_safety/R002 (mixed)",
+      "title_degree_safety/R003 (mixed)",
+      "contradiction_injection_uppercase/R001 (mixed)",
+      "contradiction_injection_uppercase/R002 (mixed)",
+      "contradiction_injection_uppercase/R003 (mixed)"
+    ],
+    "incomplete_rows": []
+  },
+  "raw_model_diagnostics": {
+    "raw_model_status_coverage": 21,
+    "total_rows": 21,
+    "raw_status_correct": 12,
+    "raw_status_accuracy_on_observed": 0.5714285714285714,
+    "post_model_status_changes": 4,
+    "model_retry_status_changes": 2,
+    "changed_rows": [
+      "negative_learning_related/R002: model=not_matched, final=uncertain",
+      "title_degree_safety/R001: model=uncertain, final=not_matched",
+      "title_degree_safety/R003: model=not_matched, final=matched",
+      "contradiction_injection_uppercase/R001: model=not_matched, final=uncertain"
+    ]
+  },
+  "metrics": {
+    "total": 21,
+    "correct": 16,
+    "accuracy": 0.7619047619047619,
+    "matched_precision": 0.9,
+    "matched_recall": 0.75,
+    "matched_f1": 0.8181818181818182,
+    "by_category": {
+      "absent": 0.6666666666666666,
+      "contradiction": 1.0,
+      "exact": 1.0,
+      "experience": 1.0,
+      "explicit_or": 1.0,
+      "learning_only": 1.0,
+      "negation": 1.0,
+      "prompt_injection": 1.0,
+      "related_different": 0.0,
+      "semantic_abbreviation": 0.0,
+      "semantic_certification": 1.0,
+      "semantic_constraint": 1.0,
+      "semantic_education": 1.0,
+      "semantic_paraphrase": 0.5,
+      "title_degree_only": 1.0,
+      "uppercase_segment": 1.0
+    },
+    "confusion": {
+      "matched->matched": 9,
+      "matched->not_matched": 3,
+      "not_matched->matched": 1,
+      "not_matched->not_matched": 5,
+      "not_matched->uncertain": 1,
+      "uncertain->uncertain": 2
+    }
+  },
+  "rows": [
+    {
+      "scenario_id": "semantic_positive",
+      "requirement_id": "R001",
+      "requirement_name": "Python",
+      "category": "exact",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [
+        "S002"
+      ],
+      "evidence": "Python",
+      "matched_term": null,
+      "correct": true,
+      "note": "",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S002"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "semantic_positive",
+      "requirement_id": "R002",
+      "requirement_name": "Natural Language Processing",
+      "category": "semantic_abbreviation",
+      "expected": "matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [],
+      "evidence": null,
+      "matched_term": null,
+      "correct": false,
+      "note": "",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "semantic_positive",
+      "requirement_id": "R003",
+      "requirement_name": "Google Cloud",
+      "category": "semantic_abbreviation",
+      "expected": "matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [],
+      "evidence": null,
+      "matched_term": null,
+      "correct": false,
+      "note": "",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "semantic_positive",
+      "requirement_id": "R004",
+      "requirement_name": "TensorFlow or PyTorch",
+      "category": "explicit_or",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [
+        "S005"
+      ],
+      "evidence": "PyTorch",
+      "matched_term": null,
+      "correct": true,
+      "note": "",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S005"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "semantic_positive",
+      "requirement_id": "R005",
+      "requirement_name": "REST API development",
+      "category": "semantic_paraphrase",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [
+        "S001"
+      ],
+      "evidence": "Python developer with 5 years of professional experience building applied AI products. Built production REST endpoints with FastAPI and developed a source-first AI intake application for support workflows.",
+      "matched_term": null,
+      "correct": true,
+      "note": "",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S001"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "semantic_positive",
+      "requirement_id": "R006",
+      "requirement_name": "AI application development",
+      "category": "semantic_paraphrase",
+      "expected": "matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [],
+      "evidence": null,
+      "matched_term": null,
+      "correct": false,
+      "note": "",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "semantic_positive",
+      "requirement_id": "R007",
+      "requirement_name": "3+ years of Python experience",
+      "category": "semantic_constraint",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [
+        "S001"
+      ],
+      "evidence": "Python developer with 5 years of professional experience building applied AI products. Built production REST endpoints with FastAPI and developed a source-first AI intake application for support workflows.",
+      "matched_term": null,
+      "correct": true,
+      "note": "",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S001"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "negative_learning_related",
+      "requirement_id": "R001",
+      "requirement_name": "Docker",
+      "category": "negation",
+      "expected": "not_matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S001"
+      ],
+      "evidence": "No professional experience with Docker.",
+      "matched_term": null,
+      "correct": true,
+      "note": "R002: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [
+        "S001"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "negative_learning_related",
+      "requirement_id": "R002",
+      "requirement_name": "Kubernetes",
+      "category": "learning_only",
+      "expected": "uncertain",
+      "predicted": "uncertain",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S002"
+      ],
+      "evidence": "Currently learning Kubernetes.",
+      "matched_term": null,
+      "correct": true,
+      "note": "R002: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [
+        "S002"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "python_or_fallback_changed_status",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "negative_learning_related",
+      "requirement_id": "R003",
+      "requirement_name": "Django",
+      "category": "related_different",
+      "expected": "not_matched",
+      "predicted": "uncertain",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S003"
+      ],
+      "evidence": "Built internal APIs with FastAPI.",
+      "matched_term": null,
+      "correct": false,
+      "note": "R002: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "uncertain",
+      "raw_final_status": "uncertain",
+      "raw_evidence_ids": [
+        "S003"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "negative_learning_related",
+      "requirement_id": "R004",
+      "requirement_name": "Redis",
+      "category": "absent",
+      "expected": "not_matched",
+      "predicted": "matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S004"
+      ],
+      "evidence": "Maintained PostgreSQL databases for production applications.",
+      "matched_term": null,
+      "correct": false,
+      "note": "R002: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S004"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "negative_learning_related",
+      "requirement_id": "R005",
+      "requirement_name": "PostgreSQL",
+      "category": "exact",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S004"
+      ],
+      "evidence": "Maintained PostgreSQL databases for production applications.",
+      "matched_term": null,
+      "correct": true,
+      "note": "R002: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S004"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "title_degree_safety",
+      "requirement_id": "R001",
+      "requirement_name": "Machine Learning",
+      "category": "title_degree_only",
+      "expected": "not_matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [],
+      "evidence": null,
+      "matched_term": null,
+      "correct": true,
+      "note": "R001: cited segment(s) contained no qualifying capability evidence. | R002: cited segment(s) contained no qualifying capability evidence. | R003: direct source guard corrected LLM not_matched to matched. | 2 assessment row(s) had invalid source citations; one corrective retry was used. | R001: cited segment(s) contained no qualifying capability evidence. | R001 still had no valid source evidence after correction; no credit awarded.",
+      "raw_initial_status": "matched",
+      "raw_final_status": "uncertain",
+      "raw_evidence_ids": [
+        "S001"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 2,
+      "decision_path": "python_or_fallback_changed_status",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "title_degree_safety",
+      "requirement_id": "R002",
+      "requirement_name": "Python",
+      "category": "absent",
+      "expected": "not_matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [],
+      "evidence": null,
+      "matched_term": null,
+      "correct": true,
+      "note": "R001: cited segment(s) contained no qualifying capability evidence. | R002: cited segment(s) contained no qualifying capability evidence. | R003: direct source guard corrected LLM not_matched to matched. | 2 assessment row(s) had invalid source citations; one corrective retry was used. | R001: cited segment(s) contained no qualifying capability evidence. | R001 still had no valid source evidence after correction; no credit awarded.",
+      "raw_initial_status": "matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 2,
+      "decision_path": "llm_correction_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "title_degree_safety",
+      "requirement_id": "R003",
+      "requirement_name": "Go",
+      "category": "experience",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S003"
+      ],
+      "evidence": "Developed backend services using Go and maintained production APIs.",
+      "matched_term": null,
+      "correct": true,
+      "note": "R001: cited segment(s) contained no qualifying capability evidence. | R002: cited segment(s) contained no qualifying capability evidence. | R003: direct source guard corrected LLM not_matched to matched. | 2 assessment row(s) had invalid source citations; one corrective retry was used. | R001: cited segment(s) contained no qualifying capability evidence. | R001 still had no valid source evidence after correction; no credit awarded.",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "python_or_fallback_changed_status",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "contradiction_injection_uppercase",
+      "requirement_id": "R001",
+      "requirement_name": "Docker",
+      "category": "contradiction",
+      "expected": "uncertain",
+      "predicted": "uncertain",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S003"
+      ],
+      "evidence": "No professional experience with Docker.",
+      "matched_term": null,
+      "correct": true,
+      "note": "R001: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "python_or_fallback_changed_status",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "contradiction_injection_uppercase",
+      "requirement_id": "R002",
+      "requirement_name": "Redis",
+      "category": "prompt_injection",
+      "expected": "not_matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [],
+      "evidence": null,
+      "matched_term": null,
+      "correct": true,
+      "note": "R001: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "contradiction_injection_uppercase",
+      "requirement_id": "R003",
+      "requirement_name": "AWS",
+      "category": "uppercase_segment",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "mixed",
+      "evidence_ids": [
+        "S002"
+      ],
+      "evidence": "AWS",
+      "matched_term": null,
+      "correct": true,
+      "note": "R001: direct source guard corrected LLM not_matched to uncertain.",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S002"
+      ],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "education_requirements",
+      "requirement_id": "R001",
+      "requirement_name": "Bachelor's degree in Computer Science",
+      "category": "semantic_education",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [
+        "S001"
+      ],
+      "evidence": "BSc Computer Science, FAST NUCES",
+      "matched_term": "BSc Computer Science",
+      "correct": true,
+      "note": "",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S001"
+      ],
+      "raw_matched_term": "BSc Computer Science",
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "education_requirements",
+      "requirement_id": "R002",
+      "requirement_name": "AWS certification",
+      "category": "semantic_certification",
+      "expected": "matched",
+      "predicted": "matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [
+        "S002"
+      ],
+      "evidence": "AWS Certified Cloud Practitioner",
+      "matched_term": "AWS Certified Cloud Practitioner",
+      "correct": true,
+      "note": "",
+      "raw_initial_status": "matched",
+      "raw_final_status": "matched",
+      "raw_evidence_ids": [
+        "S002"
+      ],
+      "raw_matched_term": "AWS Certified Cloud Practitioner",
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    },
+    {
+      "scenario_id": "education_requirements",
+      "requirement_id": "R003",
+      "requirement_name": "Docker",
+      "category": "absent",
+      "expected": "not_matched",
+      "predicted": "not_matched",
+      "evaluation_mode": "llm_assessed",
+      "evidence_ids": [],
+      "evidence": null,
+      "matched_term": null,
+      "correct": true,
+      "note": "",
+      "raw_initial_status": "not_matched",
+      "raw_final_status": "not_matched",
+      "raw_evidence_ids": [],
+      "raw_matched_term": null,
+      "llm_attempts": 1,
+      "decision_path": "llm_initial_agreed_with_final",
+      "jd_source_resolution": null
+    }
+  ]
+}

@@ -40,27 +40,15 @@ UNCERTAINTY_PATTERNS = [
     r"\bbasic\s+knowledge\b",
     r"\blimited\s+knowledge\b",
     r"\bcurrently\s+studying\b",
+    r"\bcurrently\s+training\b",
+    r"\btraining\s+in\b",
+    r"\bpreparing\s+for\b",
     r"\bstudying\b",
     r"\bbeginner\b",
     r"\binterested\s+in\b",
     r"\btheoretical\s+(?:knowledge|understanding|familiarity)\b",
     r"\bcoursework\s+(?:included|covered|involving)\b",
 ]
-
-# Deliberately tiny direct-equivalence list. This is not a skill dictionary and does
-# not grant transferable credit; it only normalizes common names/abbreviations for
-# the same thing.
-_ALIAS_GROUPS = (
-    frozenset({"nlp", "natural language processing"}),
-    frozenset({"ml", "machine learning"}),
-    frozenset({"dl", "deep learning"}),
-    frozenset({"postgres", "postgresql"}),
-    frozenset({"node", "node.js", "nodejs", "node js"}),
-    frozenset({"js", "javascript"}),
-    frozenset({"k8s", "kubernetes"}),
-    frozenset({"ms excel", "microsoft excel"}),
-    frozenset({"gcp", "google cloud", "google cloud platform"}),
-)
 
 
 def normalize_unicode(text: str) -> str:
@@ -138,60 +126,96 @@ def phrase_present(phrase: str, text: str) -> bool:
     return bool(pattern and haystack and re.search(pattern, haystack, flags=re.IGNORECASE))
 
 
-def _alias_group(value: str) -> frozenset[str] | None:
+def _generic_spelling_key(value: str) -> str:
+    """Normalize only spelling/punctuation, never semantic aliases.
+
+    This intentionally does NOT know that NLP means Natural Language Processing,
+    Postgres means PostgreSQL, etc. Semantic equivalence belongs to the LLM.
+    """
     key = canonical_key(value)
-    for group in _ALIAS_GROUPS:
-        if key in group:
-            return group
-    return None
+    if not key:
+        return ""
+    # Collapse punctuation/spacing variants such as Node.js / NodeJS / Node JS.
+    # Keep language-significant '+' and '#' intact.
+    return re.sub(r"[\s._/-]+", "", key)
+
+
+def _generic_grammar_key(value: str) -> str:
+    """Conservative grammatical identity for deduplication.
+
+    Only acronym plurals are collapsed (APIs->API, SDKs->SDK). This avoids
+    corrupting proper technology names such as Pandas or Kubernetes.
+    """
+    key = canonical_key(value)
+    if not key:
+        return ""
+    canonical_tokens = key.split()
+    raw_tokens = normalize_whitespace(value).split()
+    if canonical_tokens and raw_tokens:
+        raw_last = re.sub(r"[^A-Za-z0-9]+", "", raw_tokens[-1])
+        if len(raw_last) >= 3 and raw_last.endswith("s") and raw_last[:-1].isupper():
+            canonical_tokens[-1] = canonical_tokens[-1][:-1]
+    return " ".join(canonical_tokens)
+
 
 
 def equivalent_terms(left: str, right: str) -> bool:
+    """Generic spelling/grammar equivalence only; no domain semantic aliases."""
     a, b = canonical_key(left), canonical_key(right)
     if not a or not b:
         return False
     if a == b:
         return True
-    group = _alias_group(a)
-    return bool(group and b in group)
+    if _generic_spelling_key(a) == _generic_spelling_key(b):
+        return True
+    return _generic_grammar_key(a) == _generic_grammar_key(b)
 
 
 def aliases_for(term: str) -> set[str]:
+    """Backward-compatible name: returns spelling variants, not semantic aliases."""
     key = canonical_key(term)
-    group = _alias_group(key)
-    return set(group) if group else ({key} if key else set())
+    if not key:
+        return set()
+    variants = {key}
+    compact = _generic_spelling_key(key)
+    if compact and compact != key:
+        variants.add(compact)
+    return variants
 
 
 def extract_or_requirement(text: str) -> str | None:
-    """Return a simple explicit A-or-B requirement, stripping common wrappers.
+    """Return a compact explicit alternative requirement.
 
-    This intentionally handles only compact alternatives. It does not try to parse
-    prose such as degree/equivalent-experience clauses.
+    Supports ``A or B``, ``A/B`` and ``A and/or B`` when each side is short.
+    It deliberately refuses degree/equivalent-experience prose.
     """
     clean = normalize_whitespace(re.sub(r"^\s*(?:[-•*]\s+|\d+[.)]\s+)", "", text or ""))
     clean = clean.strip(" .;:")
     clean = re.sub(
         r"^(?:experience|proficiency|knowledge|familiarity|skills?|hands-on experience)\s+(?:with|in|of)\s+",
-        "",
-        clean,
-        flags=re.IGNORECASE,
+        "", clean, flags=re.IGNORECASE,
     )
     clean = re.sub(
         r"\s+(?:is|are)\s+(?:required|preferred|desired|a plus|mandatory|essential)$",
-        "",
-        clean,
-        flags=re.IGNORECASE,
+        "", clean, flags=re.IGNORECASE,
     ).strip(" .;:")
-    # Preserve the alternatives while stripping a shared trailing wrapper.
     clean = re.sub(
         r"\s+(?:experience|skills?|knowledge|proficiency|familiarity)$",
-        "",
-        clean,
-        flags=re.IGNORECASE,
+        "", clean, flags=re.IGNORECASE,
     ).strip(" .;:")
     if re.search(r"\b(?:degree|equivalent|related field|years? of experience)\b", clean, flags=re.IGNORECASE):
         return None
-    parts = [normalize_whitespace(p) for p in re.split(r"\s+or\s+", clean, flags=re.IGNORECASE)]
+
+    if re.search(r"\s+and/or\s+", clean, flags=re.IGNORECASE):
+        parts = re.split(r"\s+and/or\s+", clean, flags=re.IGNORECASE)
+    elif re.search(r"\s+or\s+", clean, flags=re.IGNORECASE):
+        parts = re.split(r"\s+or\s+", clean, flags=re.IGNORECASE)
+    elif "/" in clean and clean.count("/") <= 3:
+        parts = clean.split("/")
+    else:
+        return None
+
+    parts = [normalize_whitespace(p) for p in parts]
     if not 2 <= len(parts) <= 4:
         return None
     if any(not p or len(p.split()) > 4 for p in parts):
@@ -202,23 +226,24 @@ def extract_or_requirement(text: str) -> str | None:
 def requirement_options(requirement: str) -> list[str]:
     explicit = extract_or_requirement(requirement)
     if not explicit:
-        return [normalize_whitespace(requirement)] if normalize_whitespace(requirement) else []
+        value = normalize_whitespace(requirement)
+        return [value] if value else []
     return [normalize_whitespace(p) for p in re.split(r"\s+or\s+", explicit, flags=re.IGNORECASE)]
 
 
 def requirement_match_terms(requirement: str) -> set[str]:
-    terms: set[str] = set()
-    for option in requirement_options(requirement):
-        terms.update(aliases_for(option))
-    return {term for term in terms if term}
+    """Terms Python may match deterministically: exact requirement/explicit OR options only."""
+    return {canonical_key(option) for option in requirement_options(requirement) if canonical_key(option)}
 
 
 def canonical_equivalence_key(requirement: str) -> str:
+    """Generic identity for deduplication; no hardcoded semantic mappings."""
     options = requirement_options(requirement)
-    normalized: list[str] = []
+    normalized = []
     for option in options:
-        group = _alias_group(option)
-        normalized.append(sorted(group)[0] if group else canonical_key(option))
+        grammar = _generic_grammar_key(option)
+        spelling = _generic_spelling_key(grammar)
+        normalized.append(spelling or grammar)
     normalized = [item for item in normalized if item]
     if len(normalized) > 1:
         return "or:" + "|".join(sorted(set(normalized)))
@@ -234,15 +259,11 @@ def _term_context_ok(term: str, requirement: str, evidence: str) -> bool:
     lower = normalize_for_evidence(evidence)
     technical_cues = (
         "skill", "experience", "experienced", "proficient", "proficiency",
-        "knowledge", "familiar", "programming", "language", "developer",
-        "development", "backend", "frontend", "server", "runtime", "web",
+        "knowledge", "familiar", "programming", "language",
         "using ", "used ", "worked with", "built with", "developed with",
     )
     if len(key) <= 2 and key.isalpha():
         return any(cue in lower for cue in technical_cues)
-    if key == "node" and any(canonical_key(option) == "node.js" for option in requirement_options(requirement)):
-        node_cues = technical_cues + ("javascript", "npm", "express")
-        return any(cue in lower for cue in node_cues)
     return True
 
 
@@ -251,20 +272,22 @@ def evidence_supports_requirement(
     evidence: str,
     matched_term: str | None = None,
 ) -> bool:
-    """Require evidence to mention the requirement or a small safe direct alias."""
+    """Lexical helper for deterministic fallback only.
+
+    LLM semantic matches are NOT validated through this function.
+    """
     if not evidence:
         return False
-    options = requirement_options(requirement)
     if matched_term:
         if not phrase_present(matched_term, evidence):
             return False
-        if not any(equivalent_terms(matched_term, option) for option in options):
+        if not any(equivalent_terms(matched_term, option) for option in requirement_options(requirement)):
             return False
         return _term_context_ok(matched_term, requirement, evidence)
-    for term in requirement_match_terms(requirement):
-        if phrase_present(term, evidence) and _term_context_ok(term, requirement, evidence):
-            return True
-    return False
+    return any(
+        phrase_present(option, evidence) and _term_context_ok(option, requirement, evidence)
+        for option in requirement_options(requirement)
+    )
 
 
 def standalone_phrase_line(text: str, phrase: str) -> str | None:
@@ -368,7 +391,7 @@ def resolve_contextual_evidence(evidence: str | None, source_text: str) -> str |
             return candidate
 
     word_count = len(needle.split())
-    if word_count >= 1 or len(needle) >= 40:
+    if word_count >= 5 or len(needle) >= 40:
         for candidate in candidates:
             hay = normalize_for_evidence(candidate)
             if needle in hay:
@@ -482,6 +505,9 @@ def classify_requirement_tone(
         rf"\b(?:some|basic|limited)\s+familiarity\s+(?:with|in)\s+{q}",
         rf"\b(?:some|basic|limited)\s+knowledge\s+(?:of|in)\s+{q}",
         rf"\bcurrently\s+studying\s+(?:about\s+)?{q}",
+        rf"\bcurrently\s+training\s+(?:in|on|with)\s+{q}",
+        rf"\btraining\s+(?:in|on|with)\s+{q}",
+        rf"\bpreparing\s+for\s+(?:a\s+|an\s+)?{q}\b",
         rf"\bstudying\s+(?:about\s+)?{q}",
         rf"\b(?:coursework|course)\s+(?:in|on)\s+{q}",
         rf"\btaking\s+(?:a\s+)?course\s+(?:in|on)\s+{q}",
@@ -502,6 +528,9 @@ def classify_requirement_tone(
     r"\bwant(?:s)?\s+to\s+learn\b",
             r"\binterested\s+in\s+learning\b",
             r"\bcurrently\s+studying\b",
+            r"\bcurrently\s+training\b",
+            r"\btraining\s+(?:in|on|with)\b",
+            r"\bpreparing\s+for\b",
             r"\bstudying\b",
             r"\b(?:some|basic|limited|introductory)\s+exposure\s+(?:to|with|in)\b",
             r"\b(?:basic|limited)\s+(?:familiarity|knowledge)\s+(?:with|in|of)\b",

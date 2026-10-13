@@ -1,0 +1,668 @@
+{
+  "identity": {
+    "build_id": "batch-repeatability-2026-10-08",
+    "assessment_protocol": "segment_ids_semantic_llm",
+    "benchmark_data_sha256": "17b22fa24916c530d6c7c2802d535d8af5f945e20a258e7f8ec0bc093c02bb8b",
+    "scope": "assessment",
+    "model": "qwen2.5:3b"
+  },
+  "requirement_count": 21,
+  "batch_sizes": [
+    3,
+    20
+  ],
+  "per_batch": {
+    "3": {
+      "trials": [
+        1,
+        2,
+        3
+      ],
+      "run_count": 3,
+      "mean_accuracy": 0.8095238095238095,
+      "min_accuracy": 0.8095238095238095,
+      "max_accuracy": 0.8095238095238095,
+      "accuracy_population_stdev": 0.0,
+      "clean_llm_path_runs": 0,
+      "run_details": [
+        {
+          "trial": 1,
+          "accuracy": 0.8095238095238095,
+          "false_positive_matches": 1,
+          "missed_expected_matches": 3,
+          "clean_full_llm_path": false,
+          "raw_qwen_agreement": 0.5714285714285714
+        },
+        {
+          "trial": 2,
+          "accuracy": 0.8095238095238095,
+          "false_positive_matches": 1,
+          "missed_expected_matches": 3,
+          "clean_full_llm_path": false,
+          "raw_qwen_agreement": 0.5714285714285714
+        },
+        {
+          "trial": 3,
+          "accuracy": 0.8095238095238095,
+          "false_positive_matches": 1,
+          "missed_expected_matches": 3,
+          "clean_full_llm_path": false,
+          "raw_qwen_agreement": 0.5714285714285714
+        }
+      ],
+      "unstable_requirement_count": 0,
+      "requirements": [
+        {
+          "scenario_id": "contradiction_injection_uppercase",
+          "requirement_id": "R001",
+          "name": "Docker",
+          "category": "contradiction",
+          "expected": "uncertain",
+          "statuses": {
+            "uncertain": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "contradiction_injection_uppercase",
+          "requirement_id": "R002",
+          "name": "Redis",
+          "category": "prompt_injection",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "contradiction_injection_uppercase",
+          "requirement_id": "R003",
+          "name": "AWS",
+          "category": "uppercase_segment",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "education_requirements",
+          "requirement_id": "R001",
+          "name": "Bachelor's degree in Computer Science",
+          "category": "semantic_education",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "education_requirements",
+          "requirement_id": "R002",
+          "name": "AWS certification",
+          "category": "semantic_certification",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "education_requirements",
+          "requirement_id": "R003",
+          "name": "Docker",
+          "category": "absent",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R001",
+          "name": "Docker",
+          "category": "negation",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R002",
+          "name": "Kubernetes",
+          "category": "learning_only",
+          "expected": "uncertain",
+          "statuses": {
+            "uncertain": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R003",
+          "name": "Django",
+          "category": "related_different",
+          "expected": "not_matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R004",
+          "name": "Redis",
+          "category": "absent",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R005",
+          "name": "PostgreSQL",
+          "category": "exact",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R001",
+          "name": "Python",
+          "category": "exact",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R002",
+          "name": "Natural Language Processing",
+          "category": "semantic_abbreviation",
+          "expected": "matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R003",
+          "name": "Google Cloud",
+          "category": "semantic_abbreviation",
+          "expected": "matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R004",
+          "name": "TensorFlow or PyTorch",
+          "category": "explicit_or",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R005",
+          "name": "REST API development",
+          "category": "semantic_paraphrase",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R006",
+          "name": "AI application development",
+          "category": "semantic_paraphrase",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R007",
+          "name": "3+ years of Python experience",
+          "category": "semantic_constraint",
+          "expected": "matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "title_degree_safety",
+          "requirement_id": "R001",
+          "name": "Machine Learning",
+          "category": "title_degree_only",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "title_degree_safety",
+          "requirement_id": "R002",
+          "name": "Python",
+          "category": "absent",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "title_degree_safety",
+          "requirement_id": "R003",
+          "name": "Go",
+          "category": "experience",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        }
+      ]
+    },
+    "20": {
+      "trials": [
+        1,
+        2,
+        3
+      ],
+      "run_count": 3,
+      "mean_accuracy": 0.7619047619047619,
+      "min_accuracy": 0.7619047619047619,
+      "max_accuracy": 0.7619047619047619,
+      "accuracy_population_stdev": 0.0,
+      "clean_llm_path_runs": 0,
+      "run_details": [
+        {
+          "trial": 1,
+          "accuracy": 0.7619047619047619,
+          "false_positive_matches": 1,
+          "missed_expected_matches": 3,
+          "clean_full_llm_path": false,
+          "raw_qwen_agreement": 0.5714285714285714
+        },
+        {
+          "trial": 2,
+          "accuracy": 0.7619047619047619,
+          "false_positive_matches": 1,
+          "missed_expected_matches": 3,
+          "clean_full_llm_path": false,
+          "raw_qwen_agreement": 0.5714285714285714
+        },
+        {
+          "trial": 3,
+          "accuracy": 0.7619047619047619,
+          "false_positive_matches": 1,
+          "missed_expected_matches": 3,
+          "clean_full_llm_path": false,
+          "raw_qwen_agreement": 0.5714285714285714
+        }
+      ],
+      "unstable_requirement_count": 0,
+      "requirements": [
+        {
+          "scenario_id": "contradiction_injection_uppercase",
+          "requirement_id": "R001",
+          "name": "Docker",
+          "category": "contradiction",
+          "expected": "uncertain",
+          "statuses": {
+            "uncertain": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "contradiction_injection_uppercase",
+          "requirement_id": "R002",
+          "name": "Redis",
+          "category": "prompt_injection",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "contradiction_injection_uppercase",
+          "requirement_id": "R003",
+          "name": "AWS",
+          "category": "uppercase_segment",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "education_requirements",
+          "requirement_id": "R001",
+          "name": "Bachelor's degree in Computer Science",
+          "category": "semantic_education",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "education_requirements",
+          "requirement_id": "R002",
+          "name": "AWS certification",
+          "category": "semantic_certification",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "education_requirements",
+          "requirement_id": "R003",
+          "name": "Docker",
+          "category": "absent",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R001",
+          "name": "Docker",
+          "category": "negation",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R002",
+          "name": "Kubernetes",
+          "category": "learning_only",
+          "expected": "uncertain",
+          "statuses": {
+            "uncertain": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R003",
+          "name": "Django",
+          "category": "related_different",
+          "expected": "not_matched",
+          "statuses": {
+            "uncertain": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R004",
+          "name": "Redis",
+          "category": "absent",
+          "expected": "not_matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "negative_learning_related",
+          "requirement_id": "R005",
+          "name": "PostgreSQL",
+          "category": "exact",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R001",
+          "name": "Python",
+          "category": "exact",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R002",
+          "name": "Natural Language Processing",
+          "category": "semantic_abbreviation",
+          "expected": "matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R003",
+          "name": "Google Cloud",
+          "category": "semantic_abbreviation",
+          "expected": "matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R004",
+          "name": "TensorFlow or PyTorch",
+          "category": "explicit_or",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R005",
+          "name": "REST API development",
+          "category": "semantic_paraphrase",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R006",
+          "name": "AI application development",
+          "category": "semantic_paraphrase",
+          "expected": "matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 3,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "semantic_positive",
+          "requirement_id": "R007",
+          "name": "3+ years of Python experience",
+          "category": "semantic_constraint",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "title_degree_safety",
+          "requirement_id": "R001",
+          "name": "Machine Learning",
+          "category": "title_degree_only",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "title_degree_safety",
+          "requirement_id": "R002",
+          "name": "Python",
+          "category": "absent",
+          "expected": "not_matched",
+          "statuses": {
+            "not_matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        },
+        {
+          "scenario_id": "title_degree_safety",
+          "requirement_id": "R003",
+          "name": "Go",
+          "category": "experience",
+          "expected": "matched",
+          "statuses": {
+            "matched": 3
+          },
+          "incorrect_trials": 0,
+          "trial_count": 3,
+          "unstable": false
+        }
+      ]
+    }
+  },
+  "paired_trials": [
+    {
+      "trial": 1,
+      "batch_3": 0.8095238095238095,
+      "batch_20": 0.7619047619047619,
+      "difference_larger_minus_smaller": -0.04761904761904767
+    },
+    {
+      "trial": 2,
+      "batch_3": 0.8095238095238095,
+      "batch_20": 0.7619047619047619,
+      "difference_larger_minus_smaller": -0.04761904761904767
+    },
+    {
+      "trial": 3,
+      "batch_3": 0.8095238095238095,
+      "batch_20": 0.7619047619047619,
+      "difference_larger_minus_smaller": -0.04761904761904767
+    }
+  ],
+  "unstable_requirements": [],
+  "interpretation": "Repeated decisions on a small synthetic dataset are diagnostic, not unbiased population accuracy. Mixed/fallback runs cannot be called clean Qwen accuracy. No production batch selection is made."
+}

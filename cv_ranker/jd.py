@@ -1,7 +1,10 @@
 import re
 
 from .config import Settings
-from .fallback import fallback_requirements, structural_hints
+from .fallback import (
+    OTHER_HEADINGS, PREFERRED_HEADINGS, REQUIRED_HEADINGS,
+    fallback_requirements, looks_like_non_requirement, structural_hints,
+)
 from .llm import LLMError, StructuredLLM
 from .schemas import JDRequirement, JDValidationResponse, ValidatedRequirement, YakeCandidate
 from .text_utils import (
@@ -29,7 +32,7 @@ Rules:
 4. Preserve complete requirements. Do not split one requirement merely because it contains commas.
 5. Preserve explicit alternatives as ONE requirement. Example: "TensorFlow or PyTorch" must remain one requirement, not two mandatory requirements.
 6. Keep requirement names concise while preserving their meaning.
-7. Genuine naming equivalents are allowed when they mean the same thing, for example NLP/Natural Language Processing, Postgres/PostgreSQL, Node/Node.js, and JS/JavaScript.
+7. Keep the semantic interpretation faithful to the exact source wording. Python will freeze the source quotation itself as the auditable requirement text, so do not rely on renaming a source requirement.
 8. Priority must be required, preferred, or unknown.
    - required: clearly mandatory, minimum, must-have, essential, or under an explicit required section
    - preferred: explicitly preferred, desired, nice-to-have, bonus, or under an explicit preferred section
@@ -99,11 +102,12 @@ def _recover_jd_evidence(name: str, proposed_evidence: str, jd_text: str) -> str
             if hint_key == target_key:
                 return normalize_whitespace(hint.evidence)
 
-    # Last conservative source-line recovery: the source line itself must directly
-    # contain the requirement or one of the tiny direct-equivalence aliases.
+    # Last conservative recovery is lexical only. Semantic renaming is deliberately
+    # not reconstructed in Python; the exact source quote supplied by the LLM is
+    # the auditable identity of the frozen requirement.
     for raw_line in jd_text.splitlines():
         clean = _clean_jd_line(raw_line)
-        if clean and evidence_supports_requirement(name, clean):
+        if clean and canonical_equivalence_key(clean) == target_key:
             return clean
     return None
 
@@ -148,54 +152,82 @@ def _sanitize_requirements(
     response: JDValidationResponse,
     jd_text: str,
     settings: Settings,
+    diagnostics: list[dict] | None = None,
+    attempt: str = "initial",
 ) -> tuple[list[ValidatedRequirement], int, list[JDRequirement]]:
+    """Ground LLM-selected requirements to exact JD source wording.
+
+    The LLM decides *which source statement is a requirement*. Python does not
+    accept arbitrary semantic renaming: the frozen requirement name comes from
+    the source quotation itself. This keeps the denominator auditable.
+    """
     by_key: dict[str, JDRequirement] = {}
     order: list[str] = []
     discarded_rows: list[JDRequirement] = []
-    structural_priority = _priority_hints(jd_text)
 
-    for item in response.requirements:
-        name = normalize_whitespace(item.name)
+    for row_number, item in enumerate(response.requirements, start=1):
+        def record(status: str, reason: str, frozen_name: str | None = None) -> None:
+            if diagnostics is not None:
+                diagnostics.append({
+                    "stage": "jd_model_row", "attempt": attempt,
+                    "row": row_number, "proposed_name": item.name,
+                    "proposed_priority": item.priority,
+                    "proposed_evidence": item.evidence,
+                    "status": status, "reason": reason,
+                    "frozen_name": frozen_name,
+                })
+
+        proposed_name = normalize_whitespace(item.name)
         proposed_evidence = normalize_whitespace(item.evidence)
-        if not name or not proposed_evidence:
+        if not proposed_name or not proposed_evidence:
             discarded_rows.append(item)
+            record("rejected", "missing_name_or_evidence")
             continue
 
-        evidence = _recover_jd_evidence(name, proposed_evidence, jd_text)
+        evidence = _recover_jd_evidence(proposed_name, proposed_evidence, jd_text)
         if not evidence or _jd_evidence_denies_requirement(evidence):
             discarded_rows.append(item)
+            record("rejected", "evidence_absent_or_explicitly_excluded")
             continue
 
         source_priority = _priority_from_source_evidence(evidence, jd_text)
-        # If the requirement name is a semantic normalization rather than a literal
-        # term in the quote, accept it only when that quote is itself a structural
-        # requirement line. This keeps useful paraphrases while rejecting arbitrary
-        # company prose cited as evidence for an unrelated requirement.
-        if not evidence_supports_requirement(name, evidence) and source_priority is None:
+        if source_priority is None and (
+            looks_like_non_requirement(evidence)
+            or _only_under_nonrequirement_heading(jd_text, evidence)
+        ):
             discarded_rows.append(item)
+            record("rejected", "source_is_benefit_or_role_action_or_excluded_section")
+            continue
+        # For unstructured prose, require a lexical relationship between the model's
+        # proposed requirement name and its source quote. For explicit structural
+        # requirement lines, the source line itself is sufficient because Python
+        # freezes that source wording rather than trusting the LLM rename.
+        if source_priority is None and not evidence_supports_requirement(proposed_name, evidence):
+            discarded_rows.append(item)
+            record("rejected", "unstructured_evidence_not_lexically_grounded")
             continue
 
-        name = _or_name_from_evidence(name, evidence)
-
-        key = canonical_equivalence_key(name) or canonical_key(name)
+        source_or = extract_or_requirement(evidence)
+        frozen_name = source_or or normalize_whitespace(evidence)
+        key = canonical_equivalence_key(frozen_name) or canonical_key(frozen_name)
         if not key:
             discarded_rows.append(item)
+            record("rejected", "empty_source_identity")
             continue
 
-        priority = (
-            structural_priority.get(key)
-            or source_priority
-            or item.priority
-        )
-        clean = JDRequirement(name=name, priority=priority, evidence=evidence)
+        priority = source_priority or item.priority
+        clean = JDRequirement(name=frozen_name, priority=priority, evidence=evidence)
 
         if key not in by_key:
             by_key[key] = clean
             order.append(key)
+            renamed = _source_key(proposed_name) != key
+            record("accepted", "source_quote_replaced_model_name" if renamed else "source_grounded", frozen_name)
         else:
             priority_rank = {"unknown": 0, "preferred": 1, "required": 2}
             if priority_rank[clean.priority] > priority_rank[by_key[key].priority]:
                 by_key[key] = clean
+            record("merged", "duplicate_source_identity", frozen_name)
 
     priority_rank = {"required": 0, "preferred": 1, "unknown": 2}
     final_keys = sorted(order, key=lambda key: priority_rank[by_key[key].priority])
@@ -212,6 +244,127 @@ def _sanitize_requirements(
         for index, key in enumerate(final_keys, start=1)
     ]
     return requirements, total_before_cap, discarded_rows
+
+
+def _source_key(value: str) -> str:
+    return canonical_equivalence_key(value) or canonical_key(value)
+
+
+def _source_line_numbers(jd_text: str, evidence: str) -> list[int]:
+    """All possible original JD line numbers; avoids guessing at duplicate lines."""
+    return [
+        index for index, line in enumerate(jd_text.splitlines(), start=1)
+        if evidence_exists(evidence, line)
+    ]
+
+
+def _only_under_nonrequirement_heading(jd_text: str, evidence: str) -> bool:
+    """Do not treat text exclusively in Benefits/Duties/About sections as skills.
+
+    A repeated mention in a real requirement section remains eligible. No
+    technology names or semantic equivalences are encoded in this check.
+    """
+    source_kind = "unstructured"
+    found_excluded = False
+    found_elsewhere = False
+    for raw_line in jd_text.splitlines():
+        stripped = raw_line.strip()
+        if not stripped:
+            continue
+        prefix, sep, remainder = stripped.partition(":")
+        heading = canonical_key(prefix if sep else stripped)
+        if heading in OTHER_HEADINGS:
+            source_kind = "excluded"
+        elif heading in REQUIRED_HEADINGS or heading in PREFERRED_HEADINGS:
+            source_kind = "requirements"
+        elif sep and not remainder.strip():
+            source_kind = "unstructured"
+        # Compare against the original line, including inline section content.
+        if evidence_exists(evidence, stripped):
+            if source_kind == "excluded":
+                found_excluded = True
+            else:
+                found_elsewhere = True
+    return found_excluded and not found_elsewhere
+
+
+def _reconcile_explicit_source(
+    *,
+    requirements: list[ValidatedRequirement],
+    jd_text: str,
+    settings: Settings,
+    diagnostics: list[dict] | None,
+) -> tuple[list[ValidatedRequirement], int, int]:
+    """Preserve unambiguous *explicit* JD list items, even if Qwen omits them.
+
+    This is not YAKE discovery or a semantic skill catalogue. The source itself
+    marks these items as required/preferred. Other prose stays LLM-owned.
+    A recovered denominator is identified as structural, never llm_validated.
+    """
+    source = fallback_requirements(jd_text, [], max(settings.max_requirements, 10000))
+    if not source:
+        return requirements, 0, 0
+
+    by_key = {_source_key(r.name): r for r in requirements}
+    source_keys = {_source_key(r.name) for r in source}
+    restored = 0
+    capped = 0
+    merged: list[ValidatedRequirement] = []
+    for source_item in source:
+        # Normalize only an explicitly written OR separator, not skill meaning.
+        explicit_or = extract_or_requirement(source_item.name)
+        if explicit_or:
+            source_item = source_item.model_copy(update={"name": explicit_or})
+        key = _source_key(source_item.name)
+        selected = by_key.get(key)
+        if len(merged) >= settings.max_requirements:
+            capped += 1
+            decision = "capped_by_settings"
+        else:
+            merged.append(source_item)
+            if selected is None:
+                restored += 1
+                decision = "restored_from_explicit_source"
+            else:
+                decision = "kept_model_source_match"
+        if diagnostics is not None:
+            diagnostics.append({
+                "stage": "explicit_source", "name": source_item.name,
+                "priority": source_item.priority,
+                "source_evidence": source_item.jd_evidence,
+                "source_line_numbers": _source_line_numbers(jd_text, source_item.jd_evidence),
+                "source_identity": key,
+                "status": decision,
+                "model_name": selected.name if selected else None,
+            })
+
+    # Non-list JD prose may still contain real LLM-validated requirements.
+    # Retain them after the mandatory explicit list, but never let them replace
+    # or displace a source item and never take them from YAKE alone.
+    for item in requirements:
+        if _source_key(item.name) in source_keys:
+            continue
+        if len(merged) >= settings.max_requirements:
+            capped += 1
+            if diagnostics is not None:
+                diagnostics.append({
+                    "stage": "llm_additional", "name": item.name,
+                    "status": "capped_by_settings",
+                })
+            continue
+        merged.append(item)
+        if diagnostics is not None:
+            diagnostics.append({
+                "stage": "llm_additional", "name": item.name,
+                "status": "retained_source_grounded_prose",
+            })
+
+    # IDs are assigned only once, after the complete source denominator is set.
+    merged = [
+        item.model_copy(update={"requirement_id": f"R{index:03d}"})
+        for index, item in enumerate(merged, start=1)
+    ]
+    return merged, restored, capped
 
 
 def _user_prompt(jd_text: str, candidates: list[YakeCandidate]) -> str:
@@ -235,8 +388,35 @@ def validate_jd_requirements(
     candidates: list[YakeCandidate],
     settings: Settings,
     llm: StructuredLLM | None,
+    diagnostics: list[dict] | None = None,
 ) -> tuple[list[ValidatedRequirement], str, list[str]]:
     warnings: list[str] = []
+
+    def finish(items: list[ValidatedRequirement], proposed_mode: str) -> tuple[list[ValidatedRequirement], str, list[str]]:
+        final_items, restored, capped = _reconcile_explicit_source(
+            requirements=items, jd_text=jd_text, settings=settings,
+            diagnostics=diagnostics,
+        )
+        mode = proposed_mode
+        if restored:
+            # Never present structurally recovered rows as Qwen-validated.
+            mode = "fallback_structural_after_llm" if llm is not None else "fallback_structural"
+            warnings.append(
+                f"JD source completeness: recovered {restored} explicit requirement(s) "
+                "that the LLM did not freeze; visible structural recovery prevents an invalid scoring denominator."
+            )
+        if capped:
+            warnings.append(
+                f"JD requirement cap: {capped} source-grounded requirement(s) "
+                f"could not fit the configured maximum of {settings.max_requirements}."
+            )
+        if diagnostics is not None:
+            diagnostics.append({
+                "stage": "final_denominator", "mode": mode,
+                "frozen_names": [r.name for r in final_items],
+                "source_restored": restored, "capped": capped,
+            })
+        return final_items, mode, warnings
 
     if llm is not None:
         user_prompt = _user_prompt(jd_text, candidates)
@@ -246,8 +426,10 @@ def validate_jd_requirements(
                 user_prompt=user_prompt,
                 schema=JDValidationResponse,
             )
+            if diagnostics is not None:
+                diagnostics.append({"stage": "jd_llm_response", "attempt": "initial", "row_count": len(response.requirements)})
             requirements, total_before_cap, discarded_rows = _sanitize_requirements(
-                response, jd_text, settings
+                response, jd_text, settings, diagnostics, "initial"
             )
             if discarded_rows:
                 warnings.append(
@@ -267,6 +449,8 @@ def validate_jd_requirements(
                         user_prompt=correction_user_prompt,
                         schema=JDValidationResponse,
                     )
+                    if diagnostics is not None:
+                        diagnostics.append({"stage": "jd_llm_response", "attempt": "invalid_row_correction", "row_count": len(corrected.requirements)})
                     merged = JDValidationResponse(
                         requirements=[
                             JDRequirement(name=r.name, priority=r.priority, evidence=r.jd_evidence)
@@ -274,7 +458,7 @@ def validate_jd_requirements(
                         ] + corrected.requirements
                     )
                     requirements, total_before_cap, still_bad = _sanitize_requirements(
-                        merged, jd_text, settings
+                        merged, jd_text, settings, diagnostics, "correction_merged"
                     )
                     if still_bad:
                         warnings.append(
@@ -289,37 +473,8 @@ def validate_jd_requirements(
                     f"the configured maximum retained {settings.max_requirements}."
                 )
 
-            # Guard against a deceptively successful denominator such as 2/12
-            # requirements. When the JD has an explicit Required/Preferred
-            # structure and the LLM grounding step retained only a small fraction
-            # of it, prefer a visible structural fallback over ranking against a
-            # silently collapsed denominator. This is a technical fallback only;
-            # the normal path remains YAKE -> JD LLM -> frozen requirements.
-            structural = structural_hints(jd_text)
-            if structural:
-                structural_fallback = fallback_requirements(
-                    jd_text, candidates, settings.max_requirements
-                )
-                structural_count = len(structural_fallback)
-                kept_count = len(requirements)
-                required_structural = sum(1 for r in structural_fallback if r.priority == "required")
-                required_kept = sum(1 for r in requirements if r.priority == "required")
-                catastrophically_incomplete = (
-                    structural_count >= 4
-                    and (
-                        kept_count <= max(2, int(structural_count * 0.40))
-                        or (required_structural >= 3 and required_kept == 0)
-                    )
-                )
-                if catastrophically_incomplete and structural_fallback:
-                    warnings.append(
-                        f"LLM JD grounding retained only {kept_count}/{structural_count} explicit structural requirements; "
-                        "a visible structural fallback was used to prevent an invalid scoring denominator."
-                    )
-                    return structural_fallback, "fallback_structural_after_llm", warnings
-
             if requirements:
-                return requirements, "llm_validated", warnings
+                return finish(requirements, "llm_validated")
 
             if not discarded_rows:
                 warnings.append(
@@ -331,8 +486,10 @@ def validate_jd_requirements(
                         user_prompt=user_prompt,
                         schema=JDValidationResponse,
                     )
+                    if diagnostics is not None:
+                        diagnostics.append({"stage": "jd_llm_response", "attempt": "empty_output_correction", "row_count": len(corrected.requirements)})
                     requirements, total_before_cap, still_bad = _sanitize_requirements(
-                        corrected, jd_text, settings
+                        corrected, jd_text, settings, diagnostics, "empty_output_correction"
                     )
                     if still_bad:
                         warnings.append(
@@ -344,7 +501,7 @@ def validate_jd_requirements(
                             f"the configured maximum retained {settings.max_requirements}."
                         )
                     if requirements:
-                        return requirements, "llm_validated", warnings
+                        return finish(requirements, "llm_validated")
                 except LLMError as exc:
                     warnings.append(f"Corrective JD extraction failed: {exc}")
 
@@ -363,16 +520,16 @@ def validate_jd_requirements(
                         "LLM JD validation remained unusable after correction; "
                         "explicit Required/Preferred JD sections were used as a visible structural fallback."
                     )
-                    return fallback, "fallback_structural_after_llm", warnings
+                    return finish(fallback, "fallback_structural_after_llm")
 
             warnings.append(
                 "JD validation remained unusable after correction and the JD had no explicit structural requirement section to recover safely."
             )
-            return [], "llm_validated", warnings
+            return finish([], "llm_validated")
         except LLMError as exc:
             warnings.append(f"JD validation LLM unavailable; technical fallback used: {exc}")
 
     requirements = fallback_requirements(jd_text, candidates, settings.max_requirements)
     if not requirements:
         warnings.append("No JD requirements could be extracted.")
-    return requirements, "fallback_structural", warnings
+    return finish(requirements, "fallback_structural")

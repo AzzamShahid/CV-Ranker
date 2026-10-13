@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import trace_demo
+from tools import trace_demo
 
 
 def test_trace_demo_bundled_backend_resolution():

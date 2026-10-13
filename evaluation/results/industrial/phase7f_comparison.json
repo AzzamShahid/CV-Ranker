@@ -1,0 +1,576 @@
+{
+  "dataset_sha256": "29df6dadc386097db86de01ad233a8fde50da74ff3eac2f9432d268854ef9357",
+  "baseline": {
+    "build": "industrial-benchmark-v1-2026-10-13",
+    "mode": "fallback",
+    "summary": {
+      "total": 200,
+      "correct": 148,
+      "exact_status_accuracy": 0.74,
+      "confusion": {
+        "matched": {
+          "matched": 76,
+          "not_matched": 43,
+          "uncertain": 0,
+          "missing": 0
+        },
+        "not_matched": {
+          "matched": 0,
+          "not_matched": 59,
+          "uncertain": 4,
+          "missing": 0
+        },
+        "uncertain": {
+          "matched": 3,
+          "not_matched": 2,
+          "uncertain": 13,
+          "missing": 0
+        }
+      },
+      "matched_precision": 0.9620253164556962,
+      "matched_recall": 0.6386554621848739,
+      "matched_f1": 0.7676767676767676,
+      "false_positive_matched": 3,
+      "false_negative_matched": 43,
+      "false_positive_match_rate": 0.037037037037037035,
+      "false_negative_match_rate": 0.36134453781512604,
+      "uncertain_recall": 0.7222222222222222,
+      "missing_rows": 0
+    }
+  },
+  "current": {
+    "build": "evidence-integrity-repair-2026-10-13",
+    "mode": "fallback",
+    "summary": {
+      "total": 200,
+      "correct": 197,
+      "exact_status_accuracy": 0.985,
+      "confusion": {
+        "matched": {
+          "matched": 116,
+          "not_matched": 3,
+          "uncertain": 0,
+          "missing": 0
+        },
+        "not_matched": {
+          "matched": 0,
+          "not_matched": 63,
+          "uncertain": 0,
+          "missing": 0
+        },
+        "uncertain": {
+          "matched": 0,
+          "not_matched": 0,
+          "uncertain": 18,
+          "missing": 0
+        }
+      },
+      "matched_precision": 1.0,
+      "matched_recall": 0.9747899159663865,
+      "matched_f1": 0.9872340425531915,
+      "false_positive_matched": 0,
+      "false_negative_matched": 3,
+      "false_positive_match_rate": 0.0,
+      "false_negative_match_rate": 0.025210084033613446,
+      "uncertain_recall": 1.0,
+      "missing_rows": 0
+    }
+  },
+  "corrected": 49,
+  "regressed": 0,
+  "changed_but_still_wrong": 0,
+  "unchanged": 151,
+  "decision_changes": [
+    {
+      "scenario": "ai_ml",
+      "candidate": "full",
+      "requirement_id": "R005",
+      "requirement": "Google Cloud",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "ai_ml",
+      "candidate": "unscoped_years",
+      "requirement_id": "R004",
+      "requirement": "2+ years of Python experience",
+      "expected": "uncertain",
+      "old": "matched",
+      "new": "uncertain",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "backend",
+      "candidate": "negated",
+      "requirement_id": "R002",
+      "requirement": "Django",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "backend",
+      "candidate": "negated",
+      "requirement_id": "R003",
+      "requirement": "PostgreSQL",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "backend",
+      "candidate": "negated",
+      "requirement_id": "R005",
+      "requirement": "Docker",
+      "expected": "uncertain",
+      "old": "not_matched",
+      "new": "uncertain",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "backend",
+      "candidate": "other_stack",
+      "requirement_id": "R005",
+      "requirement": "Docker",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "backend",
+      "candidate": "senior",
+      "requirement_id": "R005",
+      "requirement": "Docker",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "customer_support",
+      "candidate": "full",
+      "requirement_id": "R005",
+      "requirement": "Zendesk",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "customer_support",
+      "candidate": "other",
+      "requirement_id": "R004",
+      "requirement": "2+ years of customer support experience",
+      "expected": "not_matched",
+      "old": "uncertain",
+      "new": "not_matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "customer_support",
+      "candidate": "other",
+      "requirement_id": "R005",
+      "requirement": "Zendesk",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "customer_support",
+      "candidate": "unscoped",
+      "requirement_id": "R004",
+      "requirement": "2+ years of customer support experience",
+      "expected": "uncertain",
+      "old": "matched",
+      "new": "uncertain",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "full",
+      "requirement_id": "R001",
+      "requirement": "Financial reporting",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "full",
+      "requirement_id": "R002",
+      "requirement": "Accounts payable",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "full",
+      "requirement_id": "R003",
+      "requirement": "Microsoft Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "full",
+      "requirement_id": "R005",
+      "requirement": "QuickBooks",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "in_progress",
+      "requirement_id": "R001",
+      "requirement": "Financial reporting",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "in_progress",
+      "requirement_id": "R002",
+      "requirement": "Accounts payable",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "in_progress",
+      "requirement_id": "R003",
+      "requirement": "Microsoft Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "learning",
+      "requirement_id": "R001",
+      "requirement": "Financial reporting",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "learning",
+      "requirement_id": "R003",
+      "requirement": "Microsoft Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "learning",
+      "requirement_id": "R005",
+      "requirement": "QuickBooks",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "negated",
+      "requirement_id": "R002",
+      "requirement": "Accounts payable",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "negated",
+      "requirement_id": "R003",
+      "requirement": "Microsoft Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "wrong_degree",
+      "requirement_id": "R001",
+      "requirement": "Financial reporting",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "wrong_degree",
+      "requirement_id": "R002",
+      "requirement": "Accounts payable",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "finance",
+      "candidate": "wrong_degree",
+      "requirement_id": "R003",
+      "requirement": "Microsoft Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "different",
+      "requirement_id": "R005",
+      "requirement": "Electronic health records",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "expired",
+      "requirement_id": "R001",
+      "requirement": "Patient care",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "expired",
+      "requirement_id": "R002",
+      "requirement": "Vital signs monitoring",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "full",
+      "requirement_id": "R001",
+      "requirement": "Patient care",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "full",
+      "requirement_id": "R002",
+      "requirement": "Vital signs monitoring",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "full",
+      "requirement_id": "R005",
+      "requirement": "Electronic health records",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "studying",
+      "requirement_id": "R002",
+      "requirement": "Vital signs monitoring",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "unknown_status",
+      "requirement_id": "R001",
+      "requirement": "Patient care",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "healthcare",
+      "candidate": "unknown_status",
+      "requirement_id": "R002",
+      "requirement": "Vital signs monitoring",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "hr",
+      "candidate": "different",
+      "requirement_id": "R004",
+      "requirement": "3+ years of HR experience",
+      "expected": "not_matched",
+      "old": "uncertain",
+      "new": "not_matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "hr",
+      "candidate": "different",
+      "requirement_id": "R005",
+      "requirement": "Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "hr",
+      "candidate": "full",
+      "requirement_id": "R005",
+      "requirement": "Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "hr",
+      "candidate": "junior",
+      "requirement_id": "R005",
+      "requirement": "Excel",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "hr",
+      "candidate": "learning",
+      "requirement_id": "R001",
+      "requirement": "Recruitment",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "manufacturing",
+      "candidate": "different",
+      "requirement_id": "R004",
+      "requirement": "4+ years of production experience",
+      "expected": "not_matched",
+      "old": "uncertain",
+      "new": "not_matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "manufacturing",
+      "candidate": "different",
+      "requirement_id": "R005",
+      "requirement": "SAP",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "manufacturing",
+      "candidate": "full",
+      "requirement_id": "R005",
+      "requirement": "SAP",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "manufacturing",
+      "candidate": "training",
+      "requirement_id": "R001",
+      "requirement": "Production planning",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "manufacturing",
+      "candidate": "training",
+      "requirement_id": "R002",
+      "requirement": "Quality control",
+      "expected": "uncertain",
+      "old": "not_matched",
+      "new": "uncertain",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "manufacturing",
+      "candidate": "unscoped",
+      "requirement_id": "R004",
+      "requirement": "4+ years of production experience",
+      "expected": "uncertain",
+      "old": "matched",
+      "new": "uncertain",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "procurement",
+      "candidate": "full",
+      "requirement_id": "R005",
+      "requirement": "SAP",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "procurement",
+      "candidate": "other",
+      "requirement_id": "R004",
+      "requirement": "3+ years of procurement experience",
+      "expected": "not_matched",
+      "old": "uncertain",
+      "new": "not_matched",
+      "classification": "corrected"
+    },
+    {
+      "scenario": "procurement",
+      "candidate": "other",
+      "requirement_id": "R005",
+      "requirement": "SAP",
+      "expected": "matched",
+      "old": "not_matched",
+      "new": "matched",
+      "classification": "corrected"
+    }
+  ],
+  "comparison_note": "If modes differ, changes reflect combined model+validators versus fallback, not isolated Qwen quality."
+}

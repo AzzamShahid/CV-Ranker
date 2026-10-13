@@ -3,6 +3,27 @@ from typing import cast
 from .schemas import CandidateResult, EvaluationMode, RequirementAssessment, ValidatedRequirement
 
 
+def _validate_coverage_contract(
+    requirements: list[ValidatedRequirement],
+    assessments: list[RequirementAssessment],
+) -> None:
+    """Enforce exactly one status per frozen JD requirement at the score boundary.
+
+    This is intentionally independent of assessor validation. A duplicate,
+    missing or invented assessment must never distort the ranking percentage.
+    """
+    frozen_ids = [item.requirement_id for item in requirements]
+    assessed_ids = [item.requirement_id for item in assessments]
+    if len(frozen_ids) != len(set(frozen_ids)):
+        raise ValueError("Duplicate frozen requirement ID: ranking is unsafe")
+    if len(assessed_ids) != len(set(assessed_ids)):
+        raise ValueError("Duplicate assessment requirement ID: ranking is unsafe")
+    missing = sorted(set(frozen_ids) - set(assessed_ids))
+    unknown = sorted(set(assessed_ids) - set(frozen_ids))
+    if missing or unknown:
+        raise ValueError(f"Incomplete assessment contract: missing={missing}, unexpected={unknown}")
+
+
 def _coverage_for_ids(
     ids: set[str],
     assessments: list[RequirementAssessment],
@@ -27,6 +48,7 @@ def score_candidate(
     errors: list[str],
     candidate_source: str = "",
 ) -> CandidateResult:
+    _validate_coverage_contract(requirements, assessments)
     required_ids = {r.requirement_id for r in requirements if r.priority == "required"}
     preferred_ids = {r.requirement_id for r in requirements if r.priority == "preferred"}
     unknown_ids = {r.requirement_id for r in requirements if r.priority == "unknown"}

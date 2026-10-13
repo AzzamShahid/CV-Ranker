@@ -29,7 +29,10 @@ def print_report(report: RankingReport, details: bool = False) -> None:
     print("REQUIREMENTS")
     print("-" * 72)
     for item in report.requirements:
-        print(f"[{item.requirement_id}] {item.priority.upper():9} {item.name}")
+        print(f"[{item.requirement_id}] {item.priority.upper():9} {item.name}"
+              f" | type={item.constraint.kind}"
+              f" | JD lines={item.constraint.source_line_numbers}"
+              f" | review={'yes' if item.constraint.requires_review else 'no'}")
     print()
 
     print("RANKING")
@@ -59,6 +62,11 @@ def print_report(report: RankingReport, details: bool = False) -> None:
             f"score={candidate.primary_score}"
         )
         print(f"Score basis: {candidate.score_basis}")
+        print(f"HR eligibility criteria: {candidate.eligibility.status}")
+        if candidate.eligibility.gated_requirement_ids:
+            print(f"Gated IDs: {candidate.eligibility.gated_requirement_ids}")
+        for issue in candidate.eligibility.issues:
+            print(f"  - {issue}")
         if candidate.required_score is not None:
             print(
                 f"Required coverage: {candidate.matched_required}/{candidate.total_required} "
@@ -91,6 +99,25 @@ def print_report(report: RankingReport, details: bool = False) -> None:
                 "not_matched": "✗",
             }[assessment.status]
             print(f"{symbol} [{priority}] {name}: {assessment.status}")
+            if assessment.compound_check:
+                check = assessment.compound_check
+                print(f"    Compound verification: {check.operator}/{check.outcome}: {check.explanation}")
+                for component in check.components:
+                    ids = [e.segment_id for e in component.evidence]
+                    print(f"      {component.name}: {component.status} | source IDs={ids} | {component.reason}")
+            if assessment.experience_check:
+                check = assessment.experience_check
+                print(f"    Experience verification: {check.outcome}; JD minimum={check.minimum_years}y")
+                print(f"    Basis: {check.explanation}")
+                for claim in check.claims:
+                    print(f"      {claim.segment_id}: {claim.lower_years}-{claim.upper_years}y "
+                          f"[{claim.scope}, {claim.tone}] {claim.quote}")
+            if assessment.qualification_check:
+                check = assessment.qualification_check
+                print(f"    Qualification verification: {check.kind}/{check.outcome}; external authenticity not checked")
+                print(f"    Basis: {check.explanation}")
+                for claim in check.claims:
+                    print(f"      {claim.segment_id}: [{claim.state}] {claim.quote}")
             if assessment.evidence:
                 print(f"    Resume evidence: {assessment.evidence}")
             if assessment.matched_term:

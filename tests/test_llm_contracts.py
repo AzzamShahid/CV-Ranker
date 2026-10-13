@@ -2,6 +2,8 @@ from cv_ranker.assessor import SYSTEM_PROMPT, assess_resume
 from cv_ranker.llm import LLMError
 from cv_ranker.schemas import (
     CandidateAssessmentResponse,
+    LLMAssessmentItem,
+    LLMCandidateAssessmentResponse,
     RequirementAssessment,
     ValidatedRequirement,
 )
@@ -35,23 +37,26 @@ def response(*items: RequirementAssessment) -> CandidateAssessmentResponse:
     return CandidateAssessmentResponse(assessments=list(items))
 
 
-def test_semantic_alias_can_match_when_evidence_is_source_grounded():
+def test_semantic_match_is_qwen_owned_and_python_only_checks_cited_term():
+    resume = "Experienced with Python, ML/DL, NLP, LLM integrations."
     llm = QueueLLM(
-        response(
-            RequirementAssessment(
+        LLMCandidateAssessmentResponse(assessments=[
+            LLMAssessmentItem(
                 requirement_id="R001",
                 status="matched",
-                evidence="Experienced with Python, ML/DL, NLP, LLM integrations.",
+                evidence_ids=["S001"],
+                matched_term="NLP",
             )
-        )
+        ])
     )
     items, mode, warnings = assess_resume(
-        resume_text="Experienced with Python, ML/DL, NLP, LLM integrations.",
+        resume_text=resume,
         requirements=[req("Natural Language Processing")],
         llm=llm,
     )
     assert mode == "llm_assessed"
     assert items[0].status == "matched"
+    assert items[0].matched_term == "NLP"
     assert "NLP" in items[0].evidence
     assert not warnings
 
@@ -197,9 +202,11 @@ def test_duplicate_id_is_retried_not_silently_accepted():
 
 
 def test_prompt_explicitly_rejects_transferable_technology_credit():
-    assert "FastAPI is not Django" in SYSTEM_PROMPT
-    assert "Docker is not Kubernetes" in SYSTEM_PROMPT
-    assert "AWS is not Google Cloud" in SYSTEM_PROMPT
+    # The runtime policy is domain-independent, not a list of pairs chosen for
+    # one synthetic benchmark. Semantic abbreviations still belong to Qwen.
+    assert "DIFFERENT item" in SYSTEM_PROMPT
+    assert "Do not give transferable credit" in SYSTEM_PROMPT
+    assert "abbreviations" in SYSTEM_PROMPT
 
 
 def test_prompt_forbids_llm_scoring():

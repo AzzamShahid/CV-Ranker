@@ -1,0 +1,7 @@
+Professional Summary
+Developed internal services using Python and Django.
+Skills
+Python
+Django
+PyTorch
+Docker

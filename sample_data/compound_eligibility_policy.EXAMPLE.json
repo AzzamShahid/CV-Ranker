@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "jd_sha256": "d8870f11c7aefecb79c9edadfab7baac951508df06d907be5704b17d8af6993e",
+  "reviewed_by": "HR Demonstration Reviewer (example only)",
+  "gates": [
+    {
+      "requirement": "Python and Django",
+      "reason": "Both skills explicitly required for the job demonstration"
+    },
+    {
+      "requirement": "TensorFlow or PyTorch",
+      "reason": "At least one framework is required for the job demonstration"
+    }
+  ]
+}

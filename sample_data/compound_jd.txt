@@ -1,0 +1,9 @@
+Software Services Engineer
+
+Required Skills:
+Python and Django
+TensorFlow or PyTorch
+Docker
+
+Preferred Skills:
+Kubernetes

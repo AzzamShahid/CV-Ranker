@@ -1,0 +1,7 @@
+Candidate profile for Backend Software Engineer.
+
+No experience with Python.
+Django
+PostgreSQL
+No Python work experience.
+Preparing for Docker certification.

@@ -88,9 +88,9 @@ def test_assessor_rejects_real_but_unrelated_resume_quote():
     assert items[0].status == "not_matched"
 
 
-def test_alias_tone_ignores_unrelated_negation():
+def test_llm_matched_term_scopes_tone_without_python_alias_dictionary():
     text = "No experience with Redis, but strong NLP skills."
-    assert classify_requirement_tone(text, "Natural Language Processing") == "positive"
+    assert classify_requirement_tone(text, "Natural Language Processing", "NLP") == "positive"
 
 
 def test_common_negation_variants_are_not_matches():
@@ -113,7 +113,7 @@ def test_jd_alias_name_can_be_grounded_by_source_abbreviation():
         jd_text="Required Skills:\nNLP\n", candidates=[], settings=Settings(), llm=llm
     )
     assert mode == "llm_validated"
-    assert [r.name for r in requirements] == ["Natural Language Processing"]
+    assert [r.name for r in requirements] == ["NLP"]
     assert not warnings
 
 
@@ -200,7 +200,8 @@ Completed applied ML projects in medical imaging, time-series forecasting, and L
         req("Model evaluation", "R008"),
     ]
     results = [fallback_assessment(r, resume) for r in requirements]
-    assert sum(r.status == "matched" for r in results) == 8
+    # Deterministic fallback has no semantic alias dictionary; Qwen owns ML/DL/NLP semantics.
+    assert sum(r.status == "matched" for r in results) == 5
 
 
 def test_partial_invalid_jd_rows_get_targeted_correction_only():
@@ -314,9 +315,10 @@ def test_assessor_relevance_rejects_ambiguous_go_prose():
     assert evidence_supports_requirement("Go", "Experienced with Go programming language.")
 
 
-def test_node_alias_requires_technical_context():
+def test_bare_node_is_not_a_deterministic_nodejs_alias():
     assert not evidence_supports_requirement("Node.js", "Traversed each graph node during the algorithm lesson.")
-    assert evidence_supports_requirement("Node.js", "Built backend services with Node and Express.")
+    assert not evidence_supports_requirement("Node.js", "Built backend services with Node and Express.")
+    assert evidence_supports_requirement("Node.js", "Built backend services with Node.js and Express.")
 
 
 def test_additional_learning_exposure_phrasings_are_uncertain():
@@ -373,7 +375,7 @@ def test_jd_accepts_semantic_requirement_name_when_evidence_is_exact_source_quot
         candidates=[], settings=Settings(), llm=llm,
     )
     assert llm.calls == 1 and mode == "llm_validated" and not warnings
-    assert requirements[0].name == "AI application development"
+    assert requirements[0].name == "Experience building production-oriented AI products"
     assert requirements[0].jd_evidence == "Experience building production-oriented AI products"
     assert requirements[0].priority == "preferred"
 
@@ -441,7 +443,7 @@ def test_tone_is_clause_local_for_unrelated_technology():
         req("Python"), "Never worked with Redis; Python developer for 3 years."
     ).status == "matched"
     assert fallback_assessment(
-        req("Python"), "Basic exposure to AWS; Python developer."
+        req("Python"), "Basic exposure to AWS; Experienced in Python."
     ).status == "matched"
 
 

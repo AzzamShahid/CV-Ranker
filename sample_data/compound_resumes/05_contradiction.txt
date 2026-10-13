@@ -1,0 +1,7 @@
+Skills
+Python
+Django
+PyTorch
+Docker
+Experience
+No experience with Django.

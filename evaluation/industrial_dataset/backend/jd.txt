@@ -1,0 +1,10 @@
+Backend Software Engineer
+
+Required Skills:
+- Python
+- Django
+- PostgreSQL
+- 3+ years of Python experience
+
+Preferred Skills:
+- Docker

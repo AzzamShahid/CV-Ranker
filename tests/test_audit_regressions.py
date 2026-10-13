@@ -77,7 +77,7 @@ def test_real_but_unrelated_jd_evidence_is_rejected_then_structural_fallback_is_
     assert warnings
 
 
-def test_structural_priority_can_correct_same_llm_requirement_only():
+def test_structural_priority_corrects_llm_and_explicit_omissions_are_not_lost():
     jd = "Required Skills:\nPython\nDocker\n"
     response = JDValidationResponse(
         requirements=[JDRequirement(name="Python", priority="unknown", evidence="Python")]
@@ -88,9 +88,9 @@ def test_structural_priority_can_correct_same_llm_requirement_only():
         settings=Settings(),
         llm=FakeLLM(response),
     )
-    assert mode == "llm_validated"
-    assert [item.name for item in requirements] == ["Python"]
-    assert requirements[0].priority == "required"
+    assert mode == "fallback_structural_after_llm"
+    assert [item.name for item in requirements] == ["Python", "Docker"]
+    assert all(item.priority == "required" for item in requirements)
 
 
 def test_jd_ids_are_assigned_by_python_deterministically():
