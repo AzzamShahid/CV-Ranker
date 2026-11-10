@@ -684,3 +684,4 @@ This is **decision support**, not automatic hiring approval. The tool does not i
 ```
 
 `doctor.py --live` checks external providers and may need network/model availability. The unit tests do not require your private OpenRouter key. Always extract a new release into a **new folder** rather than mixing Python files from previous releases; startup validates the build manifest.
+
