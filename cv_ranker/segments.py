@@ -7,7 +7,7 @@ snippets such as "Python".
 from dataclasses import dataclass
 import re
 
-from .text_utils import canonical_key, normalize_unicode, normalize_whitespace
+from .text_utils import canonical_key, normalize_unicode, normalize_whitespace, non_candidate_requirement_copy
 
 
 @dataclass(frozen=True)
@@ -63,7 +63,7 @@ KNOWN_HEADINGS = {
     "position requirements": "non_candidate",
 }
 
-_BULLET_RE = re.compile(r"^\s*(?:[-•*▪●◦·]\s*|\d+[.)]\s+)")
+_BULLET_RE = re.compile(r"^\s*(?:[-•*▪●◦·\uf0b7\uf0a7\uf076]\s*|\d+[.)]\s+)")
 _INLINE_LABEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9+/#& ._-]{0,32}:\s*\S")
 
 
@@ -77,6 +77,23 @@ def _heading(line: str) -> str | None:
     key = canonical_key(clean)
     if key in KNOWN_HEADINGS:
         return KNOWN_HEADINGS[key]
+    # Resume templates frequently combine a canonical section heading with
+    # "Notes" or "Additional Information". Keeping it as a heading matters:
+    # a degree after work experience must not inherit the "experience" tag.
+    if re.fullmatch(
+        r"(?:education|academic background)(?: and| &)? "
+        r"(?:notes|additional information|qualifications|credentials|certifications)", key
+    ):
+        return "education"
+    # Real CVs also use composite headings such as "EDUCATION, METHODS AND
+    # ADDITIONAL BACKGROUND". These are headings, not project content.
+    # Restrict this to heading-sized lines beginning with an education label;
+    # an ordinary sentence saying "education in ..." is not a heading.
+    if (len(clean) <= 85 and re.match(r"^(?:education|academic background)\s*[,/&-]\s*", clean, re.I)
+            and not re.search(r"[.!?]", clean)):
+        return "education"
+    if re.fullmatch(r"(?:selected |key )?projects?(?: and| &)? (?:outcomes|highlights|portfolio)", key):
+        return "projects"
     # Only known headings are headings. Arbitrary ALL-CAPS tokens such as
     # AWS, GCP, NLP and PYTHON are resume evidence, not section names.
     return None
@@ -152,6 +169,7 @@ def segment_resume(text: str) -> list[ResumeSegment]:
     section = "other"
     buffer: list[str] = []
     hanging_qualifier: str | None = None
+    copied_paragraph_continuation = False
 
     def append_segment(value: str, source_lines: tuple[str, ...], sec: str) -> None:
         if value:
@@ -168,9 +186,31 @@ def segment_resume(text: str) -> list[ResumeSegment]:
         clean = cleaned[i]
         if not clean:
             continue
+        # A PDF may wrap one explicit 'copied JD / NOT a claim' bullet over
+        # multiple physical lines. The continuation has no disclaimer of its
+        # own, but is still part of the same inadmissible source paragraph.
+        # A new bullet, section heading, blank boundary, or completed prior
+        # sentence ends this paragraph scope; genuine later CV work survives.
+        section_heading = _heading(raw)
+        new_bullet = bool(_BULLET_RE.match(normalize_unicode(raw).replace("\u200b", "")))
+        if (blank_before[i] or new_bullet or section_heading is not None
+                or (i and cleaned[i - 1].endswith((".", "!", "?")))):
+            copied_paragraph_continuation = False
         if blank_before[i]:
             hanging_qualifier = None
-        heading = _heading(raw)
+        # Explicitly pasted job requirements inside a resume are not the
+        # applicant's claims, even when extraction embeds the heading inline.
+        if non_candidate_requirement_copy(clean):
+            flush()
+            hanging_qualifier = None
+            append_segment(clean, (raw,), "non_candidate")
+            copied_paragraph_continuation = True
+            continue
+        if copied_paragraph_continuation:
+            flush()
+            append_segment(clean, (raw,), "non_candidate")
+            continue
+        heading = section_heading
         if heading is not None:
             flush()
             hanging_qualifier = None

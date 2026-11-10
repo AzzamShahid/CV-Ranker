@@ -23,7 +23,14 @@ REQUIRED_HEADINGS = {
     "job requirements", "role requirements", "candidate requirements", "must have",
     "mandatory", "essential", "minimum qualifications", "key qualifications",
     "qualifications", "skills", "key skills", "core skills", "experience requirements",
-    "education requirements", "certifications",
+    "education requirements", "certifications", "required experience",
+    "minimum experience", "minimum required experience", "required education",
+    "education", "academic requirements", "academic qualifications",
+    "minimum requirements", "required experience and education",
+    "required qualifications and experience",
+    "basic qualifications", "minimum qualifications and experience",
+    "required skills and experience", "education and experience",
+    "education and qualifications", "academic credentials",
 }
 PREFERRED_HEADINGS = {
     "preferred", "preferred skills", "preferred qualifications", "nice to have",
@@ -34,9 +41,11 @@ OTHER_HEADINGS = {
     "responsibilities", "key responsibilities", "job responsibilities",
     "role responsibilities", "duties", "job duties", "what you will do",
     "what you'll do", "about the role", "about us", "benefits",
-    "company overview", "role overview",
+    "company overview", "role overview", "core responsibilities",
+    "how to interpret requirements", "requirement interpretation",
+    "explanatory notes", "important notes", "notes to applicants",
 }
-LIST_PREFIX_RE = r"^\s*(?:[-•*▪●◦·]\s+|\d+[.)]\s+)"
+LIST_PREFIX_RE = r"^\s*(?:[-•*▪●◦·\uf0b7]\s*|\d+[.)]\s+)"
 GENERIC_NOISE = {
     "required skills", "preferred skills", "requirements", "job description",
     "responsibilities", "qualifications", "about the role", "about us",
@@ -44,7 +53,7 @@ GENERIC_NOISE = {
 _CONNECTOR_RE = re.compile(r"(?i)^(?:or|and|etc\.?|including|such as)\b")
 
 _NON_REQUIREMENT_RE = re.compile(
-    r"(?i)\b(?:competitive salary|salary package|compensation|benefits?|perks?|great culture|"
+    r"(?i)\b(?:competitive salary|salary package|compensation|great culture|"
     r"flexible hours?|paid leave|vacation|health insurance|equal opportunity employer)\b"
 )
 _ACTION_START_RE = re.compile(
@@ -83,10 +92,22 @@ def _is_heading(line: str) -> str | None:
         return None
     if key in OTHER_HEADINGS:
         return "other"
-    if _matches_heading(key, PREFERRED_HEADINGS):
+    title_like = (not re.search(r"\d", line) and not line.rstrip().endswith((".", "!", "?"))
+                  and len(line.split()) <= 7)
+    if key in PREFERRED_HEADINGS or (title_like and line.rstrip().endswith(":")
+                                     and _matches_heading(key, PREFERRED_HEADINGS)):
         return "preferred"
-    if _matches_heading(key, REQUIRED_HEADINGS):
+    if key in REQUIRED_HEADINGS or (title_like and line.rstrip().endswith(":")
+                                    and _matches_heading(key, REQUIRED_HEADINGS)):
         return "required"
+    # Variants such as "Basic Qualifications", "Required education and
+    # certifications" and "Minimum experience & education" describe source
+    # structure. These are not a fixed list of technical/professional skills.
+    if (title_like and re.search(r"(?i)\b(?:requirements?|qualifications?|experience|education|credentials?)\b", key)):
+        if re.search(r"(?i)\b(?:required|mandatory|minimum|basic|essential|must have)\b", key):
+            return "required"
+        if re.search(r"(?i)\b(?:preferred|desired|bonus|optional|nice to have)\b", key):
+            return "preferred"
     if len(line) < 80 and line.strip().endswith(":"):
         return "other"
     return None
@@ -106,6 +127,31 @@ def _split_list_line(cleaned: str) -> list[str]:
     return pieces
 
 
+def _logical_source_lines(jd_text: str) -> list[str]:
+    """Rejoin visual PDF line wraps, preserving genuine JD list boundaries.
+
+    This is layout repair only: it never creates a requirement or supplies a
+    field/skill. All reunited words must still be found in the original JD.
+    """
+    rows: list[str] = []
+    for original in jd_text.splitlines():
+        current = original.strip()
+        if not current:
+            rows.append("")
+            continue
+        previous = rows[-1].strip() if rows else ""
+        if (previous and not re.match(LIST_PREFIX_RE, current)
+                and _is_heading(current) is None and _is_heading(previous) is None
+                and not previous.endswith((".", "!", "?", ";", ":"))
+                and not re.match(LIST_PREFIX_RE, previous)
+                and (len(previous) >= 75 or
+                     bool(re.search(r"(?i)\b(?:of|in|with|for|and|or|the|a|an|to|by|from)\s*$", previous)))):
+            rows[-1] = previous + " " + current
+        else:
+            rows.append(current)
+    return rows
+
+
 def structural_hints(jd_text: str) -> list[StructuralHint]:
     """Conservative structural fallback used only when the LLM is unavailable.
 
@@ -113,10 +159,11 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
     qualifications and explicit OR requirements as single requirements.
     """
     current: str | None = None
+    excluded_section = False
     after_blank = False
     hints: list[StructuralHint] = []
 
-    for raw_line in jd_text.splitlines():
+    for raw_line in _logical_source_lines(jd_text):
         line = raw_line.strip()
         if not line:
             after_blank = True
@@ -128,9 +175,11 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
             inline_kind = _is_heading(inline_match.group(1))
             if inline_kind in {"required", "preferred"}:
                 current = inline_kind
+                excluded_section = False
                 inline_content = inline_match.group(2).strip()
             elif inline_kind == "other":
                 current = None
+                excluded_section = True
                 after_blank = False
                 continue
 
@@ -138,10 +187,25 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
             heading = _is_heading(line)
             if heading:
                 current = heading if heading in {"required", "preferred"} else None
+                excluded_section = heading == "other"
                 after_blank = False
                 continue
 
         if current is None:
+            # Explicit mandatory qualifications in otherwise unsectioned JD
+            # prose must not vanish when the model omits them. The line itself
+            # must state a numeric tenure/credential AND clear obligation;
+            # never infer expectations from a job title or CV content.
+            strong_obligation = re.search(
+                r"(?i)\b(?:minimum|at least|must have|required|mandatory|essential)\b", line)
+            concrete_constraint = re.search(
+                r"(?i)\b(?:\d+(?:\.\d+)?\s*\+?\s*(?:years?|yrs?)|"
+                r"bachelor(?:'s)?|master(?:'s)?|degree|diploma|"
+                r"certification|licen[cs]e|b\.?s\.?c?\.?|m\.?s\.?c?\.?)\b", line)
+            if (not excluded_section and strong_obligation and concrete_constraint
+                    and len(line) <= 350 and not _NON_REQUIREMENT_RE.search(line)):
+                clean = re.sub(LIST_PREFIX_RE, "", line).strip()
+                hints.append(StructuralHint(clean, "required", clean))
             after_blank = False
             continue
 
@@ -150,12 +214,27 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
         cleaned = re.sub(LIST_PREFIX_RE, "", working).strip()
         word_count = len(cleaned.split())
 
-        if (
-            after_blank
-            and not has_list_marker
-            and inline_content is None
-            and (len(cleaned) > 120 or word_count > 16 or cleaned.endswith("."))
-        ):
+        # A blank line immediately under a section title is normal in a PDF
+        # or a formatted JD. Do not discard a clear mandatory duration/degree
+        # statement merely because it is a paragraph rather than a bullet.
+        source_names_a_constraint = bool(re.search(
+            r"(?i)\b(?:\d+(?:\.\d+)?\s*\+?\s*(?:years?|yrs?)|"
+            r"degree|bachelor(?:'s)?|master(?:'s)?|diploma|certif\w*|licen[cs]e|"
+            r"b\.?s\.?c?\.?|m\.?s\.?c?\.?|b\.?tech\.?)\b",
+            cleaned,
+        ))
+        source_declares_mandatory = bool(re.search(
+            r"(?i)\b(?:minimum|at least|must have|required|mandatory|essential)\b", cleaned
+        ))
+        # A required/preferred section *itself* supplies the priority. A CV/JD
+        # author need not repeat "required" on every line. Without this,
+        # "Required Education: <blank> Bachelor's in X." disappears.
+        explicit_constraint = source_names_a_constraint and (
+            source_declares_mandatory or current in {"required", "preferred"}
+        )
+        if (after_blank and not has_list_marker and inline_content is None
+                and (len(cleaned) > 120 or word_count > 16 or cleaned.endswith("."))
+                and not explicit_constraint):
             current = None
             after_blank = False
             continue
@@ -166,8 +245,12 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
         if _NON_REQUIREMENT_RE.search(cleaned):
             continue
         if not has_list_marker and inline_content is None and cleaned.endswith((".", "!", "?")):
-            current = None
-            continue
+            # A required *paragraph* is just as binding as a required bullet.
+            # Keep only short, explicitly signalled experience/qualification
+            # statements; plain prose after a section is not a free requirement.
+            if not explicit_constraint:
+                current = None
+                continue
         if (
             _ACTION_START_RE.search(cleaned)
             and not _REQUIREMENT_CUE_RE.search(cleaned)
@@ -178,7 +261,13 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
 
         for piece in _split_list_line(cleaned):
             piece_words = len(piece.split())
-            if len(piece) <= 180 and 1 <= piece_words <= 24:
+            if (len(piece) <= 180 and 1 <= piece_words <= 24) or (
+                # An explicit, longer qualification/experience bullet must not
+                # vanish merely because it includes a clarifying sentence.
+                (has_list_marker or (inline_content is None and cleaned.endswith(".")))
+                and len(piece) <= 650 and piece_words <= 100
+                and bool(_REQUIREMENT_CUE_RE.search(piece))
+            ):
                 hints.append(StructuralHint(piece, current, piece))
 
     return hints

@@ -1,0 +1,32 @@
+Rida Hassan
+Computer Vision ML Engineer
+Peshawar, Pakistan
+rida.hassan@example.com
+Professional experience: 3 years 9 months
+
+PROFESSIONAL SUMMARY
+Computer-vision engineer with 3 years 9 months of professional experience developing research-facing medical image analysis tools, clinically separated validation datasets, PyTorch training and monitored inference services.
+
+TECHNICAL SKILLS
+- Python, PyTorch, TensorFlow, OpenCV, scikit-learn, image augmentation
+- Deep learning: CNNs, segmentation, transfer learning, uncertainty calibration
+- Evaluation: Dice, IoU, sensitivity/specificity, AUROC, patient-level splits
+- FastAPI, DICOM preprocessing, Docker, experiment tracking, GCP storage
+
+PROFESSIONAL EXPERIENCE
+
+Computer Vision Engineer | Crescent Imaging Labs (fictional)
+Jan 2023 - Present
+- Trained and compared PyTorch segmentation models on de-identified medical imaging datasets using patient-separated train/validation/test partitions.
+- Evaluated sensitivity, AUROC, Dice and hospital-site drift; documented leakage controls and clinical deployment limitations.
+- Implemented a Python inference API for clinicians to review segmentation masks as decision support, not autonomous diagnosis.
+- Built TensorFlow transfer-learning baselines and retained reproducible experiment metadata.
+- Worked with QA teams on human verification and error analysis for imaging edge cases.
+
+SELECTED PROJECTS
+- Segmentation quality suite: Held-out patient testing, threshold calibration, full confusion reviews and visual overlays.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Biomedical Engineering | East Institute (fictional), 2022
+- No professional NLP, hosted LLM integration, LangChain or LangGraph experience claimed
+- Professional computer-vision tenure: Jan 2023 - Oct 2026 (3 years 9 months)

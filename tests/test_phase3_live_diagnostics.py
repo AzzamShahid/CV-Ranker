@@ -7,15 +7,17 @@ from cv_ranker.segments import segment_resume
 
 def test_doctor_fixture_passes_actual_document_contract(tmp_path):
     jd, cv = write_live_ranker_fixtures(tmp_path)
-    assert extract_text(jd).strip() == "Required Skills:\nPython"
+    assert extract_text(jd).strip() == (
+        "Required Skills:\nPython\nSpreadsheet reporting\nCustomer support")
     text = extract_text(cv)
     assert "Python" in text and len(text.strip()) >= 20
     report = CVRanker(use_llm=False).run(jd, [cv])
-    assert [r.name for r in report.requirements] == ["Python"]
+    assert [r.name for r in report.requirements] == [
+        "Python", "Spreadsheet reporting", "Customer support"]
     assert report.candidates[0].primary_score == 100.0
-    assert report.candidates[0].matched_primary == 1
-    assert report.candidates[0].total_primary == 1
-    assert report.candidates[0].assessments[0].evidence  # legacy literal fallback has no segment IDs
+    assert report.candidates[0].matched_primary == 3
+    assert report.candidates[0].total_primary == 3
+    assert all(a.evidence for a in report.candidates[0].assessments)
 
 
 def test_compact_standalone_skill_lines_are_distinct_evidence():

@@ -1,0 +1,50 @@
+Bilal Siddiqui
+Applied ML & Product Engineer
+Islamabad, Pakistan
+bilal.siddiqui@example.com
+Professional experience: 4 years 5 months
+
+PROFESSIONAL SUMMARY
+Applied ML and full-stack product engineer with 4 years 5 months of professional AI/ML delivery. Builds NLP/LLM products as testable software, with attention to dataset leakage, reproducibility, latency, and product telemetry.
+
+TECHNICAL SKILLS
+- Python, PyTorch, transformers, scikit-learn, TensorFlow fundamentals
+- Machine learning, deep learning, named-entity recognition, information retrieval, RAG
+- LangChain, LangGraph, hosted LLM API integrations, tool-based agents, function calling
+- Accuracy, precision/recall, macro F1, BLEU/ROUGE limitations, calibration, retrieval recall
+- Google Cloud, Cloud Run, Vertex AI, BigQuery, Pub/Sub; Docker; GitHub Actions
+- Node.js/TypeScript APIs; Firebase Auth and Firestore; FastAPI
+
+PROFESSIONAL EXPERIENCE
+
+AI Product Engineer | CivicWave Software (fictional)
+Jul 2023 - Present
+- Architected an LLM-enabled document review service using Python, LangChain, LangGraph, retrieval, and human approval checkpoints.
+- Built a Node.js web backend and Firebase Auth/Firestore front end for case reviewers and secure role-specific access.
+- Developed PyTorch sentence classification and NLP entity-resolution models for multilingual complaint records.
+- Prepared held-out evaluation sets; tracked retrieval recall@5, response faithfulness, false-positive extraction, and per-run cost.
+- Deployed containers to Google Cloud Run and used Vertex AI for managed evaluations and release candidate comparisons.
+- Implemented tracing with source IDs and reviewer overrides, reducing time spent reproducing reported response errors.
+- Maintained staged rollback paths, versioned prompts, smoke tests and monthly prompt-injection exercises.
+- Partnered with product managers on acceptance tests that separated tool reliability, LLM output quality and user-interface behavior.
+- Documented PII handling, access permissions and model-provider configuration for operational audits.
+- Introduced a response caching and batch-job queue that reduced recurring inference work while preserving per-user authorization.
+- Reviewed integration tests comparing the original source segments with cited excerpts returned by the assistant.
+
+Junior Machine Learning Engineer | Peak Data Labs (fictional)
+May 2022 - Jun 2023
+- Built Python ML pipelines for customer segmentation and ticket classification; documented data splits and baseline performance.
+- Trained a PyTorch CNN for receipt-image category detection, measuring per-class recall and conducting ablation experiments.
+- Collaborated on a forecasting service using rolling-origin validation and documented performance by seasonal segment.
+- Published REST inference endpoints, Docker images, and simple monitoring metrics for internal consumers.
+
+SELECTED PROJECTS
+- Retrieval-based case assistant: Held-out groundedness evaluation, LangGraph review transitions and per-document citation checks.
+- Customer service classifier: PyTorch; macro F1 0.87 in offline evaluation, reviewer spot-checks and error breakdown by language.
+- Operational forecasts: Time-series backtesting with seasonal baselines and weekly drift/error reporting.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Software Engineering | Metropolitan Institute (fictional), 2022
+- Production ownership: alerting, rate limiting, caching, CI/CD, backup and release reviews
+- Technical mentorship: pairing sessions on privacy, source lineage and API contracts
+- Research practices: explicit failure cases, confidence intervals where applicable, reproducible seeds

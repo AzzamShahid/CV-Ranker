@@ -1,0 +1,13 @@
+Sample Candidate One — Backend Developer
+
+Professional Experience:
+- Built and deployed production HTTP JSON API endpoints using Python and Flask.
+- Wrote database migrations and SQL queries using MySQL for customer records.
+- Implemented cache-aside behavior and cache invalidation with Memcached in a web service.
+- Used Git daily to review and merge code changes.
+- Containerized a backend web application with Docker.
+
+Skills:
+Flask, Python, MySQL, Memcached, Git, Docker
+
+No professional experience with FastAPI, PostgreSQL, or Redis.

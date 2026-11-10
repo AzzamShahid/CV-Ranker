@@ -10,7 +10,8 @@ from .schemas import (
     LLMTypeProposal, LLMTypeResponse, RequirementConstraint, RequirementKind,
     LogicalOperator, ValidatedRequirement,
 )
-from .text_utils import evidence_exists, normalize_whitespace
+from .text_utils import (evidence_exists, evidence_source_line_numbers, normalize_whitespace,
+                         extract_or_requirement, requirement_options)
 
 
 _YEAR = re.compile(r"\b(?P<first>\d{1,2}(?:\.\d+)?)\s*(?:\+|[-–]\s*\d{1,2}(?:\.\d+)?)?\s*(?:years?|yrs?)\b", re.I)
@@ -34,7 +35,7 @@ def _degree_level(text: str) -> str | None:
         return "doctorate"
     if re.search(r"\b(master(?:'s)?|m\.?sc|mba|ms\s+in)\b", t):
         return "master"
-    if re.search(r"\b(bachelor(?:'s)?|b\.?sc|btech|b\.tech|bs\s+in)\b", t):
+    if re.search(r"\b(bachelor(?:'s)?|b\.?sc|btech|b\.tech|bs\s+in)\b", t) or re.match(r"^b\.?s\.?\s+[a-z]", t):
         return "bachelor"
     if re.search(r"\bassociate(?:'s)?\b", t):
         return "associate"
@@ -45,18 +46,39 @@ def _degree_level(text: str) -> str | None:
 
 def _field_of_study(text: str) -> str | None:
     # Capture only an explicit field introduced by 'in' after a degree label.
+    # Preserve indefinite singular family wording such as "a Computer Program".
+    # A source-grounded evaluator handles family membership; it is not an
+    # exact major-title requirement and no specific majors are hardcoded here.
     match = re.search(r"\b(?:degree|bachelor(?:'s)?|master(?:'s)?|ph\.?d\.?|diploma|bs|ms)\b[^\n,;]*?\bin\s+([A-Za-z][^,;()]+)", text, re.I)
+    if not match:
+        # Conventional abbreviated degree titles also occur directly before
+        # the FIELD: "BSc Computer Science", "BS Software Engineering".
+        # Take the field from the JD's *own words*, never a prelisted set of
+        # academic disciplines or a guess from the job title.
+        match = re.search(r"\b(?:b\.?s\.?c?\.?|m\.?s\.?c?\.?|b\.?tech\.?|m\.?tech\.?)"
+                          r"\s+(?:degree\s+)?([A-Za-z][^,;()]+)", text, re.I)
     if not match:
         return None
     value = normalize_whitespace(match.group(1))
     value = re.split(r"\s+(?:with|and|or)\s+\d+\s*(?:years?|yrs?)\b", value, maxsplit=1, flags=re.I)[0]
     value = re.split(r"\s+or\s+", value, maxsplit=1, flags=re.I)[0]
-    return value.strip(" .") or None
+    value = re.split(r"\s+(?:required|preferred|mandatory|desired|essential|with|must)\b", value,
+                     maxsplit=1, flags=re.I)[0]
+    clean = value.strip(" .")
+    return None if clean.casefold() in {"any", "any field", "any discipline", "any subject"} else (clean or None)
 
 
 def _operator(text: str) -> tuple[LogicalOperator, list[str]]:
     # This layer describes explicit surface operators. It does not enforce them.
     simple = normalize_whitespace(text)
+    # The source may append a non-skill annotation such as "(at least one)".
+    # Use the same source-grounded OR parser as the frozen JD, avoiding an
+    # accidental option called "PyTorch (at least one)".
+    explicit_or = extract_or_requirement(simple)
+    if explicit_or and " or " in explicit_or:
+        alternatives = requirement_options(explicit_or)
+        if 2 <= len(alternatives) <= 3:
+            return "any_of", alternatives
     if re.search(r"\b(?:and|or)\b", simple, re.I):
         if re.search(r"\band\b", simple, re.I) and re.search(r"\bor\b", simple, re.I):
             return "complex", []
@@ -71,7 +93,7 @@ def _operator(text: str) -> tuple[LogicalOperator, list[str]]:
 
 
 def _line_numbers(text: str, jd_text: str) -> list[int]:
-    return [i for i, line in enumerate(jd_text.splitlines(), 1) if evidence_exists(text, line)]
+    return evidence_source_line_numbers(text, jd_text)
 
 
 def _section_context(jd_text: str, evidence: str) -> str | None:
@@ -113,7 +135,9 @@ def classify_requirement(requirement: ValidatedRequirement, jd_text: str) -> Req
         kind = "eligibility"
     elif _LICENSE.search(text):
         kind = "license"
-    elif _EDUCATION.search(text):
+    elif (_EDUCATION.search(text) or
+          (_section_context(jd_text, evidence) == "other" and
+           re.match(r"(?i)^(?:b\.?s\.?|m\.?s\.?)\s+[A-Za-z]", text))):
         kind = "education"
         level = _degree_level(text)
         field = _field_of_study(text)
@@ -135,7 +159,14 @@ def classify_requirement(requirement: ValidatedRequirement, jd_text: str) -> Req
             match = re.search(r"^(?:of\s+)?(.+)$", remainder)
         if match:
             candidate_subject = normalize_whitespace(match.group(1)).strip(".,; ")
-            if candidate_subject.casefold() not in {"professional", "relevant", "industry", "general", "overall", "work", "experience", "professional experience", "relevant experience"}:
+            # Adjectives such as "relevant professional experience" describe
+            # the TYPE of tenure, not a competency called "relevant professional".
+            # Retain genuine JD-named subjects (logistics, Python, nursing, ...).
+            candidate_subject = re.sub(
+                r"^(?:(?:relevant|professional|general|overall|total|work|industry|full-time)\s+)+",
+                "", candidate_subject, flags=re.I,
+            ).strip()
+            if candidate_subject.casefold() not in {"", "professional", "relevant", "industry", "general", "overall", "work", "experience", "professional experience", "relevant experience"}:
                 subject = candidate_subject or None
     elif re.match(r"^experience\s+(?:building|managing|leading|designing|developing|delivering|handling|operating|maintaining|implementing|conducting|supervising)\b", text, re.I):
         kind = "experience"

@@ -87,6 +87,34 @@ def evidence_exists(evidence: str | None, source_text: str) -> bool:
     return bool(needle) and needle in haystack
 
 
+def evidence_source_line_numbers(evidence: str, source_text: str) -> list[int]:
+    """Locate an exact quote, including quotations spanning physical PDF lines.
+
+    No fuzzy token matching: joining adjacent source lines solely reconstructs
+    whitespace introduced by extraction. Return the original physical lines.
+    """
+    rows = source_text.splitlines()
+    direct = [i for i, row in enumerate(rows, start=1) if evidence_exists(evidence, row)]
+    if direct:
+        return direct
+    needle = normalize_for_evidence(evidence)
+    if not needle:
+        return []
+    for start in range(len(rows)):
+        if not rows[start].strip():
+            continue
+        joined: list[str] = []
+        for stop in range(start, min(start + 8, len(rows))):
+            if not rows[stop].strip():
+                break
+            joined.append(rows[stop].strip())
+            if stop > start and evidence_exists(evidence, " ".join(joined)):
+                return list(range(start + 1, stop + 2))
+            if len(normalize_for_evidence(" ".join(joined))) > len(needle) + 240:
+                break
+    return []
+
+
 def instruction_like_evidence(text: str | None) -> bool:
     """Reject obvious prompt/instruction text masquerading as candidate evidence."""
     if not text:
@@ -112,7 +140,12 @@ def phrase_regex(phrase: str) -> str | None:
     needle = canonical_key(phrase)
     if not needle:
         return None
-    return rf"(?<![\w+#&]){re.escape(needle)}(?![\w+#&])"
+    # A space, hyphen, underscore or slash between *whole* words is an
+    # orthographic variation, not a semantic alias.  Preserve the strict
+    # outside boundaries (Go must never match Good, C must not match C++).
+    words = needle.split()
+    pattern = r"[\s/_-]+".join(re.escape(word) for word in words)
+    return rf"(?<![\w+#&]){pattern}(?![\w+#&])"
 
 
 def phrase_present(phrase: str, text: str) -> bool:
@@ -191,6 +224,10 @@ def extract_or_requirement(text: str) -> str | None:
     """
     clean = normalize_whitespace(re.sub(r"^\s*(?:[-•*]\s+|\d+[.)]\s+)", "", text or ""))
     clean = clean.strip(" .;:")
+    # Editorial explanation of an OR list is not an additional skill. Keep
+    # the ORIGINAL quotation in jd_evidence; normalize only option parsing.
+    clean = re.sub(r"\s*\(\s*(?:at\s+least\s+one|either\s+one|choose\s+one|one\s+of\s+these)\s*\)$",
+                   "", clean, flags=re.IGNORECASE).strip(" .;:")
     clean = re.sub(
         r"^(?:experience|proficiency|knowledge|familiarity|skills?|hands-on experience)\s+(?:with|in|of)\s+",
         "", clean, flags=re.IGNORECASE,
@@ -419,6 +456,105 @@ def _present_target_term(evidence: str, requirement: str, matched_term: str | No
     return None
 
 
+def non_candidate_requirement_copy(text: str | None) -> bool:
+    """Flag explicit non-claim/job-ad passages, never candidate accomplishments.
+
+    This is a provenance veto, not a domain-specific skill list. Only explicit
+    self-disclaimers or job-ad introductions trigger it.
+    """
+    source = normalize_for_evidence(text or "")
+    return bool(re.search(
+        r"\b(?:target\s+job\s+description|copied\s+(?:job\s+)?requirements?|"
+        r"(?:^|: )job\s+advertisement\s*:|(?:^|: )job\s+posting\s*:|"
+        r"not\s+a\s+claim\s+of\s+experience|"
+        r"(?:requirements?|skills?)\s+copied\s+from\s+(?:the\s+)?(?:job|role))\b",
+        source,
+    ))
+
+
+def _coordinated_denial_scope(text: str, target: str) -> bool:
+    """Block explicit negation governing comma/or/and enumerations.
+
+    Span is bounded to one sentence/semicolon clause and a short prefix,
+    avoiding a negative Redis sentence poisoning an unrelated Python claim.
+    """
+    source = normalize_for_evidence(text)
+    pattern = phrase_regex(canonical_key(target)) or re.escape(canonical_key(target))
+    for hit in re.finditer(pattern, source, flags=re.IGNORECASE):
+        # Work inside punctuation-delimited clauses. Tool names like Node.js are
+        # kept intact by the existing normalizer / phrase expression.
+        start = max(source.rfind(';', 0, hit.start()), source.rfind('!', 0, hit.start()),
+                    source.rfind('?', 0, hit.start()), source.rfind('. ', 0, hit.start())) + 1
+        prefix = source[start:hit.start()]
+        if len(prefix) > 190:
+            prefix = prefix[-190:]
+        # "has not used A or B", "no experience with A, B, C" and
+        # "no professional A, B or C experience claimed".
+        cue = re.search(
+            r"\b(?:no\s+(?:direct\s+|hands-on\s+|professional\s+|practical\s+)?"
+            r"(?:(?:experience|knowledge|exposure|proficiency)\s+(?:with|in|of|using)\s+)?|"
+            r"(?:have|has|had|did)\s+not\s+(?:used?|worked\s+with|developed|built)\s+|"
+            r"never\s+(?:used|worked\s+with|developed)\s+|"
+            r"(?:haven't|hasn't|didn't)\s+(?:used?|worked\s+with|developed)\s+)"
+            r"[^.;!?]{0,170}$",
+            prefix,
+        )
+        if not cue:
+            continue
+        between = prefix[cue.start():]
+        if re.search(r"\b(?:but|however|although|whereas|except|yet)\b", between):
+            continue
+        # The cue must be attached to a list, not a separate action clause.
+        if re.search(r"\b(?:built|developed|implemented|deployed|trained|created)\b", between):
+            continue
+        return True
+    return False
+
+
+def _coordinated_learning_scope(text: str, target: str) -> bool:
+    """Keep a future/learning verb's scope across a short coordinated list.
+
+    ``Plans to learn A, B and C`` makes all three tentative; none is a
+    current skill claim. The rule is grammatical, not a list of professions or
+    products. It stops at a new sentence, contrasting conjunction, or a
+    separate completed-work action, so ``learning A, but built B`` cannot
+    erase the completed B assertion.
+    """
+    source = normalize_for_evidence(text)
+    pattern = phrase_regex(canonical_key(target)) or re.escape(canonical_key(target))
+    for hit in re.finditer(pattern, source, flags=re.IGNORECASE):
+        start = max(source.rfind(';', 0, hit.start()), source.rfind('!', 0, hit.start()),
+                    source.rfind('?', 0, hit.start()), source.rfind('. ', 0, hit.start())) + 1
+        prefix = source[start:hit.start()][-190:]
+        cue = re.search(
+            r"\b(?:(?:currently\s+)?(?:learning|exploring|studying)\s+|"
+            r"(?:plans?|planning|intends?|hopes?|wants?)\s+to\s+(?:learn|study|explore)\s+|"
+            r"(?:currently\s+)?(?:training|experimenting)\s+(?:in|on|with)\s+)"
+            r"[^.;!?]{0,170}$",
+            prefix,
+        )
+        if not cue:
+            continue
+        if cue.group(0).startswith('learning '):
+            # 'Deep learning and X' describes a discipline, not the act of
+            # learning X. Require affirmative learning grammar to bind a list.
+            before = prefix[:cue.start()].rstrip()
+            previous = re.search(r"\b([a-z]+)$", before)
+            if (before and not before.endswith(':')
+                    and (not previous or previous.group(1) not in {
+                        'am', 'is', 'are', 'was', 'were', 'been', 'currently',
+                        'just', 'still', 'only', 'started', 'began',
+                    })):
+                continue
+        between = prefix[cue.start():]
+        if re.search(r"\b(?:but|however|although|whereas|except|yet)\b", between):
+            continue
+        if re.search(r"\b(?:built|developed|implemented|deployed|shipped|delivered|created)\b", between):
+            continue
+        return True
+    return False
+
+
 def classify_requirement_tone(
     evidence: str | None,
     requirement: str,
@@ -428,16 +564,23 @@ def classify_requirement_tone(
     if not evidence:
         return "neutral"
     text = normalize_for_evidence(evidence)
+    if non_candidate_requirement_copy(evidence):
+        return "negated"
     target = _present_target_term(evidence, requirement, matched_term)
     if not target:
         return "neutral"
+    if _coordinated_denial_scope(evidence, target):
+        return "negated"
+    if _coordinated_learning_scope(evidence, target):
+        return "uncertain"
 
     req = canonical_key(target)
     q = phrase_regex(req) or re.escape(req)
     negative_patterns = [
         rf"\bno\s+(?:professional\s+|practical\s+|hands-on\s+)?experience\s+(?:with|in|using|of)\s+{q}",
         rf"\bno\s+(?:professional\s+|practical\s+|hands-on\s+)?(?:knowledge|exposure)\s+(?:of|to|with|in)\s+{q}",
-        rf"\bno\s+{q}\s+(?:experience|knowledge|exposure)\b",
+        rf"\bno\s+(?:direct\s+|hands-on\s+|professional\s+)?{q}\s+(?:experience|knowledge|exposure|usage)\b",
+        rf"\bno\s+(?:direct\s+|hands-on\s+|professional\s+)?experience\s+(?:with|in|using|of)\s+{q}",
         rf"\bno\s+{q}\s+evidence\b",
         rf"\bnot\s+familiar\s+with\s+{q}",
         rf"\bunfamiliar\s+with\s+{q}",
@@ -457,6 +600,10 @@ def classify_requirement_tone(
         rf"{q}\s+(?:is|was|were)\s+not\s+used\b",
         rf"{q}\s*[:=-]\s*(?:none|no|nil|n/a)\b",
         rf"\bwithout\s+{q}\s+(?:experience|knowledge|exposure)\b",
+        rf"\bwithout\s+(?:using\s+)?{q}\b",
+        # Contrast/comparison is not an affirmative claim to the named tool.
+        # A CV saying "Haystack rather than LangChain" must not get LangChain credit.
+        rf"\b(?:rather\s+than|instead\s+of|as\s+an\s+alternative\s+to)\s+{q}\b",
         rf"\black(?:s|ing)?\s+(?:professional\s+|practical\s+)?experience\s+(?:with|in|using)\s+{q}",
         rf"\bdo(?:es)?\s+not\s+have\s+experience\s+(?:with|in|using)\s+{q}",
         rf"\bdon['’]?t\s+have\s+experience\s+(?:with|in|using)\s+{q}",
@@ -497,6 +644,10 @@ def classify_requirement_tone(
 
     uncertain_patterns = [
         rf"\bcurrently\s+learning\s+(?:about\s+)?{q}",
+        rf"\b(?:currently\s+)?exploring\s+(?:about\s+)?{q}\b",
+        rf"\bcurrently\s+exploring\b[^.;!?]{{0,95}}\b{q}\b",
+        rf"\b{q}\s+(?:tutorial|tutorials|practice\s+exercise|practice\s+exercises)\b",
+        rf"\b(?:currently\s+)?experimenting\s+with\b[^.;!?]{{0,95}}\b{q}\b",
         rf"\bplanning\s+to\s+learn\s+(?:about\s+)?{q}",
         rf"\bwant(?:s)?\s+to\s+learn\s+(?:about\s+)?{q}",
         rf"\binterested\s+in\s+learning\s+(?:about\s+)?{q}",

@@ -1,0 +1,7 @@
+Sample Candidate Three — Reporting Assistant
+
+Experience:
+- Prepared monthly financial reports and maintained Excel dashboards.
+- Interested in learning FastAPI, Redis, and databases.
+- Attended an introductory programming workshop.
+- Did not work on production APIs.

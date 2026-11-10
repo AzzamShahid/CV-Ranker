@@ -1,0 +1,33 @@
+Amal Raza
+Cloud Application Engineer
+Lahore, Pakistan
+amal.raza@example.com
+Professional experience: 4 years 9 months (cloud/software)
+
+PROFESSIONAL SUMMARY
+Cloud application engineer with 4 years 9 months of professional Node.js and Python backend integration experience. Built operational APIs, logging and deployment systems; recent LLM feature work is narrower than full ML engineering.
+
+TECHNICAL SKILLS
+- Node.js, TypeScript, Python, FastAPI, REST, event-driven services
+- Google Cloud Run, Firebase Auth, Firestore, Pub/Sub, Cloud SQL
+- Hosted LLM API integration for summaries, request validation, structured output
+- Docker, Terraform, CI/CD, observability, rate limiting, incident response
+
+PROFESSIONAL EXPERIENCE
+
+Cloud Application Engineer | Riverfront Apps (fictional)
+Jan 2022 - Present
+- Built and supported Node.js APIs on Cloud Run and Firebase user workflows for business applications.
+- Integrated a hosted LLM API in 2026 for a user-support summarization endpoint with prompt guardrails and audit logging.
+- Added retriable request queues, monitoring, deployment rollback steps and cost reporting to cloud services.
+- Implemented structured API validation and integrations for external ML inference services managed by a separate data-science team.
+- Has not trained or evaluated deep-learning models as a professional responsibility.
+
+SELECTED PROJECTS
+- LLM-assisted customer notes: LLM API wiring, system prompts and structured output; demonstrated integration but not independent ML model evaluation.
+- Event-driven service platform: GCP and Firebase API design, production monitoring and deployment.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Software Engineering | City College of Technology (fictional), 2021
+- Professional cloud/software tenure: Jan 2022 - Oct 2026; AI/ML-specific tenure is substantially shorter
+- Currently exploring PyTorch and LangChain tutorials, without completed professional projects

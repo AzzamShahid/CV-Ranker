@@ -1,10 +1,17 @@
-# Supervisor demo script (5 minutes)
+# Supervisor presentation checklist
 
-1. **Show clean project folders.** `cv_ranker/` is the production engine, `evaluation/` the experiments, `tests/` the regression tests, and `docs/` the explanation.
-2. **Demonstrate environment readiness.** Run `run_runtime_check.cmd` then `python doctor.py --live` using the project's `.venv`; show `READY` if Ollama is accessible.
-3. **Run the UI.** Double-click `run_ui.cmd` and open http://localhost:8501. Use Backend demo (or upload one JD and 3 sample CVs).
-4. **Explain stages.** YAKE only suggests keywords; Qwen interprets JD requirements and CV evidence; Python freezes IDs, validates source pointers and calculates scores.
-5. **Open a ranked candidate.** Point to required-matches score, preferred coverage, matched/not-matched/uncertain, and an `S###` evidence line.
-6. **Be transparent about limitations.** Current 21-case diagnostic benchmark is 76.19% (batch 20) or 80.95% (batch 3); mixed outcomes prevent claiming pure-Qwen accuracy. No verifier, embeddings or transferable-skill credit.
+- [ ] Use Python 3.11 in a fresh project folder; install `requirements.txt`.
+- [ ] Keep the configured `.env` and API credentials private.
+- [ ] Run `run_runtime_check.cmd`. If demonstrating live models, check them with `doctor.py --live` and start Ollama / EmbeddingGemma 2 when using the optional cross-check.
+- [ ] Run `run_ui.cmd` and confirm the `phase7g-v4-5-env-owned-dual-provider-sidebar-2026-10-26` build ID in the sidebar.
+- [ ] Confirm both model IDs are configured in the private `.env`, then switch between Cloud and Local using the sidebar radio selector; model IDs in the UI are read-only.
+- [ ] Analyze the five fictional Applied AI/ML CVs or another authorized sample.
+- [ ] Show the **whole ranked leaderboard** first: percentage, Required X/Y, Preferred X/Y, Transferable, review status.
+- [ ] Select a candidate and expand Found, Transferable, and Not Found decisions to show exact evidence and reasons.
+- [ ] Show that Transferable has no direct-score weight and that ordinary skills claims do not require invented project evidence.
+- [ ] Confirm that the frozen denominator includes a distinct 3-year row for the bundled Applied AI JD (10 Required / 7 Preferred), and Farhan's 2 years 4 months cannot satisfy it.
+- [ ] For a JD that actually requires a CS degree, demonstrate why a CS degree, a related SE degree and an unrelated Arts degree cannot receive identical academic decisions.
+- [ ] Open the full source ledger, then keep technical diagnostics separate from the final decision table.
+- [ ] Explain that this is evidence-based screening support, not an autonomous hiring decision.
 
-Likely question: **Why use AI if Python matches exact words?** Because semantics (e.g., abbreviations, paraphrases and quantified experience) require more than exact string matching; Python deliberately handles deterministic source safety and scoring. Current Qwen can still miss or misclassify these cases; the benchmark demonstrates this openly.
+Detailed script: [SUPERVISOR_WALKTHROUGH.md](SUPERVISOR_WALKTHROUGH.md).

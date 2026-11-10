@@ -10,6 +10,7 @@ REQUIRED_IMPORTS = {
     "yake": "yake",
     "langchain_core": "langchain-core",
     "langchain_ollama": "langchain-ollama",
+    "dotenv": "python-dotenv",
     "fitz": "PyMuPDF",
     "docx": "python-docx",
     "pytest": "pytest",
@@ -85,22 +86,22 @@ def check_ollama(model: str) -> bool:
     return False
 
 
-def check_structured_output(model: str) -> bool:
+def check_structured_output(settings) -> bool:
     print("\nLangChain/Ollama structured-output smoke test")
     print("-" * 60)
     try:
         from pydantic import BaseModel, ConfigDict
-        from langchain_ollama import ChatOllama
+        from cv_ranker.llm import StructuredLLM
 
         class HealthCheck(BaseModel):
             model_config = ConfigDict(extra="forbid", strict=True)
             ok: bool
             message: str
 
-        llm = ChatOllama(model=model, temperature=0, client_kwargs={"timeout": 90.0})
-        structured = llm.with_structured_output(HealthCheck, method="json_schema")
-        result = structured.invoke(
-            "Return ok=true and message='structured output works'."
+        result = StructuredLLM(settings).invoke_structured(
+            system_prompt="Return a structured JSON response matching the supplied schema.",
+            user_prompt="Return ok=true and message='structured output works'.",
+            schema=HealthCheck,
         )
         print(f"[OK] {result.model_dump()}")
         return bool(result.ok)
@@ -108,6 +109,30 @@ def check_structured_output(model: str) -> bool:
         print(f"[FAIL] Structured-output call failed: {exc}")
         return False
 
+
+
+def check_openrouter_structured_output(settings) -> bool:
+    print("\nOpenRouter structured-output smoke test (synthetic data only)")
+    print("-" * 60)
+    try:
+        from pydantic import BaseModel, ConfigDict
+        from cv_ranker.llm import StructuredLLM
+
+        class HealthCheck(BaseModel):
+            model_config = ConfigDict(extra="forbid", strict=True)
+            ok: bool
+            message: str
+
+        result = StructuredLLM(settings).invoke_structured(
+            system_prompt="Return only a structured JSON response matching the supplied schema.",
+            user_prompt="Return ok=true and message='structured output works'.",
+            schema=HealthCheck,
+        )
+        print("[OK] OpenRouter returned schema-validated JSON")
+        return result.ok is True
+    except Exception as exc:
+        print(f"[FAIL] OpenRouter structured call failed: {type(exc).__name__}")
+        return False
 
 
 def write_live_ranker_fixtures(root):
@@ -118,21 +143,29 @@ def write_live_ranker_fixtures(root):
     """
     jd = root / "jd.txt"
     cv = root / "cv.txt"
-    jd.write_text("Required Skills:\nPython\n", encoding="utf-8")
+    jd.write_text(
+        "Required Skills:\n"
+        "Python\n"
+        "Spreadsheet reporting\n"
+        "Customer support\n", encoding="utf-8")
     cv.write_text(
         "Professional Summary:\n"
         "Software developer with practical experience building production Python applications.\n"
         "Technical Skills:\n"
         "Python\n"
+        "Spreadsheet reporting\n"
+        "Customer support\n"
         "Professional Experience:\n"
-        "Developed and maintained Python backend services for customer applications.\n",
+        "Developed and maintained Python backend services for customer applications.\n"
+        "Created spreadsheet reports for monthly business reviews.\n"
+        "Provided customer support and resolved service requests.\n",
         encoding="utf-8",
     )
     return jd, cv
 
 
-def check_ranker_contract(model: str) -> bool:
-    """Run a tiny real JD -> CV -> evidence_ids -> score contract test."""
+def check_ranker_contract(model: str, settings=None) -> bool:
+    """Exercise the actual retrieval-first live pipeline, not the legacy path."""
     print("\nLive CV Ranker pipeline contract")
     print("-" * 60)
     try:
@@ -145,25 +178,31 @@ def check_ranker_contract(model: str) -> bool:
             root = Path(tmp)
             jd, cv = write_live_ranker_fixtures(root)
             report = CVRanker(
-                Settings(model_name=model, max_requirements=5, assessment_batch_size=5),
-                use_llm=True,
+                Settings(model_name=model, max_requirements=5, assessment_batch_size=5, llm_provider=settings.llm_provider if settings is not None else "ollama"),
+                use_llm=True, unified=True,
             ).run(jd, [cv])
 
-        if len(report.requirements) != 1 or report.requirements[0].name.casefold() != "python":
-            raise RuntimeError(f"Expected one frozen Python requirement, got {report.requirements}")
+        required_names = {"python", "spreadsheet reporting", "customer support"}
+        if len(report.requirements) != 3 or {
+                item.name.casefold() for item in report.requirements} != required_names:
+            raise RuntimeError(f"Expected three separate cross-functional requirements, got {report.requirements}")
         candidate = report.candidates[0]
-        if candidate.primary_score != 100.0 or candidate.matched_primary != 1:
+        if candidate.primary_score != 100.0 or candidate.matched_primary != 3:
             raise RuntimeError(
-                f"Expected 1/1 matched and score=100, got {candidate.matched_primary}/{candidate.total_primary} "
+                f"Expected 3/3 matched and score=100, got {candidate.matched_primary}/{candidate.total_primary} "
                 f"score={candidate.primary_score}; candidate_errors={candidate.errors}; "
                 f"jd_mode={report.jd_validation_mode}; warnings={report.warnings}"
             )
-        assessment = candidate.assessments[0]
-        if not assessment.evidence_ids or not assessment.evidence:
+        if len(candidate.assessments) != 3 or any(
+                not item.evidence_ids or not item.evidence or item.unified_status != "Found"
+                for item in candidate.assessments):
             raise RuntimeError("Evidence segment IDs/source text were not produced by the live pipeline")
+        if any(item.assessment_state == "unverified" for item in candidate.assessments):
+            raise RuntimeError("The live model left a criterion technically unverified")
         print(
             f"[OK] JD mode={report.jd_validation_mode}; candidate mode={candidate.evaluation_mode}; "
-            f"score={candidate.primary_score:.2f}%; evidence_ids={assessment.evidence_ids}"
+            f"score={candidate.primary_score:.2f}%; "
+            f"criteria={len(candidate.assessments)}, all source-grounded"
         )
         return True
     except Exception as exc:
@@ -172,24 +211,51 @@ def check_ranker_contract(model: str) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="qwen2.5:3b")
-    parser.add_argument("--live", action="store_true", help="Also make one live structured LLM call")
+    parser.add_argument("--provider", choices=("openrouter", "ollama"), default=None,
+                        help="Test Cloud or Local independently of the .env default/UI selection")
+    parser.add_argument("--model", default=None, help="Optional command-line model override for diagnostic runs")
+    parser.add_argument("--live", action="store_true", help="Make a paid/provider live structured test and small synthetic JD/CV run")
     args = parser.parse_args()
 
     python_ok = check_python()
     imports_ok = check_imports()
     runtime_ok = check_runtime_build() if python_ok and imports_ok else False
-    ollama_ok = check_ollama(args.model) if runtime_ok else False
+    provider_ok = False
     live_ok = True
-    if args.live and python_ok and imports_ok and ollama_ok:
-        live_ok = check_structured_output(args.model)
+    settings = None
+    if runtime_ok:
+        try:
+            from cv_ranker.config import Settings
+            config_overrides = {}
+            if args.provider:
+                config_overrides["llm_provider"] = args.provider
+            if args.model:
+                config_overrides["model_name"] = args.model
+            settings = Settings(**config_overrides)
+            print(f"\nLLM provider: {settings.llm_provider} • model: {settings.model_name}")
+            if settings.llm_provider == "ollama":
+                provider_ok = check_ollama(settings.model_name)
+            else:
+                provider_ok = True  # Configuration checked; network is verified by --live
+                print("[OK] OpenRouter credentials configured (not yet network-verified)")
+                print("Ollama remains required separately for EmbeddingGemma retrieval")
+        except ValueError as exc:
+            print(f"[FAIL] LLM configuration: {exc}")
+    if args.live and python_ok and imports_ok and provider_ok and settings is not None:
+        if settings.llm_provider == "openrouter":
+            live_ok = check_openrouter_structured_output(settings)
+        else:
+            live_ok = check_structured_output(settings)
         if live_ok:
-            live_ok = check_ranker_contract(args.model)
+            live_ok = check_ranker_contract(settings.model_name, settings)
 
     print("\nOverall")
     print("-" * 60)
-    ready = python_ok and imports_ok and runtime_ok and ollama_ok and live_ok
-    print("READY" if ready else "NOT READY - see failures above")
+    ready = python_ok and imports_ok and runtime_ok and provider_ok and live_ok
+    if ready and not args.live:
+        print("LOCAL CHECKS PASS; LIVE RETRIEVAL + MODEL CONTRACT NOT TESTED (rerun --live)")
+    else:
+        print("LIVE CONTRACT PASS" if ready else "NOT READY - see failures above")
     return 0 if ready else 1
 
 

@@ -9,7 +9,7 @@ from cv_ranker.report import print_report, write_json
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Explainable YAKE + LangChain/Ollama CV ranker"
+        description="Explainable YAKE + configurable Ollama/OpenRouter CV ranker"
     )
     parser.add_argument("--jd", required=True, help="JD file: TXT, MD, PDF or DOCX")
     parser.add_argument(
@@ -19,7 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Resume files and/or directories containing TXT, MD, PDF or DOCX files",
     )
     parser.add_argument("--output", default="outputs/ranking.json", help="JSON output path")
-    parser.add_argument("--model", default="qwen2.5:3b", help="Ollama model name")
+    parser.add_argument("--model", default=None, help="Override configured Ollama/OpenRouter model")
     parser.add_argument("--top-keywords", type=int, default=40, help="YAKE candidate count")
     parser.add_argument(
         "--max-requirements",
@@ -49,7 +49,7 @@ def main() -> int:
 
     try:
         settings = Settings(
-            model_name=args.model,
+            model_name=args.model or Settings().model_name,
             yake_top_k=args.top_keywords,
             max_requirements=args.max_requirements,
             exact_initialism_guard=args.exact_initialism,

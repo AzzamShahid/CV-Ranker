@@ -1,0 +1,33 @@
+Omar Farooq
+Machine Learning Engineer, Forecasting
+Faisalabad, Pakistan
+omar.farooq@example.com
+Professional experience: 3 years 6 months
+
+PROFESSIONAL SUMMARY
+ML engineer with 3 years 6 months of professional experience in demand forecasting and operational decision support. Strong Python, deep-learning forecasting and model evaluation background, with limited LLM product work.
+
+TECHNICAL SKILLS
+- Python, pandas, scikit-learn, XGBoost, PyTorch forecasting, SQL
+- Machine learning, deep learning for sequence models, time-series backtesting
+- Forecast evaluation: WAPE, MAE, MAPE, rolling-origin validation, segment-level error analysis
+- Airflow, MLflow, Docker, FastAPI, cloud storage and internal APIs
+
+PROFESSIONAL EXPERIENCE
+
+Machine Learning Engineer | FleetSignal (fictional)
+Apr 2023 - Present
+- Developed Python time-series demand models using XGBoost, seasonal features and PyTorch LSTMs for depot operations.
+- Evaluated forecasts using rolling-origin backtests, naive seasonal baselines, WAPE and regional slice analysis.
+- Served daily prediction results via FastAPI to scheduling teams and monitored drift across operating regions.
+- Automated retraining and data-quality checks through Airflow, Docker, SQL and versioned experiment logs.
+- Implemented lightweight text normalization for support-tag enrichment but did not build production NLP/LLM products.
+
+SELECTED PROJECTS
+- Route-demand forecasting: PyTorch sequence modeling; historical splits and repeated rolling evaluation.
+- Fleet analytics service: REST endpoints used by a logistics application; limited AI-agent framework exposure.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Statistics and Data Science | Central Applied Institute (fictional), 2022
+- Currently exploring hosted LLM APIs and LangChain in personal learning; no professional LangChain project
+- Professional ML tenure: Apr 2023 - Oct 2026 (3 years 6 months)

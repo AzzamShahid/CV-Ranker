@@ -1,0 +1,35 @@
+Nadia Gill
+ML Platform / AI Engineer
+Rawalpindi, Pakistan
+nadia.gill@example.com
+Professional experience: 4 years 3 months
+
+PROFESSIONAL SUMMARY
+ML platform and applied AI engineer with 4 years 3 months of professional experience delivering training workflows, inference APIs, LLM-backed summarization products, and operational model monitoring.
+
+TECHNICAL SKILLS
+- Python, PyTorch, TensorFlow, scikit-learn, transformers, NLP
+- Hosted LLM API integration, function calls, JSON output validation, prompt experiments
+- Prefect and Airflow orchestration, custom tool routing, conditional review gates
+- Model monitoring, F1, AUROC, regression slices, retrieval evaluation, drift dashboards
+- Google Cloud Run, Vertex AI, Pub/Sub, Docker, FastAPI, Terraform
+
+PROFESSIONAL EXPERIENCE
+
+AI Platform Engineer | Quanta Commerce (fictional)
+Jul 2022 - Present
+- Built a Python-based model-serving stack handling daily inference runs for classification and AI summarization.
+- Integrated hosted LLM APIs into a summarization review application with prompt versioning and human checkpoints.
+- Created custom conditional orchestration for extraction, retrieval and validation using Prefect tasks and Python state transitions.
+- Trained a PyTorch intent model and TensorFlow feature extractor; kept training data lineage and independent test splits.
+- Monitored retrieval quality, latency, failures and model drift in Google Cloud-based deployments.
+- Maintained a production release process with staged rollouts, trace logging, and operator handover documents.
+
+SELECTED PROJECTS
+- LLM review pipeline: Hosted chat APIs + Prefect tasks; transferable chaining and branching, but no direct LangChain usage.
+- ML inference platform: Containerized PyTorch and TensorFlow services with CI gates.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Computer Engineering | Northern University (fictional), 2022
+- Has not used LangChain or LangGraph in production; no medical-imaging experience reported
+- Professional applied ML tenure: Jul 2022 - Oct 2026 (4 years 3 months)

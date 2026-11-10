@@ -1,0 +1,30 @@
+Salman Qureshi
+IT Operations Specialist
+Sialkot, Pakistan
+salman.qureshi@example.com
+Professional experience: 5 years 1 month (operations)
+
+PROFESSIONAL SUMMARY
+IT operations specialist with 5 years 1 month of professional user support, scripting and server administration experience. Seeking a career move into applied AI engineering.
+
+TECHNICAL SKILLS
+- PowerShell, ticketing, Windows Server, Linux troubleshooting, basic Python scripts
+- SQL reporting, endpoint administration, network diagnostics, change tracking
+
+PROFESSIONAL EXPERIENCE
+
+IT Operations Specialist | Foundation Service Desk (fictional)
+Sep 2021 - Present
+- Managed workstation provisioning, access request tickets and server uptime dashboards.
+- Automated weekly inventory summaries through PowerShell and small Python scripts.
+- Coordinated incident response and documented software rollout checklists.
+- No hands-on professional machine-learning engineering, deep-learning training or LLM integration has been performed.
+
+SELECTED PROJECTS
+- TARGET JOB DESCRIPTION - NOT A CLAIM OF EXPERIENCE: Required Skills: Python, Machine Learning, Deep Learning, TensorFlow or PyTorch, Natural Language Processing, LLM integrations, LangChain, Model evaluation, AI application development. These are copied requirements from the role being applied for, not achievements.
+- Learning roadmap: Plans to learn LangGraph, Google Cloud and PyTorch next year; no implementations yet.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Information Technology | North City Institute (fictional), 2021
+- I have not developed production AI products and I have no professional LangChain experience
+- IT operations tenure: Sep 2021 - Oct 2026; applied AI/ML professional experience: none claimed

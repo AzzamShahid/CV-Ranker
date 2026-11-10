@@ -1,0 +1,43 @@
+Applied AI / Machine Learning Engineer
+Location: Hybrid / Remote (example)
+Employment type: Full-time
+Benchmark reference date: October 2026
+
+JOB SUMMARY
+- We are looking for an Applied AI / Machine Learning Engineer who can build intelligent applications, machine-learning workflows, and LLM-powered products. The role combines hands-on model development, practical software integration, and evaluation of AI solutions.
+
+REQUIRED EXPERIENCE
+- Minimum 3 years of professional experience developing or delivering applied AI, machine-learning, deep-learning, or LLM-powered software. Academic coursework, personal learning, and university projects may demonstrate individual technical skills but do not independently satisfy the professional-duration requirement.
+
+REQUIRED SKILLS
+- Python
+- Machine Learning
+- Deep Learning
+- TensorFlow or PyTorch (at least one)
+- Natural Language Processing (NLP)
+- LLM integrations
+- LangChain
+- Model evaluation
+- AI application development
+
+PREFERRED SKILLS
+- LangGraph
+- Medical imaging
+- Time-series forecasting
+- Google Cloud
+- Node.js
+- Firebase
+- Experience building production-oriented AI products
+
+CORE RESPONSIBILITIES
+- Develop Python-based AI applications and reproducible ML/deep-learning training or inference workflows.
+- Integrate large language models into useful products, services, or internal tools.
+- Use NLP and retrieval or orchestration frameworks where relevant to the use case.
+- Evaluate solutions with appropriate validation data, baseline comparisons, error analysis, and documented metrics.
+- Collaborate with engineers to expose reliable APIs, monitor deployments, and improve model behavior.
+
+HOW TO INTERPRET REQUIREMENTS
+- The TensorFlow/PyTorch condition is OR: evidence of either framework can satisfy that named-tool requirement. All other listed required skills are evaluated individually.
+- Equivalent functionality demonstrated with different tools may be presented as potential transferable capability; it is not automatically proof of experience with a specifically named technology.
+- The 3-year requirement concerns the relevant professional work itself: unrelated tenure should not be counted as AI/ML engineering experience.
+- Preferred skills are additional strengths, not mandatory gates.

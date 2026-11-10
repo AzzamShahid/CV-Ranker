@@ -45,7 +45,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--resume", help="Single resume file to trace in detail")
     parser.add_argument("--demo", choices=["backend", "hr"])
     parser.add_argument("--candidate")
-    parser.add_argument("--model", default="qwen2.5:3b")
+    parser.add_argument("--model", default=None)
     parser.add_argument("--top-keywords", type=int, default=40)
     parser.add_argument("--max-requirements", type=int, default=30)
     parser.add_argument("--no-llm", action="store_true")
@@ -82,7 +82,7 @@ def main() -> int:
     try:
         jd_path, resume_path = resolve_inputs(args)
         settings = Settings(
-            model_name=args.model,
+            model_name=args.model or Settings().model_name,
             yake_top_k=args.top_keywords,
             max_requirements=args.max_requirements,
         )

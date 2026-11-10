@@ -40,6 +40,10 @@ class RequirementConstraint(StrictModel):
     operator: LogicalOperator = "single"
     options: list[str] = Field(default_factory=list)
     minimum_years: float | None = Field(default=None, ge=0, le=100)
+    # The JD can ask for performed work without imposing a duration gate.
+    # This discriminator is derived from the frozen JD's numeric threshold;
+    # its classification does not depend on the section heading.
+    experience_mode: Literal["tenure", "qualitative"] | None = None
     subject: str | None = None
     degree_level: Literal["associate", "diploma", "bachelor", "master", "doctorate"] | None = None
     field_of_study: str | None = None
@@ -51,6 +55,13 @@ class RequirementConstraint(StrictModel):
     def check_consistency(self):
         if self.minimum_years is not None and self.kind != "experience":
             raise ValueError("minimum_years may appear only on experience criteria")
+        if self.kind == "experience":
+            expected_mode = "tenure" if self.minimum_years is not None else "qualitative"
+            if self.experience_mode not in (None, expected_mode):
+                raise ValueError("experience_mode must agree with the explicit JD duration gate")
+            self.experience_mode = expected_mode
+        elif self.experience_mode is not None:
+            raise ValueError("experience_mode may appear only on experience criteria")
         if (self.degree_level is not None or self.field_of_study is not None) and self.kind != "education":
             raise ValueError("degree attributes may appear only on education criteria")
         if self.operator in {"any_of", "all_of"} and len(self.options) < 2:
@@ -70,6 +81,18 @@ class ValidatedRequirement(StrictModel):
     # Phase 7A metadata: descriptive only; never used to change an existing score.
     # Import at construction time to avoid circular imports from the typing service.
     constraint: "RequirementConstraint" = Field(default_factory=RequirementConstraint)
+
+
+class JDReviewDraft(StrictModel):
+    """Source-bound extraction awaiting a human's explicit scoring approval."""
+    jd_sha256: str
+    yake_candidates: list[YakeCandidate]
+    requirements: list[ValidatedRequirement]
+    jd_validation_mode: str
+    warnings: list[str] = Field(default_factory=list)
+    diagnostics: list[dict] = Field(default_factory=list)
+    approved: bool = False
+    edited: bool = False
 
 
 class LLMTypeProposal(StrictModel):
@@ -115,6 +138,17 @@ class RequirementAssessment(StrictModel):
     matched_term: str | None = None
     evidence_ids: list[str] = Field(default_factory=list)
     evidence_segments: list[EvidenceCitation] = Field(default_factory=list)
+    # Optional explanation from the assessor. Original source citations remain
+    # authoritative; the explanation does not itself establish a match.
+    reason: str = ""
+    # V4.8: single validated final decision. Transferable never earns direct credit.
+    unified_status: Literal["Found", "Transferable", "Not Found", "Unverified"] | None = None
+    # Technical LLM/schema/citation failures must never be mistaken for an
+    # actual CV nonmatch. Old reports default to verified for compatibility.
+    assessment_state: Literal["verified", "unverified"] = "verified"
+    review_recommended: bool = False
+    # Provenance metadata for technical audit, not candidate-facing reasoning.
+    review_checkpoint_origin: Literal["model", "retrieval"] | None = None
     reviewed_alias_by: str | None = None
     # Phase 7B: source-backed numeric experience diagnostic, when applicable.
     experience_check: "ExperienceCheck | None" = None
@@ -132,6 +166,7 @@ class LLMAssessmentItem(StrictModel):
     status: AssessmentStatus
     evidence_ids: list[str] = Field(default_factory=list)
     matched_term: str | None = None
+    reason: str = ""
 
 
 class LLMCandidateAssessmentResponse(StrictModel):
@@ -167,9 +202,14 @@ class CandidateResult(StrictModel):
 class RankingReport(StrictModel):
     build_id: str = BUILD_ID
     job_description_source: str
+    # Exact submitted JD text. Required for a self-contained downloadable audit.
+    # Older reports without this field remain readable, but cannot reconstruct it.
+    original_jd_text: str | None = None
     jd_validation_mode: str
     yake_candidates: list[YakeCandidate]
     requirements: list[ValidatedRequirement]
+    jd_review_approved: bool = False
+    jd_review_edited: bool = False
     candidates: list[CandidateResult]
     warnings: list[str] = Field(default_factory=list)
     # JD-only trace: raw model proposals, grounding decisions, explicit-source

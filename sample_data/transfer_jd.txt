@@ -1,0 +1,14 @@
+Backend Platform Developer — sample transferability exercise
+
+The team builds internal HTTP services and uses the specific technologies below.
+
+Required skills:
+- FastAPI for Python HTTP API endpoints.
+- PostgreSQL for relational data persistence.
+- Redis for application caching.
+- Git for version control.
+
+Preferred skills:
+- Docker for containerizing applications.
+
+The interviewer may consider transferable functionality as a separate discussion, but experience with a different technology must not be treated as evidence of hands-on use of the named required technology.

@@ -1,0 +1,30 @@
+Zain Aslam
+Junior Software Developer
+Multan, Pakistan
+zain.aslam@example.com
+Professional experience: 1 year 9 months (general software)
+
+PROFESSIONAL SUMMARY
+Junior application developer with 1 year 9 months of professional general web development. Interested in transitioning to applied AI and currently taking introductory ML, PyTorch and LangChain courses.
+
+TECHNICAL SKILLS
+- JavaScript, HTML/CSS, Node.js basics, Firebase Auth
+- Python for scripting and university assignments
+- Currently learning machine learning, deep learning, LangChain and NLP
+
+PROFESSIONAL EXPERIENCE
+
+Junior Web Developer | Quartz Interactive (fictional)
+Jan 2025 - Present
+- Built HTML and JavaScript front ends and maintained Node.js API integrations for web features.
+- Configured Firebase authentication in a staging website and wrote Python scripts for file conversion.
+- Did not implement professional NLP, deep-learning models, LangChain agents or production AI applications.
+
+SELECTED PROJECTS
+- Coursework sentiment analysis: Following PyTorch tutorial notebooks; model not deployed or independently evaluated.
+- Student chatbot: Planned LLM integration, not yet implemented.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Software Engineering (in progress) | South Campus (fictional), expected 2027
+- Only professional software tenure 1 year 9 months; no 3-year AI/ML engineering history
+- Currently learning Google Cloud, LangGraph and medical imaging concepts

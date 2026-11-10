@@ -5,3 +5,5 @@ __pycache__/
 outputs/
 .env
 .DS_Store
+# UI local semantic cache: embedding vectors derived from candidate CVs
+.cv_ranker_cache/

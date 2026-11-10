@@ -1,0 +1,33 @@
+Taimoor Iqbal
+Applied AI Research Associate
+Islamabad, Pakistan
+taimoor.iqbal@example.com
+Professional experience: 3 years 7 months
+
+PROFESSIONAL SUMMARY
+Applied AI research associate with 3 years 7 months of professional NLP and deep-learning research, dataset annotation workflows and model benchmarking. Research results are reproducible but production software deployment is limited.
+
+TECHNICAL SKILLS
+- Python, PyTorch, transformers, Hugging Face, NLP preprocessing
+- Machine learning, deep learning, text classification, summarization evaluation
+- Retrieval evaluation, recall@k, macro F1, calibration, annotator agreement
+- Custom Python prompt chaining and hosted LLM APIs for experimental prototypes
+
+PROFESSIONAL EXPERIENCE
+
+Applied AI Research Associate | LanguageLab Research (fictional)
+Mar 2023 - Present
+- Benchmarked transformer summarization and classification models using Python/PyTorch with held-out test sets.
+- Built an experimental RAG pipeline from local document embeddings, retrieval, and hosted LLM API calls using plain Python.
+- Measured supported-answer rates using annotated references and measured class imbalance across multilingual datasets.
+- Managed experiment tracking and model reproducibility reports across 12 research iterations.
+- Published research artifacts for collaborators; production service operation or deployment was not part of the role.
+
+SELECTED PROJECTS
+- RAG prototype: Custom Python retrieval and LLM composition demonstrates transferable chain design, not explicit LangChain use.
+- Text labelling study: PyTorch NLP model comparison; experiment and error-analysis evidence.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- MSc Artificial Intelligence | West Research Academy (fictional), 2022
+- No direct LangChain/Google Cloud/Node.js/Firebase experience shown
+- Professional research tenure: Mar 2023 - Oct 2026 (3 years 7 months)

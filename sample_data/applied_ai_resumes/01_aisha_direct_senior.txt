@@ -1,0 +1,47 @@
+Aisha Khan
+Senior Applied AI Engineer
+Lahore, Pakistan
+aisha.khan@example.com
+Professional experience: 5 years 9 months
+
+PROFESSIONAL SUMMARY
+Applied AI engineer with 5 years 9 months of professional experience shipping Python, NLP, deep-learning, and LLM applications. Owns model evaluation from dataset design to production monitoring. Regularly translates research prototypes into observable APIs and products for internal users.
+
+TECHNICAL SKILLS
+- Python; scikit-learn; PyTorch; TensorFlow; XGBoost; pandas; NumPy
+- Transformers; natural-language processing; entity extraction; text classification; embeddings; RAG
+- OpenRouter/OpenAI model APIs; LangChain; LangGraph; tool calling; structured-output validation
+- Model evaluation: macro F1, AUROC, recall@k, grounded-answer audits, regression suites
+- FastAPI; Docker; Kubernetes; PostgreSQL; Redis; CI/CD; model serving
+- Google Cloud Run; Vertex AI; BigQuery; monitoring; Node.js; Firebase
+
+PROFESSIONAL EXPERIENCE
+
+Lead Applied AI Engineer | Meridian Analytics (fictional)
+Jan 2024 - Present
+- Led a six-person team delivering a multilingual support copilot integrated with hosted LLM APIs, LangChain retrieval chains, and LangGraph approval workflows.
+- Built Python/FastAPI orchestration services for document ingestion, semantic search, structured responses, and escalation to human reviewers.
+- Evaluated answer grounding using 600 manually reviewed questions; lifted supported-answer rate from 78% to 92% over four controlled releases.
+- Developed PyTorch text classifiers for priority routing; improved macro F1 from 0.81 to 0.89 after calibration and label audits.
+- Operated production AI endpoints on Google Cloud Run with token-cost dashboards, retry policies, daily smoke tests, and alerting.
+- Implemented privacy filters, source-citation audits, and negative tests to reduce unsupported replies in the customer workflow.
+- Mentored four engineers in reproducible experiments, model cards, error analysis, and automated model quality gates.
+
+Machine Learning Engineer | Northstar Digital (fictional)
+Jan 2021 - Dec 2023
+- Developed TensorFlow image and text models, including training pipelines, augmentation policies, and evaluation notebooks for three customer applications.
+- Integrated NLP intent detection, entity extraction, and semantic retrieval into Python services consumed by Node.js dashboards.
+- Created time-series demand forecasts with seasonal cross-validation and documented MAE/MAPE against naive baselines.
+- Maintained ML feature pipelines in BigQuery and deployed repeatable containers through CI/CD for staging and production.
+- Designed a lightweight medical-image triage research pilot, explicitly evaluated on de-identified public data rather than clinical use.
+
+SELECTED PROJECTS
+- Production knowledge assistant: LangChain + LangGraph + hosted LLMs; retrieved and cited policy passages; 38% fewer manual document lookups during a controlled six-week pilot.
+- Multilingual ticket routing: PyTorch + transformers; 14 classes, error review, robust macro-F1 reporting, and monitored daily batches.
+- Visual inspection research prototype: TensorFlow transfer learning; augmentation and patient-independent split for medical imagery; research-only experiment.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BSc Computer Science | National Institute of Computing (fictional), 2020
+- Internal model-quality reviewer; 2024-2026: maintained evaluation runbooks, prompt regression labels, and change-control checklists
+- Practical deployment: Cloud Run, Vertex AI, Docker, FastAPI, PostgreSQL, Firebase authentication
+- Professional interests: interpretable AI, safe LLM applications, and operational quality engineering

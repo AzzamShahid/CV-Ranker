@@ -1,0 +1,49 @@
+Sara Imran
+LLM Systems Engineer
+Karachi, Pakistan
+sara.imran@example.com
+Professional experience: 4 years
+
+PROFESSIONAL SUMMARY
+LLM systems engineer with four years of professional experience designing search-grounded assistants, document-intelligence pipelines and measurable NLP services. Strong evidence of model integration, orchestration and evaluation, primarily with Haystack, DSPy and custom Python components rather than LangChain.
+
+TECHNICAL SKILLS
+- Python, FastAPI, PyTorch, scikit-learn, Hugging Face Transformers
+- NLP, question answering, NER, document classification, dense retrieval and hybrid search
+- LLM integrations using hosted model APIs; Haystack pipelines; DSPy prompt/program optimization
+- Custom graph/state orchestration, manual approval gates, retries, validation, tools and routing
+- Evaluation: recall@k, exact match, grounded-answer review, hallucination annotation, latency
+- GCP Cloud Run, BigQuery, Docker, Postgres; time-series features and anomaly detection
+
+PROFESSIONAL EXPERIENCE
+
+Senior LLM Engineer | Atlas Searchworks (fictional)
+Oct 2024 - Present
+- Delivered a customer-facing knowledge assistant using Haystack document retrieval, hosted LLM chat APIs and a custom Python decision pipeline.
+- Implemented tool routing, conditional branches, memory/session state, explicit escalation and source-linked answer generation without LangChain.
+- Designed an independent 450-question grounded-answer audit: source coverage improved from 71% to 90% while answer abstention remained conservative.
+- Built Python ingestion pipelines for PDFs and DOCX, including deduplication, metadata joins, relevance testing, and privacy-aware retention.
+- Exposed inference endpoints with FastAPI, containerized releases, trace IDs, retries and instrumented operational dashboards.
+- Ran incident reviews for incorrect model claims; added structured output validation and cross-document authorization tests.
+- Designed source-aware prompt templates and evaluation cases that covered missing documents, low-quality retrieval and contradictory passages.
+- Added a model-provider fallback path with strict output schemas and safe error-to-review behavior for malformed replies.
+- Analyzed retrieval ranking and annotation disagreements with domain reviewers, then prepared traceable fixes across releases.
+- Created API integration tests that blocked answers citing documents outside the current customer account.
+
+NLP / ML Engineer | Invenio Systems (fictional)
+Oct 2022 - Sep 2024
+- Trained PyTorch transformer classifiers for automated document tagging using annotated multilingual examples and stratified test data.
+- Created NER and information-extraction workflows supporting service operations, with explicit error analysis by document type.
+- Built batch demand-anomaly screening using Python, seasonal features, out-of-time validation and human feedback loops.
+- Integrated internal search APIs and experiment tracking into web applications used by account teams.
+
+SELECTED PROJECTS
+- Knowledge-grounded response platform: Haystack + hosted LLM API; same retrieval, tool routing and evidence assembly functions often achieved with LangChain.
+- Conditional workflow engine: Python state graph with branching, tool retries and reviewer approval; transferable to graph-based orchestration concepts.
+- Multilingual invoice labeling: PyTorch transformer with traceable annotation runs and 88% macro F1 on independent evaluation split.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Computer Science | Harbor Technical College (fictional), 2022
+- Has not used LangChain or LangGraph professionally; has built comparable retrieval and workflow functionality using other tools
+- Quality responsibilities: adjudication rubrics, small-dataset error review, response abstention, observability
+- Stakeholder communication: acceptance criteria, evidence reviews, documentation for support and product teams

@@ -1,0 +1,30 @@
+Hina Zaidi
+Senior Data Analyst
+Karachi, Pakistan
+hina.zaidi@example.com
+Professional experience: 5 years 8 months (analytics)
+
+PROFESSIONAL SUMMARY
+Senior data analyst with 5 years 8 months of professional business reporting and dashboard development. Experience is focused on BI/SQL and descriptive analytics, not building ML or LLM-powered products.
+
+TECHNICAL SKILLS
+- SQL, Python pandas for data cleaning, Excel, Power BI, Tableau
+- ETL checks, financial reporting, stakeholder dashboards, business metrics
+- A/B-test analysis and forecasting through spreadsheet trend formulas
+
+PROFESSIONAL EXPERIENCE
+
+Senior Data Analyst | Commerce Metrics (fictional)
+Feb 2021 - Present
+- Maintained monthly BI reports and automated Python data-cleaning scripts for financial operations.
+- Built SQL views and Power BI reports measuring sales, returns and customer activity.
+- Documented data definitions and resolved reporting discrepancies with finance managers.
+- Coordinated analyst training and scheduled extraction jobs; no deployed machine-learning models.
+
+SELECTED PROJECTS
+- Reporting automation: Python pandas routines and dashboard reconciliation; does not establish production AI applications.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BBA Business Analytics | National School of Management (fictional), 2020
+- Currently reading introductory PyTorch lessons; no hands-on deep-learning project reported
+- Total professional analytics tenure 5 years 8 months; applied AI/ML engineering tenure not established

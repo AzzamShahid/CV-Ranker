@@ -1,0 +1,43 @@
+Applied AI / Machine Learning Engineer
+Location: Hybrid / Remote (fictional example)
+Employment type: Full-time
+Benchmark reference date: October 2026
+
+JOB SUMMARY
+- Build reliable AI applications, model evaluation workflows and LLM-enabled products.
+
+REQUIRED EXPERIENCE
+- Minimum 3 years of relevant professional experience developing or delivering AI, machine-learning, deep-learning, or LLM-powered software.
+
+REQUIRED EDUCATION
+- Completed Bachelor's degree in Computer Science.
+
+REQUIRED SKILLS
+- Python
+- Machine Learning
+- Deep Learning
+- TensorFlow or PyTorch (at least one)
+- Natural Language Processing (NLP)
+- LLM integrations
+- LangChain
+- Model evaluation
+- AI application development
+
+PREFERRED SKILLS
+- LangGraph
+- Medical imaging
+- Time-series forecasting
+- Google Cloud
+- Node.js
+- Firebase
+- Experience building production-oriented AI products
+
+CORE RESPONSIBILITIES
+- Build reproducible machine-learning and deep-learning workflows.
+- Integrate LLMs with applications and structured evaluation.
+- Collaborate with engineers to build maintainable, deployed solutions.
+
+INTERPRETATION
+- Only paid/relevant professional work establishes the three-year requirement; student projects demonstrate skills separately.
+- The degree criterion is stated explicitly for this fictional employer. Alternative related degrees may be discussed as transferable for human review, without earning an exact Found point.
+- Preferred and transferable criteria never add extra weight to the required percentage.

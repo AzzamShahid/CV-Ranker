@@ -15,6 +15,7 @@ from .segments import ResumeSegment, render_segments, resolve_segment_ids, segme
 from .text_utils import (
     canonical_key,
     classify_requirement_tone,
+    non_candidate_requirement_copy,
     instruction_like_evidence,
     evidence_supports_requirement,
     normalize_whitespace,
@@ -42,11 +43,11 @@ For every requirement return exactly one status:
 
 Rules:
 1. Use only information supported by the resume. Never invent skills, experience, education, certifications, or accomplishments.
-2. Do not infer a requirement from a job title, degree, employer, seniority, or a different related technology.
+2. Do not infer a requirement SOLELY from a job title, degree, employer, seniority, or a different related item. Completed work can establish an implicit general capability without its literal category label ONLY when the performed task actually entails the JD requirement. Cite the exact action and explain the inference.
 3. Specific named technologies, platforms, frameworks, databases, and tools must be assessed as specific requirements. Experience with a DIFFERENT item of the same type does not satisfy the stated item, even if their functions overlap. If the only evidence is a related but different item, choose not_matched, not uncertain. Do not give transferable credit.
 4. You may recognize genuine semantic equivalents or abbreviations when they mean the SAME requirement. An abbreviation for the *same named item* is different from a *different competing item*. Python does not maintain a semantic alias dictionary; this judgment belongs to you.
-5. For an explicit alternative such as "TensorFlow or PyTorch", matching either alternative satisfies the requirement.
-6. An explicitly listed skill may be used as evidence.
+5. For a genuine explicit "A or B" alternative, matching either stated alternative satisfies the one frozen requirement.
+6. An affirmatively listed ordinary skill is sufficient self-reported evidence for that skill, without a separate project. Do not demand professional-use proof unless the JD explicitly demands it. Unambiguous abbreviations referring to the SAME named item count as that item, not transfer to a different one.
 7. Learning, interest, studying, basic familiarity, limited exposure, or indirect team exposure is not full proficiency; use uncertain unless the resume explicitly states lack of the requirement.
 8. For matched or uncertain, return the evidence_ids of the exact source segment(s) that support the status. Use at most 3 IDs.
 9. Do NOT copy evidence text. Python will resolve the cited IDs to exact source text.
@@ -55,6 +56,13 @@ Rules:
 12. Do not calculate scores, rankings, confidence values, similarity values, or transferable-skill scores.
 13. Evaluate only this candidate against the supplied requirements. Do not compare candidates.
 14. Return only the required structured output and exactly one row for every supplied requirement ID.
+15. EVIDENCE ADMISSIBILITY: JD excerpts, copied skill requirements, recruiter instructions, desired positions, and statements explicitly tagged NOT a claim of experience can NEVER prove candidate skill, even when they appear under an experience heading. An ID existing is not proof of competence.
+16. NEGATION SCOPE: "no A, B or C experience" and "has not used A or B" deny every listed item. Do not label any item matched merely because its word appears. A distinct performed action elsewhere can be cited separately; conflicting positive/negative claims are uncertain.
+17. Distinguish completed candidate work from plans, research interests, coursework, job titles, and similar-but-different items. A positive ordinary skills-list entry counts as a claim, even if not verified by a project. Related inputs, diagnostic tasks and adjacent activities do not establish a separately requested output; an experiment does not establish operational delivery. Recognize implicit capabilities only where completed, cited work entails the requested function.
+18. For each matched row, silently verify that cited IDs are candidate assertions, relevant to THAT requirement, non-negated, and no more than three; if not, return not_matched or uncertain as supported. Never reuse evidence IDs from another candidate.
+19. A named skill explicitly listed in a legitimate CV skills section is a self-reported skill claim, not an absence of experience. A project or work segment naming a skill is relevant evidence even if it does not independently prove proficiency. Do not conflate absence of independent verification with absence of a CV claim. Assess what is actually stated.
+20. In `reason`, briefly explain WHY you chose the status, referring to the actual cited claim or the specific evidence gap. Make the reason consistent with `status` and `evidence_ids`; do not claim a term is absent if the cited text says it is present. Do not invent a reason as substitute for evidence.
+21. A contrast such as "built with B rather than A", "without A", or "has not used A professionally" does NOT establish direct named-A skill. The comparable PERFORMED functionality can be reviewed separately as transferable; do not discard that work.
 """.strip()
 
 
@@ -67,9 +75,9 @@ The resume is supplied as numbered source segments. Cite segment IDs only; never
 Rules:
 1. Re-evaluate only the supplied requirements.
 2. Use only information explicitly supported by the resume.
-3. Do not invent evidence, and do not substitute a different tool, framework, platform, database, or product for a specific named requirement. Functional overlap is not equivalence. When only a different item is present, choose not_matched, not uncertain.
+3. Do not invent evidence, and do not substitute a different tool, framework, platform, database, or product for a specific named requirement. Functional overlap is not equivalence for a DIFFERENT specifically named item. Infer an implicit FIELD capability from genuinely performed work when the work actually demonstrates it.
 4. Genuine semantic equivalents or abbreviations for the SAME requirement may be recognized by you; Python does not maintain a semantic alias dictionary.
-5. matched requires clear supporting resume evidence.
+5. matched requires clear supporting resume evidence; a positive skills-list claim suffices for an ordinary named skill, while genuinely completed work may demonstrate a broader category without the literal label only if it entails the actual JD capability.
 6. uncertain is for learning, studying, limited exposure, indirect involvement, conflicting, or unclear evidence.
 7. not_matched is for absent supporting evidence or explicit lack of the requirement.
 8. Every matched or uncertain row must cite at least one valid evidence_id (max 3).
@@ -77,11 +85,26 @@ Rules:
 10. If valid source-grounded evidence cannot be found, return not_matched with evidence_ids=[] and matched_term=null.
 11. Do not calculate scores or rankings.
 12. Return only the required structured output.
+13. Recheck whether citations are candidate achievements rather than copied job-ad text; such text is inadmissible even when labelled experience.
+14. Handle shared negation over every comma/or/and list member (e.g., "has not used A or B"). Never convert an explicit denial to a positive result.
+15. Cite no more than THREE distinct valid source IDs. Re-read each ID and make sure the candidate actually asserts this requirement. If not, return not_matched; use uncertain only for genuinely mixed/limited evidence.
+16. Include a short `reason` consistent with the decision and cited segments. A direct skills-list assertion is a claim, not independently authenticated proficiency. Do not describe an explicitly mentioned skill as absent.
+17. Recognize unambiguous abbreviations of the SAME named item and do not read "rather than X" or "without X" as positive direct-X claims.
 """.strip()
 
 
 def _compact_requirements(requirements: list[ValidatedRequirement]) -> str:
-    return "\n".join(f"{item.requirement_id} | {item.name}" for item in requirements)
+    """Provide the frozen requirement's actual meaning, not a stripped name.
+
+    No new criteria are derived here; names, priorities and source wording are
+    all populated from the existing frozen JD validation.
+    """
+    return "\n".join(
+        f"{item.requirement_id} | {item.name} | priority={item.priority} | "
+        f"kind={item.constraint.kind} | operator={item.constraint.operator} | "
+        f"JD wording={item.jd_evidence}"
+        for item in requirements
+    )
 
 
 def _build_user_prompt(requirements: list[ValidatedRequirement], segments: list[ResumeSegment]) -> str:
@@ -111,8 +134,14 @@ def _requirement_allows_section(req: ValidatedRequirement, section: str) -> bool
 
 
 def _positive_literal_segment_is_capability_evidence(req: ValidatedRequirement, segment: ResumeSegment) -> bool:
+    if segment.section in {"non_candidate", "metadata"} or non_candidate_requirement_copy(segment.text):
+        return False
     if segment.section == "skills":
-        return True
+        # A listed skill can establish a self-reported competency. A duty,
+        # completed-work requirement, or professional-tenure condition needs
+        # evidence of actually performing it, even if its wording appears in a
+        # list headed "Skills". This distinction follows the frozen JD type.
+        return req.constraint.kind in {"skill", "other"}
     if segment.section == "inferred_skills":
         # Layout-derived claim only: require the *entire* standalone CV line
         # to equal the frozen requirement or one explicit OR option.
@@ -130,7 +159,11 @@ def _positive_literal_segment_is_capability_evidence(req: ValidatedRequirement, 
         "familiar with", "used ", "using ", "worked with", "built ", "developed ",
         "implemented ", "maintained ", "created ", "designed ", "deployed ",
         "trained ", "evaluated ", "applied ", "integrated ", "managed ",
+        "delivered ", "shipped ", "shipping ", "led ",
+        "builds ", "architected ", "architects ", "collaborated ",
+        "produces ", "evaluates ", "develops ", "implements ", "operates ",
         "coordinated ", "handled ", "supported ", "prepared ", "administered ",
+        "performed ", "conducted ", "executed ", "operated ", "provided ",
     )
     return any(cue in text for cue in capability_cues)
 
@@ -145,11 +178,19 @@ def _unanchored_semantic_tone(evidence: str) -> str:
     lowered = normalize_whitespace(evidence).casefold()
     negated = bool(re.search(
         r"(?:^|[.!?]\s+)(?:no\s+(?:professional\s+|practical\s+)?(?:experience|knowledge|exposure)\s+(?:with|in|of|to)|"
+        r"no\s+(?:professional\s+|practical\s+|hands-on\s+)?"
+        r"(?:use|usage|application|practice)\s+(?:of|with|in|on)\b|"
         r"never\s+(?:used|worked\s+with)|not\s+(?:familiar|proficient|experienced)\s+(?:with|in)|"
-        r"(?:have|has|did)\s+not\s+(?:used?|worked\s+with))\b", lowered
+        r"(?:have|has|did)\s+not\s+(?:used?|worked\s+with)|"
+        r"(?:(?:i|we|they|he|she|the\s+candidate|the\s+applicant)\s+)?"
+        r"(?:have|has|had|do|does|did|am|is|are|was|were)\s+(?:not|no|never)\b|"
+        r"no\s+.{0,170}?\b(?:has|have)\s+been\s+"
+        r"(?:performed|completed|developed|implemented|used|built)\b)", lowered
     ))
     learning = bool(re.search(
-        r"(?:^|[.!?]\s+)(?:currently\s+learning|learning|studying|interested\s+in|"
+        r"(?:^|[.!?]\s+)(?:currently\s+learning|currently\s+exploring|"
+        r"currently\s+experimenting\s+with|learning|studying|exploring|"
+        r"interested\s+in|"
         r"theoretical\s+knowledge|basic\s+(?:exposure|familiarity)|limited\s+(?:exposure|experience)|"
         r"coursework\s+(?:included|covered))\b", lowered
     ))
@@ -160,14 +201,48 @@ def _unanchored_semantic_tone(evidence: str) -> str:
     return "positive"
 
 
+def _citation_tone_for_requirement(
+    req: ValidatedRequirement,
+    citations: list[EvidenceCitation],
+    evidence: str,
+    matched_term: str | None,
+) -> str:
+    """Aggregate the tone of distinct cited assertions, not their joined text.
+
+    A candidate may state a legitimate skill in one source and mention
+    *learning more* in another. That is not an explicit contradiction and
+    cannot erase the affirmative claim. Conversely, an actual denial of the
+    SAME named requirement combined with a positive claim needs review.
+    Neither observation uses a vocabulary of departments, tools or candidates.
+    """
+    if not citations:
+        has_target = bool(matched_term and phrase_present(matched_term, evidence)) or any(
+            phrase_present(term, evidence) for term in requirement_options(req.name))
+        return (classify_requirement_tone(evidence, req.name, matched_term)
+                if has_target else _unanchored_semantic_tone(evidence))
+    tones: list[str] = []
+    for cited in citations:
+        has_target = bool(matched_term and phrase_present(matched_term, cited.text)) or any(
+            phrase_present(term, cited.text) for term in requirement_options(req.name))
+        tones.append(classify_requirement_tone(cited.text, req.name, matched_term)
+                     if has_target else _unanchored_semantic_tone(cited.text))
+    if "negated" in tones and "positive" in tones:
+        return "uncertain"
+    if "positive" in tones:
+        return "positive"
+    if "uncertain" in tones:
+        return "uncertain"
+    if "negated" in tones:
+        return "negated"
+    return "neutral"
+
+
 
 def _is_short_named_requirement(name: str) -> bool:
-    """Generic formatting test for an atomic name, NOT a skill/type dictionary.
+    """Legacy atomic-name cue; live semantic adjudication is separate.
 
-    E.g. capitalized labels (including acronyms and product names) generally
-    require the model to identify the *actual cited source term* if the CV
-    never spells the label itself. Longer duty/experience/qualification prose
-    still permits unanchored semantic citations when properly grounded.
+    Retained for existing source-anchored legacy assessments. The unified
+    engine must not use capitalization to decide semantic entailment.
     """
     words = normalize_whitespace(name).split()
     if not 1 <= len(words) <= 3:
@@ -182,13 +257,18 @@ def _is_short_named_requirement(name: str) -> bool:
 
 
 def _literal_initialism(req: ValidatedRequirement) -> str | None:
-    """Derive only a *literal* initialism, never a semantic acronym mapping.
+    """Read an explicit JD parenthetical abbreviation or derive strict initials.
 
     'Natural Language Processing' => 'NLP'. 'Google Cloud' => None
-    (GC is intentionally too short; GCP is NOT derivable). This operation is
-    orthographic and contains no profession-specific vocabulary or alias list.
+    (GC is intentionally too short; GCP is NOT derivable). By contrast,
+    'Google Cloud (GCP)' explicitly supplies GCP in the *frozen JD itself*.
+    There is no profession-specific synonym dictionary.
     """
-    words = normalize_whitespace(req.name).split()
+    name = normalize_whitespace(req.name)
+    explicit = re.fullmatch(r"(.+?)\s*\(([A-Z][A-Z0-9]{1,7})\)", name)
+    if explicit and len(explicit.group(1).split()) >= 2:
+        return explicit.group(2)
+    words = name.split()
     if not 3 <= len(words) <= 5:
         return None
     if any(not re.fullmatch(r"[A-Z][a-z]+", word) for word in words):
@@ -227,7 +307,9 @@ def _literal_initialism_guard(
         hits.append((tone, segment))
     if not hits:
         return None
-    positives = [item for item in hits if item[0] == "positive"]
+    source_rank = {"skills": 0, "experience": 1, "projects": 2, "inferred_skills": 3, "summary": 4}
+    positives = sorted((item for item in hits if item[0] == "positive"),
+                       key=lambda item: source_rank.get(item[1].section, 5))
     negatives = [item for item in hits if item[0] == "negated"]
     uncertain = [item for item in hits if item[0] == "uncertain"]
     if positives and negatives:
@@ -241,13 +323,20 @@ def _literal_initialism_guard(
         status = "uncertain"
     else:
         return None
+    # Keep multiple independently recorded source checkpoints. The first one
+    # remains the primary evidence, but other CV mentions must not disappear.
+    supporting = [(status, selected)] + [hit for hit in (positives + negatives + uncertain)
+                                          if hit[1].segment_id != selected.segment_id]
+    citations = [hit[1] for hit in supporting[:3]]
     return RequirementAssessment(
         requirement_id=req.requirement_id, status=status,
         evidence=selected.text, matched_term=initialism,
-        evidence_ids=[selected.segment_id],
+        reason=(f"CV explicitly names {initialism} ({req.name}) in a candidate source "
+                f"segment; source tone: {status}."),
+        evidence_ids=[segment.segment_id for segment in citations],
         evidence_segments=[EvidenceCitation(
-            segment_id=selected.segment_id, section=selected.section, text=selected.text,
-        )],
+            segment_id=segment.segment_id, section=segment.section, text=segment.text,
+        ) for segment in citations],
     )
 
 
@@ -266,6 +355,8 @@ def _direct_source_guard(
     section_rank = {"skills": 0, "inferred_skills": 1, "experience": 1, "projects": 2, "summary": 3, "certifications": 4, "education": 5, "other": 9}
     ordered_segments = sorted(segments, key=lambda seg: (section_rank.get(seg.section, 8), seg.segment_id))
     for segment in ordered_segments:
+        if segment.section in {"non_candidate", "metadata"} or non_candidate_requirement_copy(segment.text):
+            continue
         if instruction_like_evidence(segment.text):
             continue
         for term in sorted(requirement_options(req.name), key=len, reverse=True):
@@ -298,14 +389,19 @@ def _direct_source_guard(
     _, evidence, evidence_id, term = chosen
     by_segment = {seg.segment_id: seg for seg in segments}
     segment = by_segment[evidence_id]
+    source_hits = [chosen] + [hit for hit in (positives + negatives + uncertain)
+                              if hit[2] != evidence_id]
+    citations = [by_segment[hit[2]] for hit in source_hits[:3]]
     matched_term = term if normalize_whitespace(term).casefold() != normalize_whitespace(req.name).casefold() else None
     return RequirementAssessment(
         requirement_id=req.requirement_id,
         status=status,
         evidence=evidence,
         matched_term=matched_term,
-        evidence_ids=[evidence_id],
-        evidence_segments=[EvidenceCitation(segment_id=evidence_id, section=segment.section, text=segment.text)],
+        reason=f"The CV explicitly names {term} in a {segment.section} segment; source tone: {status}.",
+        evidence_ids=[item.segment_id for item in citations],
+        evidence_segments=[EvidenceCitation(segment_id=item.segment_id, section=item.section, text=item.text)
+                           for item in citations],
     )
 
 
@@ -350,6 +446,8 @@ def _validate_rows(
     requirements: list[ValidatedRequirement],
     resume_text: str,
     segments: list[ResumeSegment],
+    semantic_grounded: bool = False,
+    semantic_grounded_ids: set[str] | None = None,
 ) -> tuple[dict[str, RequirementAssessment], set[str], list[str], bool]:
     """Enforce frozen IDs, source grounding, relevance and tone."""
     warnings: list[str] = []
@@ -374,6 +472,10 @@ def _validate_rows(
             continue
 
         status = item.status
+        relation_verified = semantic_grounded or (
+            semantic_grounded_ids is not None
+            and requirement_id in semantic_grounded_ids)
+        original_status = status
         matched_term = normalize_whitespace(getattr(item, "matched_term", None) or "") or None
         evidence = None
         evidence_ids: list[str] = []
@@ -382,8 +484,18 @@ def _validate_rows(
         # New live path: the model cites deterministic segment IDs, so it never
         # needs to reproduce exact resume wording.
         raw_ids = list(getattr(item, "evidence_ids", []) or [])
+        source_limit = (6 if req.constraint.kind == "experience"
+                        and req.constraint.minimum_years is not None else 3)
+        if len(raw_ids) > source_limit and status in {"matched", "uncertain"}:
+            invalid.add(requirement_id)
+            warnings.append(
+                f"{requirement_id}: cited {len(raw_ids)} source IDs "
+                f"(maximum {source_limit}); retry with the permitted relevant IDs."
+            )
+            continue
         if raw_ids:
-            evidence, evidence_ids = resolve_segment_ids(raw_ids, segments)
+            evidence, evidence_ids = resolve_segment_ids(
+                raw_ids, segments, limit=source_limit)
             if evidence is not None:
                 by_segment = {seg.segment_id: seg for seg in segments}
                 evidence_segments = [
@@ -394,6 +506,30 @@ def _validate_rows(
                 invalid.add(requirement_id)
                 warnings.append(f"{requirement_id}: unknown/invalid evidence segment ID(s): {raw_ids}.")
                 continue
+            if status in {"matched", "uncertain"} and any(
+                cited.section in {"non_candidate", "metadata"} or
+                non_candidate_requirement_copy(cited.text)
+                for cited in evidence_segments
+            ):
+                invalid.add(requirement_id)
+                warnings.append(
+                    f"{requirement_id}: cited job-description copy or non-candidate text; "
+                    "a real candidate claim is required."
+                )
+                continue
+            if status in {"matched", "uncertain"} and evidence_segments:
+                # An explicit denial of the SAME named requirement is evidence
+                # of non-satisfaction, not a broken citation needing retries.
+                # Do not use blanket sentence sentiment: mixed performed work
+                # and denial remains reviewable later in the normal path.
+                scoped_tones = [
+                    classify_requirement_tone(cited.text, req.name)
+                    for cited in evidence_segments
+                    if any(phrase_present(option, cited.text)
+                           for option in requirement_options(req.name))
+                ]
+                if scoped_tones and all(tone == "negated" for tone in scoped_tones):
+                    status = "not_matched"
         else:
             # Backward-compatible path for deterministic unit tests / old reports.
             raw_evidence = normalize_whitespace(getattr(item, "evidence", None) or "") or None
@@ -421,15 +557,17 @@ def _validate_rows(
                     invalid.add(requirement_id)
                     warnings.append(f"{requirement_id}: legacy free-text evidence did not support this requirement.")
                     continue
-                # Qwen owns semantic equivalence. Python checks the optional cited
-                # phrase's existence; the exact requirement name need not appear.
-                # Single-word source phrases are valid (no minimum quote length).
+                # Legacy assessments require source-attested alias words.
+                # A separately adjudicated unified judgment may omit this
+                # cosmetic highlight after the provenance check succeeds.
                 if matched_term and not any(
                     phrase_present(matched_term, cited.text) for cited in evidence_segments
                 ) and not (not evidence_segments and phrase_present(matched_term, evidence)):
-                    invalid.add(requirement_id)
-                    warnings.append(f"{requirement_id}: matched_term was not present in the cited source segment.")
-                    continue
+                    if not relation_verified:
+                        invalid.add(requirement_id)
+                        warnings.append(f"{requirement_id}: matched_term was not present in the cited source segment.")
+                        continue
+                    matched_term = None
 
                 # A real source citation is necessary but not sufficient.
                 # Generic tenure for another subject is not task/tool evidence,
@@ -457,16 +595,14 @@ def _validate_rows(
                     )
                     continue
 
-                # For an atomic, named requirement, a source ID alone is not
-                # enough to justify a semantic *substitution*: if the CV never
-                # spells the requirement, ask the SAME assessment model to
-                # identify the actual supporting word/phrase from that segment.
-                # This uses the existing correction call, NOT a verifier, synonym
-                # database, or Python semantic equivalence check. Generic task
-                # requirements continue to allow genuine unanchored paraphrases.
-                if (evidence_segments and not matched_term
+                # The unified semantic adjudicator validates implicit claims
+                # without requiring a literal alias; the legacy model path
+                # retains its original extra citation check.
+                actual_tone = _citation_tone_for_requirement(
+                    req, evidence_segments, evidence, matched_term)
+                if (not relation_verified and evidence_segments and not matched_term
                     and _is_short_named_requirement(req.name)
-                    and _unanchored_semantic_tone(evidence) == "positive"
+                    and actual_tone == "positive"
                     and not any(phrase_present(opt, evidence) for opt in requirement_options(req.name))):
                     invalid.add(requirement_id)
                     warnings.append(
@@ -477,13 +613,13 @@ def _validate_rows(
 
                 # Segment IDs prove provenance, not competence. A job title or a
                 # degree cannot by itself prove a general skill requirement.
-                # Neither a positive nor an uncertain proficiency decision can
-                # rely solely on an unqualified job-title/degree label.  A real
-                # learning/limited-exposure statement remains uncertain because
-                # it has an explicit uncertainty cue; a degree requirement can
-                # still cite the education section.  No skill names are encoded.
+                # A genuinely tentative/review claim may cite non-work
+                # evidence (learning, interest, incomplete qualifications).
+                # A bare title or unrelated degree is NOT a tentative claim;
+                # it still needs a corrective citation. Determine the exact
+                # source tone before making this distinction.
                 if (status in {"matched", "uncertain"} and evidence_segments
-                    and _unanchored_semantic_tone(evidence) == "positive"
+                    and actual_tone == "positive"
                     and not any(
                         _positive_literal_segment_is_capability_evidence(req, segments_by_id[c.segment_id])
                         for c in evidence_segments
@@ -498,11 +634,8 @@ def _validate_rows(
             continue
 
         if evidence:
-            has_scoped_term = bool(matched_term or any(
-                phrase_present(option, evidence) for option in requirement_options(req.name)
-            ))
-            tone = (classify_requirement_tone(evidence, req.name, matched_term)
-                    if has_scoped_term else _unanchored_semantic_tone(evidence))
+            tone = _citation_tone_for_requirement(
+                req, evidence_segments, evidence, matched_term)
             if tone == "negated" and status in {"matched", "uncertain"}:
                 status = "not_matched"
             elif tone == "uncertain" and status == "matched":
@@ -519,10 +652,40 @@ def _validate_rows(
                     if "negated" in source_tones and "positive" in source_tones:
                         status = "uncertain"
 
+        # If the model cites context that does NOT name an atomic requirement
+        # while a separate valid CV segment *does* explicitly name it, anchor
+        # the primary proof to the actual named source. In particular, an
+        # unrelated Docker passage cannot be presented as proof of Python when
+        # the CV's skills/projects actually contain Python. No new skill is
+        # inferred and the correction uses only already-admissible source text.
+        if (status in {"matched", "uncertain"} and evidence_segments
+                and _is_short_named_requirement(req.name)):
+            literal_terms = list(requirement_options(req.name))
+            abbreviation = _literal_initialism(req)
+            if abbreviation:
+                literal_terms.append(abbreviation)
+            has_named_citation = any(
+                phrase_present(term, cited.text)
+                for cited in evidence_segments for term in literal_terms
+            )
+            if not has_named_citation:
+                named = _direct_source_guard(req, resume_text, segments)
+                if named.status == "not_matched" and abbreviation:
+                    named = _literal_initialism_guard(req, segments) or named
+                if named.status in {"matched", "uncertain"}:
+                    valid[requirement_id] = named
+                    used_direct_guard = True
+                    warnings.append(
+                        f"{requirement_id}: model cited only contextual source; "
+                        f"anchored {req.name} to the explicit named CV checkpoint "
+                        f"({', '.join(named.evidence_ids)})."
+                    )
+                    continue
+
         # A small local model may still miss an explicit listed skill/abbreviation.
         # Correct ONLY exact/direct-alias/OR evidence using the deterministic guard;
         # never infer related/transferable technologies.
-        if status == "not_matched":
+        if status == "not_matched" and (not semantic_grounded or req.constraint.kind == "skill"):
             direct = _direct_source_guard(req, resume_text, segments)
             if direct.status in {"matched", "uncertain"}:
                 valid[requirement_id] = direct
@@ -537,6 +700,8 @@ def _validate_rows(
             status=status,
             evidence=evidence,
             matched_term=matched_term,
+            reason=(normalize_whitespace(getattr(item, "reason", "") or "")
+                    if status == original_status else "Source tone check changed the model's original decision."),
             evidence_ids=evidence_ids,
             evidence_segments=evidence_segments,
         )

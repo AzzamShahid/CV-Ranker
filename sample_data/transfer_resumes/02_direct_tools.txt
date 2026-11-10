@@ -1,0 +1,8 @@
+Sample Candidate Two — Backend Engineer
+
+Experience:
+- Developed HTTP endpoints and request validation using FastAPI.
+- Designed PostgreSQL tables, queries, and schema migrations for business records.
+- Implemented Redis-backed caching for frequently read API responses.
+- Used Git for version control and code reviews.
+- Packaged services into Docker containers.

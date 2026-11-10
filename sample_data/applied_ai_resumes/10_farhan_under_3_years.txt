@@ -1,0 +1,32 @@
+Farhan Malik
+Applied AI Developer
+Multan, Pakistan
+farhan.malik@example.com
+Professional experience: 2 years 4 months
+
+PROFESSIONAL SUMMARY
+Hands-on applied AI developer with 2 years 4 months of full-time professional experience in RAG assistants, Python/PyTorch model prototypes and testable LLM integrations. Below the JD minimum of three years.
+
+TECHNICAL SKILLS
+- Python, PyTorch, ML/DL, NLP, transformer fine-tuning
+- LangChain, LangGraph, OpenRouter API integrations, hosted LLM tools
+- Model evaluation, recall@k, accuracy, macro F1, golden questions
+- FastAPI, Google Cloud Run, Docker, Firebase basics
+
+PROFESSIONAL EXPERIENCE
+
+Applied AI Developer | BrightLoop AI (fictional)
+Jun 2024 - Present
+- Built Python/LangChain document Q&A applications using hosted LLM APIs and source-link retrieval.
+- Trained a small PyTorch text classifier and compared against scikit-learn baselines with a held-out dataset.
+- Tracked retrieval recall@5 and answer grounding for internal agent workflows.
+- Deployed containerized FastAPI services and assisted with Cloud Run releases.
+
+SELECTED PROJECTS
+- Document question answering: LangChain chain, hosted LLM, evaluation sheet, lightweight review UI.
+- Ticket classifier: PyTorch transformer baseline with macro F1 tracking.
+
+EDUCATION AND ADDITIONAL INFORMATION
+- BS Computer Science | South Tech University (fictional), 2024
+- Professional AI/ML experience: Jun 2024 - Oct 2026 (2 years 4 months)
+- University projects from 2022-2024 do not add paid professional months

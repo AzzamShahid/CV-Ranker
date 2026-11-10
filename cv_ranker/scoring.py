@@ -49,6 +49,8 @@ def score_candidate(
     candidate_source: str = "",
 ) -> CandidateResult:
     _validate_coverage_contract(requirements, assessments)
+    unverified = sorted(a.requirement_id for a in assessments
+                        if a.assessment_state == "unverified")
     required_ids = {r.requirement_id for r in requirements if r.priority == "required"}
     preferred_ids = {r.requirement_id for r in requirements if r.priority == "preferred"}
     unknown_ids = {r.requirement_id for r in requirements if r.priority == "unknown"}
@@ -80,6 +82,16 @@ def score_candidate(
         primary_ids, assessments
     )
 
+    if unverified:
+        # Keep known successes and every frozen denominator for diagnosis, but
+        # publish NO percentage/rank while any assessment is technically
+        # unverified. A provider/schema failure is not a CV skill failure.
+        primary_score = required_score = preferred_score = unknown_score = None
+        score_basis += " · incomplete source/model assessment"
+        errors = list(errors) + [
+            "Ranking withheld: technical assessment incomplete for " + ", ".join(unverified)
+        ]
+
     allowed_modes = {"llm_assessed", "mixed", "fallback_exact", "failed"}
     mode = cast(
         EvaluationMode,
@@ -102,36 +114,34 @@ def score_candidate(
         matched_unknown=matched_unknown,
         total_unknown=total_unknown,
         score_basis=score_basis,
-        evaluation_mode=mode,
+        evaluation_mode="failed" if unverified else mode,
         assessments=assessments,
         errors=errors,
     )
+
+
+def _ranking_key(item: CandidateResult) -> tuple:
+    """The sole source of candidate ordering for backend and UI/export."""
+    if item.primary_score is None:
+        return (1, 0.0, 0.0, item.candidate_name.casefold(), item.candidate_source.casefold())
+    return (0, -(item.primary_score or 0.0),
+            -(item.preferred_score or 0.0),
+            item.candidate_name.casefold(), item.candidate_source.casefold())
 
 
 def assign_ranks(candidates: list[CandidateResult]) -> list[CandidateResult]:
     successful = [c for c in candidates if c.primary_score is not None]
     failed = [c for c in candidates if c.primary_score is None]
 
-    successful.sort(
-        key=lambda item: (
-            -(item.primary_score or 0.0),
-            item.candidate_name.casefold(),
-            item.candidate_source.casefold(),
-        )
-    )
-    previous_score: float | None = None
+    successful.sort(key=_ranking_key)
+    previous_score: tuple[float, float] | None = None
     previous_rank = 0
     for position, candidate in enumerate(successful, start=1):
-        score = candidate.primary_score or 0.0
+        score = (candidate.primary_score or 0.0, candidate.preferred_score or 0.0)
         if previous_score is None or score != previous_score:
             previous_rank = position
             previous_score = score
         candidate.rank = previous_rank
 
-    failed.sort(
-        key=lambda item: (
-            item.candidate_name.casefold(),
-            item.candidate_source.casefold(),
-        )
-    )
+    failed.sort(key=_ranking_key)
     return successful + failed
