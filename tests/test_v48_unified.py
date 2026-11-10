@@ -243,6 +243,7 @@ def test_source_page_renders_with_only_unified_retrieval_state():
     segments = [ResumeSegment(segment_id="S001", section="skills",
                               text="Python, FastAPI", source_lines=())]
     environment = {"RankingReport": object, "st": fake_st, "json": json,
+                   "_section_title": lambda *args, **kwargs: None,
                    "resume_segments": lambda ledger: segments,
                    "highlighted_source_html": lambda value, query: value}
     module = ast.fix_missing_locations(ast.Module(body=functions, type_ignores=[]))

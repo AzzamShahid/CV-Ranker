@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 from .documents import SUPPORTED_EXTENSIONS
-from .schemas import RankingReport
+from .schemas import CandidateResult, RankingReport
 from .scoring import _ranking_key
 from .text_utils import requirement_options
 
@@ -100,6 +100,29 @@ def ranking_rows(report: RankingReport) -> list[dict[str, object]]:
     return rows
 
 
+def review_label_for_candidate(candidate: CandidateResult, final: dict | None) -> str:
+    """Present completion and per-criterion human review as separate states.
+
+    This is display-only: the persisted `Provisional` compatibility flag is
+    never used to withhold or create a candidate's scored qualification.
+    """
+    if candidate.primary_score is None:
+        return (f"Ranking withheld · {final.get('Unverified', 0)} unverified"
+                if final is not None and candidate.assessments else
+                "Assessment unavailable · rerun")
+    if final is None:
+        return "Earlier run · rerun"
+    if final.get("Unverified"):
+        return f"Unverified ({int(final['Unverified'])}) · rerun"
+    criteria = final.get("Criteria")
+    if isinstance(criteria, list) and all(
+            isinstance(row, dict) and "Review recommended" in row for row in criteria):
+        count = sum(bool(row["Review recommended"]) for row in criteria)
+        return f"Review suggested ({count})" if count else "Complete"
+    # Old / partial payloads only recorded a coarse flag.
+    return "Review suggested" if final.get("Provisional") else "Complete"
+
+
 def final_leaderboard_rows(
     report: RankingReport, final_results: dict[str, dict] | None = None,
 ) -> list[dict[str, object]]:
@@ -127,9 +150,7 @@ def final_leaderboard_rows(
                     "Leaderboard/detail count mismatch; rerun assessment before exporting scores."
                 )
             transferable = int(final["Transferable"])
-            review = "Provisional · review" if final.get("Provisional") else "Complete"
-            if final.get("Unverified"):
-                review = f"Unverified ({int(final['Unverified'])}) · rerun"
+            review = review_label_for_candidate(candidate, final)
         else:
             required_found = candidate.matched_required
             required_total = candidate.total_required
@@ -142,8 +163,7 @@ def final_leaderboard_rows(
         if candidate.primary_score is None:
             # A provider/embedding failure is NOT a 0%-match candidate. In
             # particular, do not turn a 429 into dozens of Not Found scores.
-            review = (f"Ranking withheld · {final.get('Unverified', 0)} unverified"
-                      if has_partial else "Assessment unavailable · rerun")
+            review = review_label_for_candidate(candidate, final)
 
         row = {
             "Candidate index": index,  # Stable source identity; leaderboard order can differ.

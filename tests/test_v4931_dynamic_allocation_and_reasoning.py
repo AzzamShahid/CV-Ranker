@@ -350,7 +350,8 @@ def test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates(
     app = app.run(timeout=20)
     assert not app.exception
     text = " ".join(item.value for item in app.markdown)
-    assert "Why this candidate ranks first" in text
+    assert ("Why no ranking is available" if review_case == "all_withheld"
+            else "Why this candidate ranks first") in text
     assert "Why this CV received its ranking" in text
     assert "Candidate leaderboard" in text
     if review_case != "complete":

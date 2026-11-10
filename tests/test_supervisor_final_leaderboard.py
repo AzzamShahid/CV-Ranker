@@ -46,7 +46,7 @@ def test_leaderboard_uses_final_counts_and_preferred_tiebreak():
     assert rows[0]["Score"] == 88.9
     assert rows[0]["Required"] == "8/9"
     assert rows[0]["Preferred"] == "3/7"
-    assert rows[0]["Review"] == "Provisional · review"
+    assert rows[0]["Review"] == "Review suggested"
     assert rows[1]["Transferable"] == 3
     assert rows[1]["Score"] == 88.9  # transferability never awards extra points
     assert rows[2]["Score"] == 77.8

@@ -8,6 +8,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 from .schemas import RankingReport
 from .ranking_reasoning import candidate_reasoning, comparative_reasoning
+from .ui_support import review_label_for_candidate
 from .weighted_scoring import ScoreWeights, weighted_leaderboard
 
 
@@ -26,6 +27,10 @@ def complete_results_zip(
     finals = final_results or {}
     ledgers = source_ledgers or {}
     leaderboard = weighted_leaderboard(report, weights)
+    # Match the UI's separate completion and human-review states in all
+    # supervisor-facing exports; weighted scoring remains authoritative.
+    review_labels = {str(index): review_label_for_candidate(candidate, finals.get(str(index)))
+                     for index, candidate in enumerate(report.candidates)}
     result = io.BytesIO()
     with ZipFile(result, "w", compression=ZIP_DEFLATED, compresslevel=7) as archive:
         def add_json(name: str, data: object) -> None:
@@ -68,7 +73,7 @@ def complete_results_zip(
                 "Required JD matched": row["required"],
                 "Preferred JD matched": row["preferred"],
                 "Transferable": final.get("Transferable", "Not checked"),
-                "Review": row["review"],
+                "Review": review_labels.get(idx, row["review"]),
             })
         archive.writestr("weighted_leaderboard.csv", table.getvalue().encode("utf-8-sig"))
 
@@ -80,7 +85,7 @@ def complete_results_zip(
             path = f"candidates/candidate_{int(index) + 1:03d}"
             add_json(path + "_results.json", {
                 "candidate": candidate.model_dump(),
-                "weighted_result": row,
+                "weighted_result": {**row, "review": review_labels.get(index, row["review"])},
                 "final_decisions": final,
                 "why": ([{"requirement": item.get("Requirement"),
                            "decision": item.get("Result"),

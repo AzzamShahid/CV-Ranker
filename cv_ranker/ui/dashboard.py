@@ -8,6 +8,7 @@ import json
 import hashlib
 import tempfile
 import csv
+from html import escape
 from copy import deepcopy
 import io
 import time
@@ -19,7 +20,8 @@ from queue import Empty, SimpleQueue
 import streamlit as st
 
 from cv_ranker import CVRanker, Settings
-from cv_ranker.build_info import ASSESSMENT_PROTOCOL, BUILD_ID
+from cv_ranker.build_info import (ASSESSMENT_PROTOCOL, ASSESSMENT_PROTOCOL_VERSION,
+                                  BUILD_ID, UI_RELEASE_VERSION)
 from cv_ranker.config import default_ui_provider
 from cv_ranker.documents import DocumentError, extract_text
 from cv_ranker.runtime_check import assert_runtime_current
@@ -89,14 +91,192 @@ def _progress_caption(queue_key: str, started_key: str) -> str:
 def _styles():
     st.markdown("""
     <style>
-    .block-container {max-width: 1300px; padding-top: 1rem; padding-bottom: 1.8rem;}
-    div[data-testid="stMetric"] {border: 1px solid rgba(128,144,165,.16); border-radius: 9px; padding: 10px;}
-    div[data-testid="stMetricValue"] {font-size: 1.5rem; font-weight: 700;}
-    div[data-testid="stTabs"] button {font-weight: 600;}
-    .cv-kicker {font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:#3888a4;font-weight:700;}
+    :root {--cv-navy:#18334c;--cv-blue:#3265a8;--cv-teal:#16877d;
+           --cv-ink:var(--text-color);--cv-line:rgba(113,135,158,.23);
+           --cv-muted:var(--text-color);}
+    .block-container {max-width:1350px;padding-top:1.15rem;padding-bottom:2.8rem;}
+    [data-testid="stAppViewContainer"] {background:
+      radial-gradient(circle at 96% 0%,rgba(38,122,168,.065),transparent 30%),
+      radial-gradient(circle at 0% 42%,rgba(22,135,125,.035),transparent 34%),
+      var(--background-color);}
+    .cv-hero {position:relative;overflow:hidden;display:flex;align-items:center;
+      justify-content:space-between;gap:2rem;margin:.15rem 0 1.5rem;
+      padding:1.6rem 1.85rem;border-radius:21px;color:#f8fbff;
+      background:linear-gradient(112deg,#112c46 0%,#1b4c68 61%,#127b76 100%);
+      border:1px solid rgba(255,255,255,.13);box-shadow:0 12px 32px rgba(14,42,66,.16);}
+    .cv-hero:after {content:"";position:absolute;width:17rem;height:17rem;
+      top:-10rem;right:9%;border-radius:50%;border:2.5rem solid rgba(255,255,255,.05);
+      pointer-events:none;}
+    .cv-hero-title {font-size:clamp(1.55rem,3vw,2.15rem);font-weight:790;
+      letter-spacing:-.035em;line-height:1.12;margin:.32rem 0 .55rem;}
+    .cv-hero-description {color:rgba(240,250,255,.86);font-size:.94rem;
+      line-height:1.55;margin:0;max-width:47rem;}
+    .cv-hero-badge {font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+      font-weight:800;color:#b7f1e6;}
+    .cv-hero-mark {position:relative;z-index:1;display:grid;place-items:center;
+      flex-shrink:0;width:4.25rem;height:4.25rem;border-radius:16px;
+      background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+      font-size:1.95rem;font-weight:700;color:#f3fffd;}
+    .cv-section {display:flex;align-items:flex-start;gap:.8rem;
+      margin:1.35rem 0 .72rem;padding-bottom:.65rem;
+      border-bottom:1px solid var(--cv-line);}
+    .cv-section-line {width:4px;min-height:2.65rem;border-radius:8px;
+      background:linear-gradient(180deg,#2374b8,#16a394);flex-shrink:0;margin-top:.12rem;}
+    .cv-section-eyebrow,.cv-card-eyebrow {font-size:.68rem;letter-spacing:.11em;
+      text-transform:uppercase;font-weight:800;color:#16877d;margin:0 0 .15rem;}
+    .cv-section-heading {font-size:1.16rem;font-weight:770;letter-spacing:-.012em;
+      color:var(--cv-ink);margin:0 0 .2rem;line-height:1.32;}
+    .cv-section-subtitle {font-size:.83rem;opacity:.72;line-height:1.4;margin:0;color:var(--cv-ink);}
+    .cv-insight {position:relative;overflow:hidden;margin:.45rem 0 1rem;
+      border:1px solid var(--cv-line);border-left:4px solid #238c82;
+      border-radius:16px;background:var(--secondary-background-color);
+      box-shadow:0 5px 21px rgba(24,51,76,.055);padding:1.1rem 1.3rem 1.05rem;}
+    .cv-insight.is-blue {border-left-color:#3877b7;}
+    .cv-insight.is-amber {border-left-color:#bc8b37;}
+    .cv-insight.is-slate {border-left-color:#8394a5;}
+    .cv-insight-top {display:flex;flex-wrap:wrap;align-items:center;
+      justify-content:space-between;gap:.4rem;margin-bottom:.38rem;}
+    .cv-insight-label {font-size:.71rem;text-transform:uppercase;letter-spacing:.075em;
+      color:#218b81;font-weight:800;}
+    .cv-insight.is-blue .cv-insight-label {color:#3979b9;}
+    .cv-insight.is-amber .cv-insight-label {color:#aa782f;}
+    .cv-insight.is-slate .cv-insight-label {color:#748697;}
+    .cv-insight-tag {font-size:.71rem;font-weight:700;padding:.23rem .55rem;
+      border-radius:99px;background:rgba(35,140,130,.085);color:var(--cv-ink);
+      border:1px solid var(--cv-line);}
+    .cv-insight-heading {margin:0 0 .35rem;font-size:.99rem;font-weight:760;
+      line-height:1.45;color:var(--cv-ink);overflow-wrap:anywhere;}
+    .cv-insight-body {margin:0;color:var(--cv-ink);opacity:.88;
+      font-size:.91rem;line-height:1.64;overflow-wrap:anywhere;}
+    .cv-rank-row {display:flex;align-items:flex-start;gap:1rem;
+      padding:1rem 1.15rem;margin:.55rem 0;border:1px solid var(--cv-line);
+      border-radius:14px;background:var(--secondary-background-color);
+      box-shadow:0 3px 12px rgba(24,51,76,.035);}
+    .cv-rank-row.is-top {border-left:4px solid #16877d;}
+    .cv-rank-row.is-pending {border-left:4px solid #bc8b37;}
+    .cv-rank-position {display:flex;align-items:center;justify-content:center;
+      flex:0 0 3rem;min-height:3rem;border-radius:11px;
+      background:rgba(48,107,166,.09);color:var(--cv-ink);font-weight:800;
+      font-size:.91rem;white-space:nowrap;}
+    .cv-rank-row.is-top .cv-rank-position {background:rgba(22,135,125,.12);}
+    .cv-rank-row.is-pending .cv-rank-position {background:rgba(188,139,55,.12);}
+    .cv-rank-content {flex:1;min-width:0;}
+    .cv-rank-topline {display:flex;gap:.6rem;justify-content:space-between;
+      align-items:baseline;flex-wrap:wrap;margin-bottom:.33rem;}
+    .cv-rank-name {font-size:1rem;font-weight:780;color:var(--cv-ink);
+      letter-spacing:-.01em;overflow-wrap:anywhere;}
+    .cv-rank-score {font-size:.82rem;font-weight:800;padding:.22rem .65rem;
+      border-radius:100px;background:rgba(30,139,130,.095);
+      border:1px solid var(--cv-line);color:var(--cv-ink);white-space:nowrap;}
+    .cv-rank-reason {font-size:.87rem;color:var(--cv-ink);opacity:.86;
+      line-height:1.57;overflow-wrap:anywhere;}
+    .cv-mini-title {font-size:.79rem;font-weight:800;letter-spacing:.045em;
+      text-transform:uppercase;color:var(--cv-ink);margin:.3rem 0 .7rem;}
+    .cv-mini-item {border-left:2px solid #2d9c8e;padding:.5rem .7rem;
+      margin:.38rem 0;border-radius:0 9px 9px 0;background:rgba(29,142,128,.055);}
+    .cv-mini-item.is-gap {border-left-color:#c89a49;background:rgba(192,144,53,.06);}
+    .cv-mini-name {font-weight:710;color:var(--cv-ink);font-size:.9rem;line-height:1.4;}
+    .cv-mini-points {font-size:.76rem;color:var(--cv-ink);opacity:.72;margin:.18rem 0;}
+    .cv-mini-description {font-size:.8rem;color:var(--cv-ink);opacity:.8;
+      line-height:1.47;margin-top:.25rem;overflow-wrap:anywhere;}
+    div[data-testid="stMetric"] {border:1px solid var(--cv-line);
+      border-top:3px solid rgba(30,139,130,.65);border-radius:13px;
+      padding:.75rem 1rem;background:var(--secondary-background-color);
+      box-shadow:0 4px 16px rgba(24,51,76,.045);min-height:6.2rem;}
+    div[data-testid="stMetricLabel"] {font-weight:650;letter-spacing:.01em;}
+    div[data-testid="stMetricValue"] {font-size:1.58rem;font-weight:790;
+      letter-spacing:-.03em;}
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] {gap:.4rem;
+      border-bottom:1px solid var(--cv-line);padding-bottom:.3rem;}
+    div[data-testid="stTabs"] button[role="tab"] {border-radius:11px 11px 0 0;
+      font-weight:700;padding:.7rem 1rem;transition:background .18s ease;}
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]
+      {background:rgba(30,139,130,.075);}
+    [data-testid="stExpander"] {border:1px solid var(--cv-line);
+      border-radius:13px;overflow:hidden;background:var(--secondary-background-color);}
+    [data-testid="stExpander"] summary {font-weight:680;}
+    [data-testid="stDataFrame"] {border:1px solid var(--cv-line);
+      border-radius:13px;overflow:hidden;}
+    [data-testid="stFileUploader"] {border-radius:13px;}
+    [data-testid="stButton"] button[kind="primary"],
+    [data-testid="stDownloadButton"] button[kind="primary"] {
+      border-radius:10px;font-weight:750;box-shadow:0 3px 12px rgba(32,104,155,.12);}
+    .cv-kicker {font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+      color:#16877d;font-weight:800;}
     .cv-muted {opacity:.75;font-size:.92rem;}
-    .cv-source {white-space:pre-wrap;overflow-wrap:anywhere;padding:.85rem;border:1px solid rgba(128,144,165,.3);border-radius:10px;margin:.3rem 0 1rem 0;}
+    .cv-source {white-space:pre-wrap;overflow-wrap:anywhere;padding:.95rem 1.05rem;
+      border:1px solid var(--cv-line);border-left:3px solid #4482ab;
+      border-radius:11px;margin:.45rem 0 .9rem;background:var(--secondary-background-color);
+      font-size:.9rem;line-height:1.55;}
+    @media(max-width:700px) {
+      .block-container {padding-top:.6rem;}
+      .cv-hero {padding:1.2rem;gap:1rem;border-radius:15px;}
+      .cv-hero-mark {display:none;}
+      .cv-insight {padding:.85rem .95rem;}
+      .cv-section-heading {font-size:1.04rem;}
+      .cv-rank-row {padding:.82rem .9rem;gap:.7rem;}
+      .cv-rank-position {flex-basis:2.3rem;min-height:2.3rem;font-size:.8rem;}
+    }
     </style>""", unsafe_allow_html=True)
+
+
+def _section_title(title: str, subtitle: str, *, eyebrow: str = "Assessment insight") -> None:
+    """A compact, consistent section heading with no data-dependent HTML."""
+    st.markdown(
+        '<div class="cv-section"><span class="cv-section-line"></span><div>'
+        f'<div class="cv-section-eyebrow">{escape(eyebrow)}</div>'
+        f'<h3 class="cv-section-heading">{escape(title)}</h3>'
+        f'<p class="cv-section-subtitle">{escape(subtitle)}</p>'
+        '</div></div>', unsafe_allow_html=True,
+    )
+
+
+def _insight_card(title: str, body: str, *, label: str, tag: str = "",
+                  tone: str = "teal") -> None:
+    """Source-grounded summary card; user CV/JD text is always HTML-escaped."""
+    safe_tone = tone if tone in {"blue", "amber", "slate"} else "teal"
+    pill = f'<span class="cv-insight-tag">{escape(tag)}</span>' if tag else ''
+    st.markdown(
+        f'<div class="cv-insight is-{safe_tone}">'
+        f'<div class="cv-insight-top"><span class="cv-insight-label">{escape(label)}</span>{pill}</div>'
+        f'<div class="cv-insight-heading">{escape(title)}</div>'
+        f'<p class="cv-insight-body">{escape(body)}</p></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def _evidence_tile(item: dict, *, gap: bool = False) -> None:
+    """Readable requirement evidence with the same point values as scoring."""
+    points = item.get("possible_points") if gap else item.get("earned_points")
+    label = (_scored_points_text(points) + " unearned" if gap and points is not None
+             else _scored_points_text(points, prefix="+" if not gap else ""))
+    style = " is-gap" if gap else ""
+    st.markdown(
+        f'<div class="cv-mini-item{style}">'
+        f'<div class="cv-mini-name">{escape(str(item["requirement"]))}</div>'
+        f'<div class="cv-mini-points">{escape(label)}</div>'
+        f'<div class="cv-mini-description">{escape(str(item["why"]))}</div>'
+        '</div>', unsafe_allow_html=True,
+    )
+
+
+def _rank_explanation_row(explanation: dict) -> None:
+    """One easily scanned candidate placement, without duplicating audit blocks."""
+    rank = explanation.get("rank")
+    score = explanation.get("weighted_score")
+    marker = f"#{rank}" if rank is not None else "—"
+    score_label = f"{score:.2f}%" if score is not None else "Not ranked"
+    reason = explanation.get("placement_reason") or explanation.get("summary") or ""
+    style = " is-top" if rank == 1 else " is-pending" if rank is None else ""
+    st.markdown(
+        f'<div class="cv-rank-row{style}">'
+        f'<div class="cv-rank-position">{escape(marker)}</div>'
+        f'<div class="cv-rank-content"><div class="cv-rank-topline">'
+        f'<span class="cv-rank-name">{escape(str(explanation["candidate"]))}</span>'
+        f'<span class="cv-rank-score">{escape(score_label)}</span></div>'
+        f'<div class="cv-rank-reason">{escape(str(reason))}</div></div></div>',
+        unsafe_allow_html=True,
+    )
 
 
 def _sync_weight(key: str, source: str) -> None:
@@ -215,7 +395,9 @@ def _weightage_panel(requirements) -> bool:
         int(st.session_state.get("cv_weight_slider_education", 10)),
         int(st.session_state.get("cv_weight_slider_jd", 80)),
     )
-    st.markdown("#### Step 4 · Category weightage")
+    _section_title("Step 4 · Category weightage",
+                   "Set the overall scoring priorities for the approved job description.",
+                   eyebrow="Review & prioritize")
     with st.expander(
         f"Category weights — {initial[0]}% / {initial[1]}% / {initial[2]}%",
         expanded=True,
@@ -240,7 +422,9 @@ def _weightage_panel(requirements) -> bool:
         by_category[allocation_bucket(requirement)].append(requirement)
     category_weights = {"experience": experience, "education": education, "jd": jd}
     active_weight = sum(category_weights[key] for key, rows in by_category.items() if rows)
-    st.markdown("#### Step 5 · Edit individual JD allocations")
+    _section_title("Step 5 · Edit individual JD allocations",
+                   "Give individual requirements more or less influence within their category.",
+                   eyebrow="Review & prioritize")
     with st.expander("Individual requirement allocations (within each category)", expanded=True):
         st.caption("All percentages below are shares of their own category, not additional overall points. "
                    "Changing one share automatically rebalances only the other items in that same category. "
@@ -541,7 +725,8 @@ def _publish_rank_artifacts(artifacts: dict, settings: Settings, use_llm: bool,
 
 def _sidebar() -> tuple[Settings | None, bool, bool]:
     with st.sidebar:
-        st.markdown("### Assessment")
+        st.markdown('<p class="cv-kicker">Assessment workspace</p>', unsafe_allow_html=True)
+        st.markdown("### Configure screening")
         use_llm = st.toggle("AI-assisted assessment", value=True, help="Uses your configured local Ollama or OpenRouter LLM. Switch off for exact-only fallback.")
         default_provider = default_ui_provider()
         provider_names = {"Cloud (OpenRouter)": "openrouter", "Local (Ollama)": "ollama"}
@@ -596,6 +781,7 @@ def _sidebar() -> tuple[Settings | None, bool, bool]:
             st.button("Clear current results", on_click=_clear_results,
                       key="cv_clear_active_results", width="stretch")
         st.caption("Cloud mode sends CV excerpts to OpenRouter.")
+        st.caption(f"Interface V{UI_RELEASE_VERSION} · Assessment protocol v{ASSESSMENT_PROTOCOL_VERSION}")
         return Settings(
             llm_provider=configured.llm_provider,
             yake_top_k=yake_limit,
@@ -790,7 +976,9 @@ def _arm_auto_resume(report: RankingReport, settings: Settings, use_llm: bool,
 def _review_jd_panel(settings: Settings, pending: dict) -> JDReviewDraft | None:
     """Render an explicit, editable approval gate before any candidate scoring."""
     draft = JDReviewDraft.model_validate(pending["draft"])
-    st.markdown("#### Step 3 · Review extracted JD requirements")
+    _section_title("Step 3 · Review extracted JD requirements",
+                   "Confirm the extracted criteria before they become the scoring reference.",
+                   eyebrow="Job description")
     st.caption("Edit requirements and priorities if needed, then approve. JD quotations must match the source.")
     if draft.jd_validation_mode != "llm_validated":
         st.warning("This extraction used a structural fallback. Review all rows carefully; "
@@ -846,7 +1034,9 @@ def _review_jd_panel(settings: Settings, pending: dict) -> JDReviewDraft | None:
 
 
 def _run_form(settings: Settings, use_llm: bool, semantic_enabled: bool):
-    st.markdown("#### Step 1 · Upload documents")
+    _section_title("Step 1 · Upload documents",
+                   "Add the employer's job description and the resumes to compare.",
+                   eyebrow="Start assessment")
     st.caption("Upload documents · Extract JD · Approve requirements · Assign weightage · Assess candidates")
     with st.container(border=True):
         st.markdown("**Job description**")
@@ -877,7 +1067,9 @@ def _run_form(settings: Settings, use_llm: bool, semantic_enabled: bool):
     # Keep Step 2 as a genuine heading, visible even after JD approval.
     # Earlier builds put this label inside the upload box, so the setup
     # appeared to jump directly from the Step 1 heading to Step 3.
-    st.markdown("#### Step 2 · Extract JD requirements")
+    _section_title("Step 2 · Extract JD requirements",
+                   "Identify the exact requirements that will be reviewed and scored.",
+                   eyebrow="Job description")
     clicked = st.button("Extract JD requirements for review", type="primary",
                         width="stretch")
 
@@ -951,7 +1143,9 @@ def _run_form(settings: Settings, use_llm: bool, semantic_enabled: bool):
     weights_valid = True
     if approved is not None and pending is not None:
         weights_valid = _weightage_panel(approved.requirements)
-        st.markdown("#### Step 6 · Assess candidates against the approved JD")
+        _section_title("Step 6 · Assess candidates against the approved JD",
+                       "Run the evidence checks using your confirmed requirements and weights.",
+                       eyebrow="Candidate screening")
         st.caption("You can change the CV selection without re-extracting the approved JD. "
                    "Changing the JD or assessment settings invalidates approval.")
         recovery_state = st.session_state.get("cv_auto_resume_state")
@@ -1366,17 +1560,17 @@ def _summary(report: RankingReport):
             if not cause and candidate.errors:
                 cause = candidate.errors[-1]
             st.warning(
-                f"CV {index + 1} · {candidate.candidate_name} — assessment incomplete. "
-                + (f"Unverified criteria: {', '.join(pending_ids[:10])}. "
-                   if pending_ids else "No completed assessment checkpoint was returned. ")
-                + (f"Reported cause: {str(cause)[:250]}. " if cause else "")
-                + "Verified evidence is saved; unfinished judgments receive no ranking score. "
-                "See Technical details → Execution details for request counts and failure diagnostics.")
+                f"{candidate.candidate_name} · not ranked yet. "
+                + (f"{len(pending_ids)} requirement(s) still need a verified decision. "
+                   if pending_ids else "The assessment did not finish. ")
+                + "Completed results are saved. Open the details below to review what is missing.")
             if pending_ids:
-                with st.expander(f"Why CV {index + 1} is incomplete · validation details"):
+                with st.expander(f"Review unfinished requirements for {candidate.candidate_name}"):
+                    if cause:
+                        st.caption("Technical cause: " + str(cause)[:250])
                     if validation_notes:
                         for note in list(dict.fromkeys(validation_notes))[:8]:
-                            st.warning(note)
+                            st.caption(note)
                     else:
                         st.info("The model did not return a source-validated judgment for every "
                                 "criterion. The exact API response is unavailable in this saved "
@@ -1387,7 +1581,8 @@ def _summary(report: RankingReport):
                         requirement = next((req for req in report.requirements
                                             if req.requirement_id == assessment.requirement_id), None)
                         label = requirement.name if requirement is not None else assessment.requirement_id
-                        st.markdown(f"**{assessment.requirement_id} · {label}**")
+                        st.markdown(f"**{label}**")
+                        st.caption(f"JD reference: {assessment.requirement_id}")
                         for passage in assessment.evidence_segments[:2]:
                             st.caption("Evidence examined: " + passage.text[:500])
     separate = [f"Experience: {bucket_totals['experience']['total']}"
@@ -1425,14 +1620,15 @@ def _summary(report: RankingReport):
 
 
 def _ranking(report: RankingReport):
-    st.markdown("#### Candidate leaderboard")
+    _section_title("Candidate leaderboard",
+                   "Compare validated match scores under the approved JD priorities.",
+                   eyebrow="Rankings & evidence")
     try:
         weights = _current_weights(report)
     except ValueError as exc:
         st.error(f"Cannot compute weighted scores: {exc}")
         return
-    st.caption("One JD pool: Required + Preferred share its editable allocation. "
-               "Experience and Education have their own allocations; Transferable earns no scoring credit.")
+    st.caption("Scores use the JD priorities you approved. Related (Transferable) skills do not earn points.")
     category_totals = criterion_bucket_counts(report)
     has_experience = category_totals["experience"]["total"] > 0
     has_education = category_totals["education"]["total"] > 0
@@ -1470,71 +1666,61 @@ def _ranking(report: RankingReport):
                     "Why this rank": reasons[int(item["candidate_index"])].get(
                         "placement_reason", reasons[int(item["candidate_index"])]["summary"])})
         present.append(row)
-    if calculated:
-        first_breakdown = next((r["breakdown"] for r in calculated if r["weighted_score"] is not None), None)
-        if first_breakdown:
-            effective = first_breakdown["effective_weights"]
-            st.caption("Effective weight: " + " · ".join(
-                f"{name.replace('_', ' ').title()} {weight:.1f}%"
-                for name, weight in effective.items() if weight > 0))
-        else:
-            st.warning("No weighted rank is available until assessments are complete and weights apply to JD criteria.")
+    if calculated and not any(r["weighted_score"] is not None for r in calculated):
+        st.warning("No final rank is available yet. One or more assessments may be incomplete.")
+    with st.expander("How these scores are calculated", expanded=False):
+        st.caption("Required and Preferred requirements share the JD scoring allocation. "
+                   "Experience and Education use their own allocations; Transferable never earns points.")
+        if calculated:
+            first_breakdown = next((r["breakdown"] for r in calculated if r["weighted_score"] is not None), None)
+            if first_breakdown:
+                effective = first_breakdown["effective_weights"]
+                st.write("**Effective category weights**")
+                st.caption(" · ".join(
+                    f"{name.replace('_', ' ').title()} {weight:.1f}%"
+                    for name, weight in effective.items() if weight > 0))
     st.dataframe(present, hide_index=True, width="stretch", column_config={
         "Score": st.column_config.ProgressColumn("Weighted score", min_value=0, max_value=100, format="%.1f%%"),
         "Why this rank": st.column_config.TextColumn("Why this rank", width="large"),
     })
-    st.markdown("##### Why each candidate received this ranking")
+    _section_title("Why candidates ranked this way",
+                   "One clear explanation per candidate. Detailed evidence is available below.",
+                   eyebrow="Ranking explained")
     for explanation in comparison["candidates"]:
-        heading = (f"#{explanation['rank']} · {explanation['candidate']}"
-                   if explanation["rank"] is not None else
-                   f"Unranked · {explanation['candidate']}")
-        st.markdown(f"**{heading}**")
-        st.write(explanation.get("placement_reason", explanation["summary"]))
-    st.markdown("##### Why this candidate ranks first · comparative reasoning")
-    st.write(comparison["summary"])
-    for item in comparison["comparisons"]:
-        with st.expander(f"Top candidate compared with #{item['rank']} · {item['against']} "
-                         f"(difference {item['score_gap']:.2f} percentage points)"):
-            if item["is_tie"]:
-                st.info("These candidates are tied on the current weighted score.")
-            if item["top_candidate_advantages"]:
-                st.markdown("**Top candidate's additional Found criteria**")
-                for advantage in item["top_candidate_advantages"]:
-                    st.write(f"• {advantage['requirement']} · {_scored_points_text(advantage['possible_points'])} "
-                             f"· {advantage['why']}")
-            if item["other_candidate_advantages"]:
-                st.markdown("**Other candidate's additional Found criteria**")
-                for advantage in item["other_candidate_advantages"]:
-                    st.write(f"• {advantage['requirement']} · {_scored_points_text(advantage['possible_points'])} "
-                             f"· {advantage['why']}")
-            if not item["top_candidate_advantages"] and not item["other_candidate_advantages"]:
-                st.caption("Both candidates have the same credited criteria; any remaining rank "
-                           "difference follows their overall validated weighted totals.")
-    with st.expander("Why every candidate received their position · evidence-based summaries"):
-        for explanation in comparison["candidates"]:
-            st.markdown(f"**{explanation['candidate']}**")
-            st.write(explanation["summary"])
-            if explanation["weighted_score"] is None:
-                st.info("Assessment incomplete: the evidence below is provisional. "
-                        "No weighted contributions or rank are assigned to this CV.")
-            if explanation["strengths"]:
-                st.markdown("**Strongest credited requirements**" if explanation["weighted_score"] is not None
-                            else "**Verified Found criteria · no points allocated yet**")
-                for item in explanation["strengths"][:5]:
-                    st.write(f"• {item['requirement']} ({_scored_points_text(item['earned_points'], prefix='+')}) · "
-                             f"{item['why']}")
-            if explanation["gaps"]:
-                st.markdown("**Largest weighted gaps**")
-                for item in explanation["gaps"][:5]:
-                    points = (_scored_points_text(item["possible_points"]) + " unearned"
-                              if item["possible_points"] is not None else
-                              _scored_points_text(None))
-                    st.write(f"• {item['requirement']} ({points}) · "
-                             f"{item['why']}")
-            if explanation["audit"]["status"] != "structurally_valid":
-                st.caption(f"Reasoning check: {explanation['audit']['status']} · "
-                           f"{len(explanation['audit']['repairs'])} local repair(s); "
-                           "review evidence before hiring decisions.")
+        _rank_explanation_row(explanation)
+    with st.expander("Optional · Compare the leading candidate with others", expanded=False):
+        _insight_card("Why this candidate ranks first" if comparison["top_candidate_indices"]
+                      else "Why no ranking is available", comparison["summary"],
+                      label="Head-to-head comparison", tone="blue")
+        if comparison["comparisons"]:
+            selected_comparison = st.selectbox(
+                "Compare against",
+                range(len(comparison["comparisons"])),
+                format_func=lambda i: comparison["comparisons"][i]["against"],
+                key="cv_rank_comparison_candidate",
+            )
+            selected = comparison["comparisons"][selected_comparison]
+            st.metric("Weighted score difference", f"{selected['score_gap']:.2f} points")
+            if selected["is_tie"]:
+                st.info("These candidates have the same weighted score. Neither is arbitrarily preferred.")
+            left_advantage, right_advantage = st.columns(2)
+            with left_advantage:
+                st.markdown("**Where the leader has additional verified matches**")
+                for item in selected["top_candidate_advantages"]:
+                    st.write(f"**{item['requirement']}** · {_scored_points_text(item['possible_points'])}"
+                             f" — {item['why']}")
+                if not selected["top_candidate_advantages"]:
+                    st.caption("No additional Found requirements in this comparison.")
+            with right_advantage:
+                st.markdown("**Where the other candidate has additional verified matches**")
+                for item in selected["other_candidate_advantages"]:
+                    st.write(f"**{item['requirement']}** · {_scored_points_text(item['possible_points'])}"
+                             f" — {item['why']}")
+                if not selected["other_candidate_advantages"]:
+                    st.caption("No additional Found requirements in this comparison.")
+        else:
+            st.caption("A head-to-head comparison becomes available when more than one candidate has a verified rank.")
+    st.caption("For every requirement's full explanation and exact CV passages, use the individual candidate review below.")
     a, b = st.columns(2)
     output = io.StringIO()
     fields = ["Rank", "Candidate", "Score"]
@@ -1572,7 +1758,9 @@ def _ranking(report: RankingReport):
 
 
 def _candidate_evidence(report: RankingReport):
-    st.markdown("#### Final JD-to-CV assessment")
+    _section_title("Final JD-to-CV assessment",
+                   "Inspect each candidate's decisions, supporting evidence, and reasoning.",
+                   eyebrow="Individual candidate review")
     if report.build_id != BUILD_ID:
         st.error(
             f"This displayed report was assessed with build {report.build_id}, "
@@ -1631,32 +1819,40 @@ def _candidate_evidence(report: RankingReport):
     except ValueError as exc:
         st.error(f"Cannot validate individual ranking reasoning: {exc}")
     else:
-        st.markdown("##### Why this CV received its ranking")
-        st.write(explanation["summary"])
-        if explanation["strengths"]:
-            st.markdown("**Strongest credited evidence**" if explanation["weighted_score"] is not None
-                        else "**Verified Found evidence · score withheld**")
-            for item in explanation["strengths"][:6]:
-                st.write(f"• {item['requirement']} · {_scored_points_text(item['earned_points'], prefix='+')} "
-                         f"· {item['why']}")
-        if explanation["gaps"]:
-            st.markdown("**Highest-impact gaps**")
-            for item in explanation["gaps"][:6]:
-                st.write(f"• {item['requirement']} · Potential: {_scored_points_text(item['possible_points'])} "
-                         f"· {item['why']}")
+        _section_title("Why this CV received its ranking",
+                       "What helped this candidate's score, and what held it back.",
+                       eyebrow="Evidence-based ranking explanation")
+        _insight_card(
+            f"{candidate.candidate_name} · ranking rationale", explanation["summary"],
+            label="Assessment summary",
+            tag=(f"Rank #{explanation['rank']} · {explanation['weighted_score']:.2f}%"
+                 if explanation["weighted_score"] is not None and explanation["rank"] is not None
+                 else "Assessment incomplete · no score"),
+            tone="teal" if explanation["weighted_score"] is not None else "amber",
+        )
+        strengths_column, gaps_column = st.columns(2, gap="medium")
+        with strengths_column:
+            st.markdown('<div class="cv-mini-title">✓ What helped this CV</div>',
+                        unsafe_allow_html=True)
+            if explanation["strengths"]:
+                for item in explanation["strengths"][:4]:
+                    _evidence_tile(item)
+            else:
+                st.caption("No verified Found requirement evidence is available yet.")
+        with gaps_column:
+            st.markdown('<div class="cv-mini-title">◇ What reduced the match</div>',
+                        unsafe_allow_html=True)
+            if explanation["gaps"]:
+                for item in explanation["gaps"][:4]:
+                    _evidence_tile(item, gap=True)
+            else:
+                st.caption("No Not Found criteria are recorded in this assessment.")
         if explanation["transferable"]:
             st.caption("Related but non-scoring capabilities: " + ", ".join(
                 item["requirement"] for item in explanation["transferable"]))
-        audit = explanation["audit"]
-        with st.expander(f"Reasoning reliability check · {audit['status']}"):
-            st.caption(audit["validation_scope"])
-            st.caption("Repairs reconstruct only explanations; no score, ranking, or API call changes.")
-            for issue in audit["repairs"]:
-                st.warning(f"{issue['requirement_id']}: {'; '.join(issue['issues'])}")
-            for warning in audit["warnings"]:
-                st.warning(warning)
-            if not audit["repairs"] and not audit["warnings"]:
-                st.success("All criterion decisions, retained citations and contribution totals passed structural checks.")
+        if explanation["audit"]["status"] == "needs_review":
+            st.warning("Some explanation details need an audit review. The validated scoring "
+                       "has not been changed; technical diagnostics are in Technical details.")
     if st.session_state.get("cv_weight_split", False):
         st.caption(f"JD breakdown · Required {buckets['jd_required']['found']}/{buckets['jd_required']['total']} "
                    f"· Preferred {buckets['jd_preferred']['found']}/{buckets['jd_preferred']['total']} "
@@ -1671,26 +1867,25 @@ def _candidate_evidence(report: RankingReport):
         st.caption(f"Partial evidence review only: {final.get('Unverified', 0)} "
                    "unverified criterion/criteria. Do not compare these counts "
                    "as a completed score or rank.")
-    if candidate.primary_score is None:
-        st.caption("Partial assessment; unverified rows are not scored.")
     if not any(r.constraint.kind == "experience" and r.constraint.minimum_years is not None
                for r in report.requirements):
-        st.warning("The frozen JD has **no numeric minimum-years criterion**. A full Required match count therefore "
-                   "does not mean this candidate met a professional-experience threshold. "
-                   "Check that the uploaded JD explicitly contains the minimum in its extracted text.")
+        st.caption("Experience note: the approved JD has no numeric minimum-years criterion, "
+                   "so no professional-tenure threshold was scored.")
     if not any(r.constraint.kind == "education" for r in report.requirements):
-        st.info("The frozen JD has **no degree or field-of-study criterion**. "
-                "The candidate's actual studies are visible below, but cannot affect "
-                "the score unless the uploaded JD asks for them.")
+        st.caption("Education note: the approved JD has no degree or field-of-study requirement, "
+                   "so education did not affect the score.")
     if candidate.errors:
         with st.expander(f"Assessment and validation notices ({len(candidate.errors)})",
                          expanded=candidate.evaluation_mode == "failed"):
             st.caption("The source and deterministic validation notices from this candidate's assessment.")
             for error in candidate.errors:
                 st.warning(error)
-    if final.get("Provisional"):
-        st.warning("Provisional assessment — some evidence requires review or the assessment did not complete. "
-                   "The Found/Transferable/Not Found counts are not independently verified hiring qualifications.")
+    # Do not show a blanket provisional warning for a completed assessment.
+    # Transferable/uncertain criteria are marked for review at the specific
+    # requirement below. Genuine incompleteness was already shown above.
+    if candidate.primary_score is not None and final.get("Unverified"):
+        st.error("One or more requirements remain unverified despite a saved overall score. "
+                 "Do not use this rank until the assessment inconsistency is reviewed.")
     for notice in final.get("Notices", []):
         if notice not in candidate.errors:
             st.warning(notice)
@@ -1718,13 +1913,18 @@ def _candidate_evidence(report: RankingReport):
     st.caption(f"Showing {len(filtered)} of {len(matrix)} requirements · "
                f"{sum(row['Review recommended'] for row in filtered)} review flags")
     # Exactly ONE final requirements table; no competing primary/shadow matrix.
+    st.caption("'Why this decision' explains each JD-to-CV result. It is separate "
+               "from the leaderboard's 'Why this rank'.")
     st.dataframe([{
         "ID": item["ID"], "JD requirement": item["Requirement"],
         "Priority": item["Priority"], "Category": group_names.get(item["ID"], ""),
         "Final decision": item["Result"],
+        "Why this decision": item["Why"],
         "Cited segments": ", ".join(c["Segment"] for c in item.get("Display checkpoints", item["Checkpoints"])),
         "Review": "Suggested" if item["Review recommended"] else "",
-    } for item in filtered], hide_index=True, width="stretch")
+    } for item in filtered], hide_index=True, width="stretch",
+                 column_config={"Why this decision": st.column_config.TextColumn(
+                     "Why this decision", width="large")})
     summary_columns = ["ID", "JD requirement", "Priority", "Category", "Final decision", "What the CV establishes", "Cited segments", "Checkpoints considered", "Review", "Why"]
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=summary_columns)
@@ -1746,18 +1946,24 @@ def _candidate_evidence(report: RankingReport):
     right.download_button("Download all final evidence (JSON)",
                           json.dumps(final, ensure_ascii=False, indent=2),
                           "cv_final_evidence.json", "application/json", width="stretch")
-    st.markdown("**Requirement evidence**")
-    st.caption("Expand a requirement for its reasoning and source passages. All citations are in the JSON export.")
+    _section_title("Requirement evidence",
+                   "Open any criterion to read why it was credited, transferred, or not established.",
+                   eyebrow="JD-to-CV decisions")
+    st.caption("Original source passages are shown beneath each explanation; the complete citation ledger is available in the JSON export.")
     for item in filtered:
         icon = {"Found": "✅", "Transferable": "↔️", "Not Found": "○", "Unverified": "⚠️"}[item["Result"]]
         visible_checkpoints = item.get("Display checkpoints", item["Checkpoints"])
-        count_label = (f"{len(visible_checkpoints)} of {len(item['Checkpoints'])} checkpoints"
-                       if len(visible_checkpoints) < len(item["Checkpoints"])
-                       else f"{len(visible_checkpoints)} segment(s)")
-        with st.expander(f"{icon} {item['ID']} · {item['Requirement']} · {item['Result']} ({count_label})"):
-            st.caption(f"{group_names.get(item['ID'], item['Priority'])} · {item['Kind']} · CV evidence level: {item['Evidence level']}")
-            st.write(item["Why"])
-            st.caption("JD: " + item["JD source"])
+        with st.expander(f"{icon} {item['Requirement']} · {item['Result']}"):
+            st.caption(f"Requirement {item['ID']} · {group_names.get(item['ID'], item['Priority'])} "
+                       f"· {len(visible_checkpoints)} cited CV passage(s)")
+            st.caption("CV evidence: " + item["Evidence level"])
+            if item["Review recommended"] and item["Result"] != "Unverified":
+                st.caption("Human review suggested for this requirement; this note does not change its score.")
+            _insight_card("Why this decision", item["Why"],
+                          label="Individual criterion explanation", tag=item["Result"],
+                          tone={"Found": "teal", "Transferable": "blue",
+                                "Not Found": "slate", "Unverified": "amber"}.get(item["Result"], "slate"))
+            st.caption("Original employer requirement: " + item["JD source"])
             if len(visible_checkpoints) < len(item["Checkpoints"]):
                 st.caption(f"Showing {len(visible_checkpoints)} of {len(item['Checkpoints'])} checkpoints; see JSON for all.")
             if not item["Checkpoints"]:
@@ -1767,8 +1973,9 @@ def _candidate_evidence(report: RankingReport):
                 else:
                     st.info("No relevant source passage was retained for this requirement.")
             for n, checkpoint in enumerate(visible_checkpoints, 1):
-                st.markdown(f"**Evidence segment {n} · {checkpoint['Segment']}**")
-                st.caption(f"CV section: {checkpoint['Section']} · {', '.join(checkpoint['Sources'])}")
+                st.markdown(f"**CV passage {n}**")
+                st.caption(f"Source {checkpoint['Segment']} · CV section: {checkpoint['Section']} "
+                           f"· {', '.join(checkpoint['Sources'])}")
                 if not checkpoint["Validated against CV"]:
                     st.warning("One citation could not be verified against the retained original CV ledger; it cannot by itself establish a match.")
                 st.markdown(f'<div class="cv-source">{highlighted_source_html(checkpoint["Text"], checkpoint.get("Highlight terms") or item["Requirement"])}</div>', unsafe_allow_html=True)
@@ -1778,7 +1985,9 @@ def _candidate_evidence(report: RankingReport):
 
 
 def _jd_details(report: RankingReport):
-    st.markdown("#### Frozen JD requirements")
+    _section_title("Frozen JD requirements",
+                   "The exact criteria approved for this assessment, preserved for audit.",
+                   eyebrow="Approved employer criteria")
     if report.jd_review_approved:
         st.success("Evaluator-approved JD requirements" +
                    (" · reviewed edits applied" if report.jd_review_edited else " · extracted rows approved"))
@@ -1806,7 +2015,9 @@ def _jd_details(report: RankingReport):
 
 def _semantic_review(report: RankingReport, *, candidate_name: str | None = None):
     """Same-run live semantic proposals, not a stale uploaded JSON report."""
-    st.markdown("#### Potential transferable skills")
+    _section_title("Potential transferable skills",
+                   "Optional AI relationships for human review; these do not change verified scoring.",
+                   eyebrow="Capability cross-check")
     st.caption("AI-proposed relationships, independently unverified. The original score and ranking never change.")
     reason = st.session_state.get("cv_semantic_error")
     if reason:
@@ -1914,7 +2125,9 @@ def _semantic_review(report: RankingReport, *, candidate_name: str | None = None
 
 def _source_segments_page(report: RankingReport):
     """Full original CV source ledger for single-candidate evidence debugging."""
-    st.markdown("#### Complete CV source segments")
+    _section_title("Complete CV source segments",
+                   "Explore exact extracted passages, citations, and prioritized source text.",
+                   eyebrow="Source transparency")
     if not report.candidates:
         st.info("No CV was analyzed yet.")
         return
@@ -1975,9 +2188,40 @@ def _yake_display_rows(candidates) -> list[dict[str, object]]:
             for index, item in enumerate(ordered, 1)]
 
 
+def _reasoning_audit_panel(report: RankingReport) -> None:
+    """Diagnostics are intentionally isolated from supervisor-facing ranking prose."""
+    with st.expander("Reasoning verification · internal audit", expanded=False):
+        st.caption("Technical consistency checks only. Passing these checks does not "
+                   "independently verify a candidate's claims or prove the model's judgment.")
+        try:
+            weights = _current_weights(report)
+            for index, candidate in enumerate(report.candidates):
+                explanation = candidate_reasoning(
+                    report, index, weights,
+                    st.session_state.get("cv_final_results"),
+                    st.session_state.get("cv_source_ledgers"),
+                )
+                audit = explanation["audit"]
+                st.markdown(f"**{index + 1}. {candidate.candidate_name}**")
+                st.caption(f"Reasoning check: {audit['status']} · "
+                           f"{audit['checked_requirements']} criteria inspected")
+                st.caption(audit["validation_scope"])
+                for repair in audit["repairs"]:
+                    st.warning(f"{repair['requirement_id']}: {'; '.join(repair['issues'])}")
+                for warning in audit["warnings"]:
+                    st.warning(warning)
+                if not audit["repairs"] and not audit["warnings"]:
+                    st.success("No structural discrepancies were detected in this assessment's explanation.")
+        except ValueError as exc:
+            st.error(f"Reasoning audit unavailable: {exc}")
+
+
 def _technical(report: RankingReport):
     st.caption("Advanced diagnostics and source exports for auditing; no effect on scoring.")
-    st.markdown("#### JD phrase discovery · YAKE")
+    _reasoning_audit_panel(report)
+    _section_title("JD phrase discovery · YAKE",
+                   "Inspect the source phrases that helped structure the job description.",
+                   eyebrow="Technical audit")
     yake_rows = _yake_display_rows(report.yake_candidates)
     if yake_rows:
         left, right = st.columns([1, 2])
@@ -2083,8 +2327,15 @@ def render_app():
         st.stop()
     _styles()
     settings, use_llm, semantic_enabled = _sidebar()
-    st.title("CV Ranker")
-    st.caption("Review job requirements, assess resumes, inspect cited evidence.")
+    st.markdown(
+        '<div class="cv-hero" role="banner"><div>'
+        '<div class="cv-hero-badge">Supervisor edition · Evidence-first screening</div>'
+        '<h1 class="cv-hero-title">CV Ranker</h1>'
+        '<p class="cv-hero-description">Review approved job requirements, compare candidates '
+        'with transparent scores, and understand every decision through original CV evidence.</p>'
+        '</div><div class="cv-hero-mark" aria-hidden="true">↗</div></div>',
+        unsafe_allow_html=True,
+    )
     if settings is None:
         st.stop()
     old_provider = st.session_state.get("cv_run_provider")

@@ -166,6 +166,7 @@ def test_v4_ui_keeps_separate_segment_inspection_tab():
     source = (ROOT / "cv_ranker/ui/dashboard.py").read_text(encoding="utf-8")
     assert "03  CV source segments" in source
     assert "segment_ledger(" in source
-    assert "Evidence segment {n}" in source
+    assert "CV passage {n}" in source  # supervisor-friendly title
+    assert "checkpoint['Segment']" in source  # exact source IDs are still audited
     assert "Why this segment matters:" in source
     assert "AI evidence checkpoint {checkpoint}" in source

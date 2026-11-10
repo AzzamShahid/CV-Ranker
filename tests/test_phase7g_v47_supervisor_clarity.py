@@ -161,4 +161,8 @@ def test_ui_keeps_full_audit_export_and_caps_nonmatches_at_render():
     assert '"cv_final_evidence.json"' in source
     # V4.8 has one main evidence pass; the V4.7-specific label was retired.
     assert 'Assessment and validation notices' in source
-    assert 'if final.get("Provisional")' in source
+    # V4.9.42 intentionally separates a completed CV's human review flags from
+    # genuinely unfinished judgments, removing the blanket provisional banner.
+    assert 'if final.get("Provisional")' not in source
+    assert 'if item["Review recommended"] and item["Result"] != "Unverified"' in source
+    assert 'if candidate.primary_score is None:' in source

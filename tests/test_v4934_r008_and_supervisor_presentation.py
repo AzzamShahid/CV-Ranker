@@ -72,7 +72,11 @@ def test_all_steps_are_prominent_and_in_order_and_status_is_visible():
         "Step 5 · Edit individual JD allocations",
         "Step 6 · Assess candidates against the approved JD",
     ), 1):
-        assert source.count('#### ' + phrase) == 1, f"Step {index} not a visible heading"
+        # V4.9.40 renders its numbered headings as accessible, coordinated
+        # section cards instead of bare Markdown H4s.
+        assert source.count('_section_title("' + phrase + '"') == 1, (
+            f"Step {index} not a visible section heading")
+    assert '<h3 class="cv-section-heading">' in source
     assert 'st.status("Assessing candidates in the background", state="running"' in source
     assert 'st.status("Recovering unfinished CV assessments", state="running"' in source
 

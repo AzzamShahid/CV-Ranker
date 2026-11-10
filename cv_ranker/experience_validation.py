@@ -586,6 +586,48 @@ def check_experience(
                            subject=c.subject, claims=claims, explanation=note)
 
 
+def _successful_experience_reason(check: ExperienceCheck,
+                                  source_by_id: dict[str, ResumeSegment]) -> str | None:
+    """Explain the accepted numeric CV claim in supervisor-facing language.
+
+    Use the actual physical duration clause and original section, not a model's
+    possibly stale narrative or a hardcoded field of work. The claim remains
+    self-reported experience, not independent employment verification.
+    """
+    if check.outcome != 'sufficient' or check.minimum_years is None:
+        return None
+    supporting = next((c for c in check.claims if c.tone == 'positive'
+                       and c.lower_years >= check.minimum_years), None)
+    if supporting is None:
+        return None
+    source = source_by_id.get(supporting.segment_id)
+    if source is None:
+        return None
+    match = _DURATION.search(supporting.quote)
+    if match is None:
+        return None
+    # Capture the report's actual work-scope wording after the numeric term,
+    # including adjacent months and compound names like UI/UX or quality/R&D.
+    reported = supporting.quote[match.start():].strip()
+    reported = re.split(r'(?<!\d)[.;](?!\d)', reported, maxsplit=1)[0]
+    reported = ' '.join(reported.split()).rstrip(',:- ')
+    if len(reported) > 150:
+        reported = reported[:150].rsplit(' ', 1)[0].rstrip(',:- ') + '…'
+    if not reported:
+        return None
+    source_label = {
+        'summary': 'professional summary',
+        'experience': 'experience section',
+        'work_experience': 'work-experience section',
+    }.get(source.section, 'original CV statement')
+    location = (f"the candidate's {source_label}" if source_label != 'original CV statement'
+                else f'the {source_label}')
+    return (f'The candidate reports {reported}, which meets the JD minimum of '
+            f'{check.minimum_years:g} years. This is supported by {location} '
+            'and its cited original CV passage. The duration is CV-reported, '
+            'not independently confirmed employment.')
+
+
 def apply_experience_checks(*, requirements: list[ValidatedRequirement],
                             assessments: list[RequirementAssessment],
                             resume_text: str) -> tuple[list[RequirementAssessment], list[str], bool]:
@@ -706,6 +748,11 @@ def apply_experience_checks(*, requirements: list[ValidatedRequirement],
                 f'work scope is not established. {check.explanation} '
                 'This is Transferable for HR review, not Found or numeric credit.'
             )
+        elif status == 'matched' and check.outcome == 'sufficient':
+            # A validator-rescued Found row must never retain the old model's
+            # Not Found text or a generic "does not establish" explanation.
+            # Store one source-grounded explanation for UI and every export.
+            reason = _successful_experience_reason(check, source_by_id) or row.reason
         elif status != row.status:
             reason = ('The cited experience does not establish the complete '
                       f'JD minimum: {check.explanation}')
