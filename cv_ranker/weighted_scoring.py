@@ -232,6 +232,56 @@ def weighted_candidate(report: RankingReport, candidate: CandidateResult,
             "reason": "Verified Found only; Transferable and Not Found earn zero"}
 
 
+def provisional_score_bounds(report: RankingReport, candidate: CandidateResult,
+                             weights: ScoreWeights) -> dict[str, object]:
+    """Show useful partial evidence without manufacturing a final rank.
+
+    The floor contains *only* verified Found credit; the ceiling assumes all
+    unresolved requirements might later be Found. This is an evidence range,
+    never a confidence percentage, an earned score, or a hiring recommendation.
+    A model outage must not erase the verified work already available to HR.
+    """
+    requirements = {r.requirement_id: r for r in report.requirements}
+    assessments = {a.requirement_id: a for a in candidate.assessments}
+    if (len(requirements) != len(report.requirements)
+            or len(assessments) != len(candidate.assessments)
+            or set(assessments) - set(requirements)):
+        raise ValueError("Cannot estimate bounds from duplicate or unexpected requirement IDs")
+    shares = _validated_shares(report, weights)
+    counts = criterion_bucket_counts(report)
+    active_groups = {
+        "experience": counts["experience"]["total"] > 0,
+        "education": counts["education"]["total"] > 0,
+        "jd": counts["jd_required"]["total"] + counts["jd_preferred"]["total"] > 0,
+    }
+    raw = {"experience": weights.experience, "education": weights.education, "jd": weights.jd}
+    total_active = sum(raw[key] for key, enabled in active_groups.items() if enabled)
+    if not total_active:
+        raise ValueError("No positive weighted category applies to the frozen JD")
+    confirmed = 0.0
+    unresolved_possible = 0.0
+    unresolved = 0
+    for req in report.requirements:
+        row = assessments.get(req.requirement_id)
+        bucket = allocation_bucket(req)
+        possible = (100.0 * raw[bucket] / total_active
+                    * shares[req.requirement_id] / 100.0)
+        if row is not None and _earned(row):
+            confirmed += possible
+        elif row is None or row.assessment_state == "unverified":
+            unresolved_possible += possible
+            unresolved += 1
+    return {
+        "verified_floor": round(confirmed, 2),
+        "possible_ceiling": round(min(100.0, confirmed + unresolved_possible), 2),
+        "unverified_requirements": unresolved,
+        "provisional": candidate.primary_score is None or unresolved > 0,
+        "reason": ("Only verified Found requirements contribute to the floor; "
+                   "unresolved requirements contribute to the possible ceiling, "
+                   "not an earned score."),
+    }
+
+
 def weighted_leaderboard(report: RankingReport, weights: ScoreWeights) -> list[dict[str, object]]:
     rows = []
     for index, candidate in enumerate(report.candidates):

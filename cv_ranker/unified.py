@@ -145,6 +145,41 @@ Answer TWO questions, in this order:
    A denial, copied JD text, title or learning plan alone cannot transfer.
    If NO, choose not_found/absent; if conflicting or unclear, uncertain/uncertain.
 
+DECISION CALIBRATION: Prefer a supported conclusive result to vague
+"uncertain" hedging. If the original CV affirmatively claims the exact JD
+capability, award found/direct (or found/entailed when completed duties truly
+prove it). Do not demand verification of self-reported CV facts, exclusive
+ownership, a separate deployment, or a dated role unless the JD explicitly
+requires that condition. Substantive, completed participation in a team task
+can establish participation or exposure; merely observing, attending a class,
+or helping on an unrelated adjacent task cannot establish performance or
+independent ownership. If exact satisfaction is not shown but completed
+related work is, choose transferable/overlap. If neither is established,
+choose not_found/absent. Reserve uncertain/uncertain for an actual material
+contradiction or ambiguity that prevents either conclusion; do not use it
+just because evidence comes from a self-reported resume. Never guess a
+confidence percentage or replace genuine missing evidence with optimism.
+
+UNCERTAINTY RESOLUTION EXAMPLES (apply the logic to EVERY profession):
+- JD requires participation/exposure; source describes a concrete completed
+  contribution to the requested work: FOUND if the contribution actually
+  establishes what was asked, even if the applicant was not team lead.
+- JD requires personally operating/supervising something; source says the
+  applicant observed it or attended an introduction: NOT FOUND for that
+  condition. Completed adjacent work may still be TRANSFERABLE.
+- JD requires N years in a stated professional field; dated full-time role
+  spans meet N and the same roles contain completed field-relevant duties:
+  FOUND when all required conditions are evidenced. Compute duration from
+  dates rather than waiting for the literal phrase "N years". Ambiguous
+  dates or unrelated duties cannot be credited by confidence alone.
+- JD names a completed academic degree; source reports a completed award in
+  an accepted field and level: FOUND even if reported as an abbreviation or
+  without a separate graduation certificate. In-progress study is not a
+  completed award; a genuinely related, completed other major may TRANSFER.
+- A citation is missing the actual requested function: NOT FOUND, not
+  "uncertain because it might be there". A direct source conflict that cannot
+  be resolved from the CV is legitimately UNCERTAIN and merits human review.
+
 For DEGREE criteria, check the JD's exact major versus any explicit inclusive
 field-family allowance. A completed degree in the named major or a permitted
 family may be found. A DIFFERENT but substantially related completed degree
@@ -297,8 +332,42 @@ DECISION PROCESS — apply these steps to EACH criterion in order:
    job title or an intention to learn never establishes transferable ability.
 3. If neither direct satisfaction nor meaningful completed overlap exists,
    choose not_found with relation=absent. This means 'not established by this
-   CV', not incompetence. Contradictory, tentative, insufficiently scoped or
-   learning-only claims are uncertain with relation=uncertain.
+   CV', not incompetence. Learning-only or merely tentative claims with no
+   completed exact or related work are not_found; reserve uncertain for
+   materially contradictory or genuinely unclear scope evidence.
+
+DECISION CALIBRATION: Resolve a plausible but incomplete judgment using the
+strongest ORIGINAL CV evidence and the precise frozen JD condition. A clear
+affirmative claim of the requested skill, a completed matching academic award,
+or actual completed work meeting a performance criterion is found, even if
+only reported by the candidate. Do not require exclusive project ownership,
+commercial deployment, or independent proficiency verification unless the
+JD demands them. Meaningful participation in a team activity can meet a JD
+asking for participation/exposure; it does not automatically meet an explicit
+independent-operation, supervision or completed-deliverable condition.
+Completed similar work that falls short of the named condition is transferable;
+absence of an established exact/related claim is not_found. Use uncertain only
+when source facts materially conflict or the scope remains genuinely unclear;
+do not use it as a generic low-confidence option, and never estimate certainty
+without supporting original CV passages.
+
+APPLY THIS ORDER FOR EVERY JD ID: (1) identify exactly what the employer
+requires and whether the CV reports completion, dates, scope or only study;
+(2) examine cited original passages for performed work/credential claims;
+(3) choose Found when every explicit condition is supported, even if the CV
+uses different wording and does not independently verify its own claims;
+(4) otherwise choose Transferable for genuinely completed related work;
+(5) otherwise choose Not Found. Use Uncertain ONLY if original CV passages
+materially conflict or no responsible choice among these can be made.
+Do not equate a self-reported fact with an unverified model response.
+For experience, calculate eligible non-overlapping full-time months from
+dated roles and verify field-relevant duties in each role; literal year-count
+text is optional. For education, a completed award at the exact accepted
+level/field is Found; other related completed fields are Transferable if
+the JD does not accept them, and unfinished study does not meet completion.
+For involvement, a real documented contribution can meet an exposure or
+participation requirement, but cannot silently prove independent leadership,
+supervision, deployment, or multiple years unless those facts are shown.
 
 MANDATORY ENTAILMENT CHECK: Before found, ask whether all cited statements
 could be TRUE while the JD condition remains FALSE. If yes, do not award
@@ -1138,6 +1207,22 @@ def _map_response(response: UnifiedResponse, group: list[ValidatedRequirement],
             if normalized_notices is not None:
                 normalized_notices.append(
                     f"{rid}: overlap relation aligned to unscored transferable decision.")
+        # A model sometimes writes "uncertain" even though its structured
+        # relation unambiguously says that the cited work is only related, or
+        # that the exact condition is not established. Those two outcomes
+        # cannot add score. Resolve this *format inconsistency* instead of
+        # spending cloud credit on the same negative/transferable judgment.
+        # Never infer Found from a conflicting direct/entailed relation: that
+        # still needs the ordinary positive source and specialist validators.
+        if (rejected_reason is None and row.decision == "uncertain"
+                and row.relation in {"absent", "overlap"}
+                and (row.relation == "absent" or row.evidence_ids)):
+            resolved = "not_found" if row.relation == "absent" else "transferable"
+            row = row.model_copy(update={"decision": resolved})
+            if normalized_notices is not None:
+                normalized_notices.append(
+                    f"{rid}: ambiguous label aligned with its model-declared "
+                    f"{row.relation} relationship; no direct credit inferred.")
         valid_relation = {
             "found": {"direct", "entailed"},
             "transferable": {"overlap"},
@@ -1233,6 +1318,14 @@ def _independently_adjudicate(llm, group: list[ValidatedRequirement], prompt: st
     for req in group:
         rid = req.requirement_id
         verdict: IndependentSemanticVerdict = getattr(data, rid)
+        if (verdict.decision == "uncertain" and verdict.relation in {"absent", "overlap"}
+                and (verdict.relation == "absent" or verdict.evidence_ids)):
+            verdict = verdict.model_copy(update={
+                "decision": "not_found" if verdict.relation == "absent" else "transferable"})
+            if normalization_notices is not None:
+                normalization_notices.append(
+                    f"{rid}: independent ambiguous label aligned to a "
+                    f"non-scoring {verdict.relation} relation; no Found inferred.")
         cited = verdict.evidence_ids
         source_limit = (6 if req.constraint.kind == "experience"
                         and req.constraint.minimum_years is not None else 3)

@@ -31,7 +31,7 @@ from cv_ranker.schemas import CandidateResult, JDReviewDraft, RankingReport
 from cv_ranker.weighted_scoring import (
     ScoreWeights, allocation_bucket, even_requirement_shares,
     rebalance_requirement_share, criterion_bucket_counts, requirement_bucket,
-    weighted_candidate, weighted_leaderboard,
+    weighted_candidate, weighted_leaderboard, provisional_score_bounds,
 )
 from cv_ranker.report_bundle import complete_results_zip
 from cv_ranker.recovery_bundle import (
@@ -1776,10 +1776,15 @@ def _ranking(report: RankingReport):
     present = []
     for item in calculated:
         earlier = baseline[int(item["candidate_index"])]
+        candidate = report.candidates[int(item["candidate_index"])]
+        bounds = provisional_score_bounds(report, candidate, weights)
         row = {
             "Rank": str(item["rank"]) if item["rank"] is not None else "Withheld",
             "Candidate": item["candidate"],
             "Score": item["weighted_score"],
+            "Evidence range": (
+                f"{bounds['verified_floor']:.2f}–{bounds['possible_ceiling']:.2f}% "
+                "(provisional)" if bounds["provisional"] else "—"),
         }
         if has_experience:
             row["Experience"] = item["experience"]
@@ -1797,7 +1802,9 @@ def _ranking(report: RankingReport):
                         "placement_reason", reasons[int(item["candidate_index"])]["summary"])})
         present.append(row)
     if calculated and not any(r["weighted_score"] is not None for r in calculated):
-        st.warning("No final rank is available yet. One or more assessments may be incomplete.")
+        st.warning("No final rank is available yet. Provisional evidence ranges below "
+                   "show credit already verified and the maximum additional "
+                   "credit still unresolved; they are not final scores.")
     with st.expander("How these scores are calculated", expanded=False):
         st.caption("Required and Preferred requirements share the JD scoring allocation. "
                    "Experience and Education use their own allocations; Transferable never earns points.")
@@ -1813,6 +1820,32 @@ def _ranking(report: RankingReport):
         "Score": st.column_config.ProgressColumn("Weighted score", min_value=0, max_value=100, format="%.1f%%"),
         "Why this rank": st.column_config.TextColumn("Why this rank", width="large"),
     })
+    # A technical failure must not prevent the reviewer from inspecting or
+    # comparing the *validated* portion of otherwise incomplete CVs. Keep this
+    # separate from the official rank, and never treat an unverified result as
+    # Not Found (or give it guessed positive credit).
+    provisional = []
+    for row in calculated:
+        candidate = report.candidates[int(row["candidate_index"])]
+        if row["weighted_score"] is not None or not candidate.assessments:
+            continue
+        bounds = provisional_score_bounds(report, candidate, weights)
+        provisional.append({
+            "Candidate": row["candidate"],
+            "Verified Found credit": bounds["verified_floor"],
+            "Possible upper bound": bounds["possible_ceiling"],
+            "Unverified criteria": bounds["unverified_requirements"],
+            "Transferable": baseline[int(row["candidate_index"])]["Transferable"],
+        })
+    if provisional:
+        provisional.sort(key=lambda row: (-row["Verified Found credit"],
+                                          row["Candidate"].casefold()))
+        st.markdown("**Provisional comparison of incomplete assessments**")
+        st.caption("Ordered by already verified Found credit only. This is a "
+                   "review aid, not a final candidate ranking. Unverified "
+                   "requirements are not treated as Not Found and earn no "
+                   "points until verified.")
+        st.dataframe(provisional, hide_index=True, width="stretch")
     _section_title("Why candidates ranked this way",
                    "One clear explanation per candidate. Detailed evidence is available below.",
                    eyebrow="Ranking explained")
@@ -1853,7 +1886,7 @@ def _ranking(report: RankingReport):
     st.caption("For every requirement's full explanation and exact CV passages, use the individual candidate review below.")
     a, b = st.columns(2)
     output = io.StringIO()
-    fields = ["Rank", "Candidate", "Score"]
+    fields = ["Rank", "Candidate", "Score", "Evidence range"]
     if has_experience:
         fields.append("Experience")
     if has_education:
@@ -1926,9 +1959,9 @@ def _candidate_evidence(report: RankingReport):
     candidate = report.candidates[index]
     if candidate.primary_score is None:
         if candidate.assessments:
-            st.warning("Ranking withheld because one or more requirements are unverified. "
-                       "Verified requirement decisions remain visible below; the "
-                       "candidate has no final percentage or leaderboard rank.")
+            st.warning("Some requirements remain technically unverified. Verified "
+                       "decisions and a provisional evidence range remain visible; "
+                       "a final percentage and rank require complete assessment.")
         else:
             st.error("Candidate assessment failed before individual requirements could "
                      "be validated. No final score or rank is available.")
@@ -1956,6 +1989,13 @@ def _candidate_evidence(report: RankingReport):
     try:
         weighted = weighted_candidate(report, candidate, _current_weights(report))
         c.metric("Weighted score", f"{weighted['score']:.1f}%" if weighted["score"] is not None else "—")
+        if weighted["score"] is None and candidate.assessments:
+            bounds = provisional_score_bounds(report, candidate, _current_weights(report))
+            st.info(f"Provisional evidence range: {bounds['verified_floor']:.2f}% "
+                    f"verified Found credit to {bounds['possible_ceiling']:.2f}% "
+                    f"possible if the remaining {bounds['unverified_requirements']} "
+                    "unverified requirement(s) later qualify. This is not a "
+                    "final score or rank, and no unverified criterion earns points.")
     except ValueError:
         c.metric("Weighted score", "—")
     try:

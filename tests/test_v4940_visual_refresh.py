@@ -10,9 +10,9 @@ def test_assessment_repair_has_a_new_protocol_identity():
     # The 4.9.40–4.9.42 styling revisions left the paid assessment identity
     # unchanged. This release changes how invalid grouped model rows are
     # reconciled, so old incomplete checkpoints must not mix with new results.
-    assert UI_RELEASE_VERSION == "4.9.54"
-    assert BUILD_ID == "phase7g-v4-9-54-unbulleted-requirements-completeness-2026-11-11"
-    assert ASSESSMENT_PROTOCOL_VERSION == 40
+    assert UI_RELEASE_VERSION == "4.9.55"
+    assert BUILD_ID == "phase7g-v4-9-55-calibrated-uncertainty-local-edit-2026-11-11"
+    assert ASSESSMENT_PROTOCOL_VERSION == 41
 
 
 def test_supervisor_cards_render_consistently_in_streamlit():

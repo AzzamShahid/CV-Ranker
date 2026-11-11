@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 
 from .build_info import ASSESSMENT_PROTOCOL, ASSESSMENT_PROTOCOL_VERSION, BUILD_ID
@@ -15,6 +16,19 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _enforce_release_hashes() -> bool:
+    """Local work is editable; externally exposed installations are not.
+
+    `CVR_ACCESS_MODE=local` is separately enforced as a loopback-only listener
+    by the app's access policy. A local developer can opt back into strict
+    integrity checks; non-local modes cannot switch them off via this flag.
+    """
+    local = os.getenv("CVR_ACCESS_MODE", "local").strip().casefold() == "local"
+    opt_in = os.getenv("CVR_STRICT_SOURCE_HASHES", "").strip().casefold() in {
+        "1", "true", "yes", "on"}
+    return not local or opt_in
 
 
 def runtime_fingerprint() -> dict[str, str]:
@@ -37,31 +51,33 @@ def runtime_fingerprint() -> dict[str, str]:
     if "missing, non-contextual, or irrelevant evidence" in assessor_text:
         raise RuntimeError("Stale assessor detected: legacy free-text evidence validator is still present")
 
-    if not manifest_path.exists():
+    strict = _enforce_release_hashes()
+    if not manifest_path.exists() and strict:
         raise RuntimeError(f"Build manifest is missing: {manifest_path}")
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest.get("build_id") != BUILD_ID:
-        raise RuntimeError(
-            f"Build manifest ID mismatch: manifest={manifest.get('build_id')!r}, runtime={BUILD_ID!r}"
-        )
-    if manifest.get("assessment_protocol") != ASSESSMENT_PROTOCOL:
-        raise RuntimeError("Assessment protocol in build manifest does not match runtime code")
-    if manifest.get("assessment_protocol_version") != ASSESSMENT_PROTOCOL_VERSION:
-        raise RuntimeError("Assessment protocol version in build manifest does not match runtime code")
-
+    manifest = (json.loads(manifest_path.read_text(encoding="utf-8"))
+                if manifest_path.exists() else {})
     files = manifest.get("files") or {}
-    if not files:
-        raise RuntimeError("Build manifest contains no file hashes")
-    for relative, expected_hash in files.items():
-        path = project_root / relative
-        if not path.exists():
-            raise RuntimeError(f"Build integrity failure: missing {relative}")
-        actual_hash = _sha256(path)
-        if actual_hash != expected_hash:
+    if strict:
+        if manifest.get("build_id") != BUILD_ID:
             raise RuntimeError(
-                f"Build integrity failure: {relative} hash mismatch. "
-                "The project folder contains mixed/stale files."
+                f"Build manifest ID mismatch: manifest={manifest.get('build_id')!r}, runtime={BUILD_ID!r}"
             )
+        if manifest.get("assessment_protocol") != ASSESSMENT_PROTOCOL:
+            raise RuntimeError("Assessment protocol in build manifest does not match runtime code")
+        if manifest.get("assessment_protocol_version") != ASSESSMENT_PROTOCOL_VERSION:
+            raise RuntimeError("Assessment protocol version in build manifest does not match runtime code")
+        if not files:
+            raise RuntimeError("Build manifest contains no file hashes")
+        for relative, expected_hash in files.items():
+            path = project_root / relative
+            if not path.exists():
+                raise RuntimeError(f"Build integrity failure: missing {relative}")
+            actual_hash = _sha256(path)
+            if actual_hash != expected_hash:
+                raise RuntimeError(
+                    f"Build integrity failure: {relative} hash mismatch. "
+                    "The project folder contains mixed/stale files."
+                )
 
     return {
         "build_id": BUILD_ID,
@@ -69,6 +85,7 @@ def runtime_fingerprint() -> dict[str, str]:
         "assessment_protocol_version": str(ASSESSMENT_PROTOCOL_VERSION),
         "package_path": str(package_dir),
         "manifest_files": str(len(files)),
+        "source_integrity": "strict_verified" if strict else "local_editable",
     }
 
 
@@ -82,4 +99,5 @@ if __name__ == "__main__":
     print(f"ASSESSMENT_PROTOCOL={info['assessment_protocol']}")
     print(f"ASSESSMENT_PROTOCOL_VERSION={info['assessment_protocol_version']}")
     print(f"MANIFEST_FILES={info['manifest_files']}")
+    print(f"SOURCE_INTEGRITY={info['source_integrity']}")
     print(f"PACKAGE_PATH={info['package_path']}")

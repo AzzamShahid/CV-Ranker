@@ -34,8 +34,11 @@ def run_checks(*, remote: bool = False) -> list[Check]:
     except (RuntimeError, OSError, ValueError) as exc:
         checks.append(Check("source integrity", False, f"Runtime verification failed ({type(exc).__name__})"))
     else:
-        checks.append(Check("source integrity", True,
-                            f"Verified assessment protocol v{runtime['assessment_protocol_version']}"))
+        strict_source = runtime.get("source_integrity") == "strict_verified"
+        checks.append(Check("source integrity", strict_source or not remote,
+                            (f"Verified release file hashes and protocol v{runtime['assessment_protocol_version']}"
+                             if strict_source else
+                             "Local editable development mode; file hashes are NOT verified")))
     try:
         config = tomllib.loads((ROOT / ".streamlit/config.toml").read_text(encoding="utf-8"))
         server = config["server"]

@@ -2,9 +2,9 @@
 
 Evidence-first, configurable JD-to-CV screening with original source citations, transparent scoring and reviewer-facing explanations.
 
-**Current interface:** 4.9.54 (11 November 2026)  
-**Assessment build:** `phase7g-v4-9-54-unbulleted-requirements-completeness-2026-11-11`  
-**Protocol:** `segment_ids_semantic_llm` v39  
+**Current interface:** 4.9.55 (11 November 2026)  
+**Assessment build:** `phase7g-v4-9-55-calibrated-uncertainty-local-edit-2026-11-11`  
+**Protocol:** `segment_ids_semantic_llm` v41  
 **Status:** local supervisor-review application; not an autonomous hiring decision system.
 
 ## What it does
@@ -19,7 +19,7 @@ Evidence-first, configurable JD-to-CV screening with original source citations, 
 
 The current AI-assisted pipeline uses **local Ollama EmbeddingGemma retrieval** with a selectable **Ollama or OpenRouter assessment model**. The optional diagnostic/research scripts are separate from the authoritative final score. There are no hardcoded profession-specific matching answers. The employer's explicit alternative academic majors are accepted at their stated degree level, while relevant work from a different discipline can be displayed as **Transferable** only when supported by cited original CV duties; it never earns direct points.
 
-The Streamlit UI uses native **Light / Dark / System** themes with high-contrast custom evidence cards and readable buttons, inspired by Reliance Weaving Mills' green corporate palette. In the Streamlit app menu, select **Settings → Theme**. The “RW” initials are a text-based placeholder, **not an official company logo**. Brand customization makes no assessment/API requests and keeps private-file static serving disabled. See [4.9.54 release notes](docs/RELEASE_NOTES_V4_9_54.md).
+The Streamlit UI uses native **Light / Dark / System** themes with high-contrast custom evidence cards and readable buttons, inspired by Reliance Weaving Mills' green corporate palette. In the Streamlit app menu, select **Settings → Theme**. The “RW” initials are a text-based placeholder, **not an official company logo**. Brand customization makes no assessment/API requests and keeps private-file static serving disabled. See [4.9.55 release notes](docs/RELEASE_NOTES_V4_9_55.md).
 
 > **Decision support, not verification:** CVs are self-reported. Source citations, structural checks and model judgments do not establish real-world qualifications, employment authenticity or fitness to hire. A person must review significant decisions.
 
@@ -59,9 +59,9 @@ You may omit the Qwen pull if using cloud-only assessment, but **keep Ollama and
 .\run_ui.cmd
 ```
 
-Open **http://localhost:8501**. Work through **Analyze → Review/approve extracted JD → Adjust weights → Run assessment → Rankings & evidence**. Other tabs display original CV segments and technical details. `run_ui.cmd` fails safely if port 8501 is already in use or release hashes do not match.
+Open **http://localhost:8501**. Work through **Analyze → Review/approve extracted JD → Adjust weights → Run assessment → Rankings & evidence**. Other tabs display original CV segments and technical details. `run_ui.cmd` fails safely if port 8501 is already in use. Local-only mode permits legitimate edits to project source without a build-manifest hash mismatch; use `CVR_STRICT_SOURCE_HASHES=1` to opt back into source-hash verification. Remotely accessible modes always enforce the release manifest and cannot opt out.
 
-**Access safeguard (retained in 4.9.54):** The app starts in loopback-only `CVR_ACCESS_MODE=local` and refuses a non-loopback bind in that mode. For a future managed deployment, optional OIDC authentication requires an explicit verified-email allowlist and configured Streamlit identity-provider secrets; see [production security and deployment acceptance](docs/PRODUCTION_SECURITY.md). A public deployment is **not approved** by enabling OIDC alone.
+**Access safeguard (retained in 4.9.55):** The app starts in loopback-only `CVR_ACCESS_MODE=local` and refuses a non-loopback bind in that mode. For a future managed deployment, optional OIDC authentication requires an explicit verified-email allowlist and configured Streamlit identity-provider secrets; see [production security and deployment acceptance](docs/PRODUCTION_SECURITY.md). A public deployment is **not approved** by enabling OIDC alone.
 
 For a no-network local configuration check:
 

@@ -49,7 +49,7 @@ Rules:
 4. You may recognize genuine semantic equivalents or abbreviations when they mean the SAME requirement. An abbreviation for the *same named item* is different from a *different competing item*. Python does not maintain a semantic alias dictionary; this judgment belongs to you.
 5. For a genuine explicit "A or B" alternative, matching either stated alternative satisfies the one frozen requirement.
 6. An affirmatively listed ordinary skill is sufficient self-reported evidence for that skill, without a separate project. Do not demand professional-use proof unless the JD explicitly demands it. Unambiguous abbreviations referring to the SAME named item count as that item, not transfer to a different one.
-7. Learning, interest, studying, basic familiarity, limited exposure, or indirect team exposure is not full proficiency; use uncertain unless the resume explicitly states lack of the requirement.
+7. Learning, interest, studying, basic familiarity or merely observing another person's work does not establish independently completed performance; use uncertain only when those sources materially conflict with a positive claim. A substantive completed contribution can satisfy a JD asking for participation or exposure, but not a separate requirement for independent ownership or professional years. When only related completed work is shown, do not call it a direct match.
 8. For matched or uncertain, return the evidence_ids of the exact source segment(s) that support the status. Use at most 3 IDs.
 9. Do NOT copy evidence text. Python will resolve the cited IDs to exact source text.
 10. For a short named item that is NOT spelled out in the cited source (for instance, a technology or product), matched_term MUST copy the actual source wording you think names the SAME item; it can be ONE word. A cited segment ID alone is not proof that different named items are equivalent. For broader task/experience/qualification paraphrases, matched_term is OPTIONAL. Never invent a phrase, and do not change not_matched to uncertain just because a related item exists.
@@ -64,6 +64,7 @@ Rules:
 19. A named skill explicitly listed in a legitimate CV skills section is a self-reported skill claim, not an absence of experience. A project or work segment naming a skill is relevant evidence even if it does not independently prove proficiency. Do not conflate absence of independent verification with absence of a CV claim. Assess what is actually stated.
 20. In `reason`, briefly explain WHY you chose the status, referring to the actual cited claim or the specific evidence gap. Make the reason consistent with `status` and `evidence_ids`; do not claim a term is absent if the cited text says it is present. Do not invent a reason as substitute for evidence.
 21. A contrast such as "built with B rather than A", "without A", or "has not used A professionally" does NOT establish direct named-A skill. The comparable PERFORMED functionality can be reviewed separately as transferable; do not discard that work.
+22. Choose the supported decisive outcome instead of uncertain by default. A credible affirmative CV assertion may be matched even though its real-world accuracy is not independently verified; this is self-reported evidence. Not_matched means the specified JD condition is not established, not that the applicant is incapable. Reserve uncertain for material conflicting or genuinely unclear source claims. Never let confidence alone overcome an unstated date, missing degree completion, negation or missing performed duty.
 """.strip()
 
 
@@ -79,7 +80,7 @@ Rules:
 3. Do not invent evidence, and do not substitute a different tool, framework, platform, database, or product for a specific named requirement. Functional overlap is not equivalence for a DIFFERENT specifically named item. Infer an implicit FIELD capability from genuinely performed work when the work actually demonstrates it.
 4. Genuine semantic equivalents or abbreviations for the SAME requirement may be recognized by you; Python does not maintain a semantic alias dictionary.
 5. matched requires clear supporting resume evidence; a positive skills-list claim suffices for an ordinary named skill, while genuinely completed work may demonstrate a broader category without the literal label only if it entails the actual JD capability.
-6. uncertain is for learning, studying, limited exposure, indirect involvement, conflicting, or unclear evidence.
+6. uncertain is for materially conflicting or genuinely unclear evidence. A clearly reported skill or completed qualifying task does not become uncertain solely because it is self-reported. Learning-only and observation-only do not prove independent performance; assess exactly what the JD asks.
 7. not_matched is for absent supporting evidence or explicit lack of the requirement.
 8. Every matched or uncertain row must cite at least one valid evidence_id (max 3).
 9. If a short named requirement is absent verbatim but genuinely supported by an equivalent name or abbreviation, matched_term MUST copy that actual named source phrase (even one word). If the only source names a different related item, return not_matched with no evidence. For broader action/experience/qualification paraphrases, matched_term may be null. Never invent source wording.
@@ -91,6 +92,7 @@ Rules:
 15. Cite no more than THREE distinct valid source IDs. Re-read each ID and make sure the candidate actually asserts this requirement. If not, return not_matched; use uncertain only for genuinely mixed/limited evidence.
 16. Include a short `reason` consistent with the decision and cited segments. A direct skills-list assertion is a claim, not independently authenticated proficiency. Do not describe an explicitly mentioned skill as absent.
 17. Recognize unambiguous abbreviations of the SAME named item and do not read "rather than X" or "without X" as positive direct-X claims.
+18. Resolve to matched if the original source actually supports every explicit JD condition, even if the applicant participated in a team rather than owning it alone where independent ownership was not requested. Otherwise use not_matched for an unsupported exact requirement. Do not invent confidence values, calendar tenure, qualifications, or performed actions.
 """.strip()
 
 
