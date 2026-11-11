@@ -31,11 +31,17 @@ REQUIRED_HEADINGS = {
     "basic qualifications", "minimum qualifications and experience",
     "required skills and experience", "education and experience",
     "education and qualifications", "academic credentials",
+    "what we are looking for", "what we're looking for", "what you bring",
+    "who you are", "your qualifications", "your background",
+    "candidate profile", "ideal candidate", "must haves", "must-haves",
+    "required capabilities", "core capabilities", "required competencies",
+    "key competencies", "technical requirements", "technical capabilities",
 }
 PREFERRED_HEADINGS = {
     "preferred", "preferred skills", "preferred qualifications", "nice to have",
     "desirable", "advantageous", "bonus", "bonus skills", "desired",
     "desired skills", "desired qualifications",
+    "good to have", "good-to-have", "nice-to-haves", "nice to haves",
 }
 OTHER_HEADINGS = {
     "responsibilities", "key responsibilities", "job responsibilities",
@@ -62,6 +68,9 @@ _ACTION_START_RE = re.compile(
 )
 _REQUIREMENT_CUE_RE = re.compile(
     r"(?i)\b(?:experience|proficiency|knowledge|skill|ability|familiarity|degree|certif|license|licence|years?)\b"
+)
+_NARRATIVE_FUTURE_RE = re.compile(
+    r"(?i)^(?:the|this|our|we)\b.{0,150}\b(?:will|would)\b"
 )
 
 
@@ -108,8 +117,18 @@ def _is_heading(line: str) -> str | None:
             return "required"
         if re.search(r"(?i)\b(?:preferred|desired|bonus|optional|nice to have)\b", key):
             return "preferred"
+    if (title_like and re.search(r"(?i)\b(?:capabilit(?:y|ies)|competenc(?:y|ies)|"
+                                 r"stack|tooling|technologies)\b", key)):
+        if re.search(r"(?i)\b(?:required|mandatory|minimum|essential|must have)\b", key):
+            return "required"
+        if re.search(r"(?i)\b(?:preferred|desired|bonus|optional|nice to have)\b", key):
+            return "preferred"
     if len(line) < 80 and line.strip().endswith(":"):
-        return "other"
+        # Unknown labels inside an explicit Required/Preferred block are
+        # often nested categories ("Backend:", "Cloud:", "Platform:").
+        # They are not exclusion sections. Preserve the enclosing JD scope
+        # without interpreting their field names or inventing requirements.
+        return "subsection"
     return None
 
 
@@ -159,6 +178,7 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
     qualifications and explicit OR requirements as single requirements.
     """
     current: str | None = None
+    current_heading = ""
     excluded_section = False
     after_blank = False
     hints: list[StructuralHint] = []
@@ -175,19 +195,34 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
             inline_kind = _is_heading(inline_match.group(1))
             if inline_kind in {"required", "preferred"}:
                 current = inline_kind
+                current_heading = canonical_key(inline_match.group(1))
                 excluded_section = False
                 inline_content = inline_match.group(2).strip()
             elif inline_kind == "other":
                 current = None
+                current_heading = ""
                 excluded_section = True
                 after_blank = False
                 continue
+            elif inline_kind == "subsection" and current in {"required", "preferred"}:
+                # A nested technical heading can also have inline items:
+                # "Backend: Python, Django". Those remain explicit criteria
+                # of the enclosing hiring section, not discarded prose.
+                inline_content = inline_match.group(2).strip()
+            elif inline_kind is None and current in {"required", "preferred"}:
+                # An inline technical subgroup has no trailing colon when
+                # passed to _is_heading: "Cloud Services: X, Y". Treat its
+                # content as the enclosing heading's items. Scope is still
+                # established by that explicit parent Required/Preferred.
+                inline_content = inline_match.group(2).strip()
 
         if inline_content is None:
             heading = _is_heading(line)
             if heading:
-                current = heading if heading in {"required", "preferred"} else None
-                excluded_section = heading == "other"
+                if heading != "subsection":
+                    current = heading if heading in {"required", "preferred"} else None
+                    current_heading = canonical_key(line) if current else ""
+                    excluded_section = heading == "other"
                 after_blank = False
                 continue
 
@@ -215,8 +250,9 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
         word_count = len(cleaned.split())
 
         # A blank line immediately under a section title is normal in a PDF
-        # or a formatted JD. Do not discard a clear mandatory duration/degree
-        # statement merely because it is a paragraph rather than a bullet.
+        # or a formatted JD. Do not discard a qualification merely because
+        # it is written as an unbulleted sentence. A section heading supplies
+        # its required/preferred status; named technologies are irrelevant.
         source_names_a_constraint = bool(re.search(
             r"(?i)\b(?:\d+(?:\.\d+)?\s*\+?\s*(?:years?|yrs?)|"
             r"degree|bachelor(?:'s)?|master(?:'s)?|diploma|certif\w*|licen[cs]e|"
@@ -232,10 +268,29 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
         explicit_constraint = source_names_a_constraint and (
             source_declares_mandatory or current in {"required", "preferred"}
         )
+        # Many employer JDs use one sentence per line instead of bullets:
+        # "Automate regression tests.", "Integrate tests into CI.", etc.
+        # The *explicit section* is the provenance of these obligations.
+        # Keep concise, single-sentence lines without demanding a keyword
+        # such as "degree" or "years" on every line. Long narrative
+        # paragraphs still end the section's list-like interpretation.
+        scoped_sentence = (
+            inline_content is None
+            and not has_list_marker
+            and cleaned.endswith((".", "!", "?"))
+            and len(cleaned) <= 180
+            and word_count <= 24
+            and len(re.split(r"(?<=[.!?])\s+", cleaned)) == 1
+            # "The role will ..." after a skills section is descriptive
+            # future-tense prose rather than a qualification. This rule is
+            # grammatical and applies to every profession, not named tools.
+            and not _NARRATIVE_FUTURE_RE.search(cleaned)
+        )
         if (after_blank and not has_list_marker and inline_content is None
                 and (len(cleaned) > 120 or word_count > 16 or cleaned.endswith("."))
-                and not explicit_constraint):
+                and not explicit_constraint and not scoped_sentence):
             current = None
+            current_heading = ""
             after_blank = False
             continue
 
@@ -245,18 +300,21 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
         if _NON_REQUIREMENT_RE.search(cleaned):
             continue
         if not has_list_marker and inline_content is None and cleaned.endswith((".", "!", "?")):
-            # A required *paragraph* is just as binding as a required bullet.
-            # Keep only short, explicitly signalled experience/qualification
-            # statements; plain prose after a section is not a free requirement.
-            if not explicit_constraint:
+            # Concise standalone sentences under an employer's explicit
+            # Required/Preferred heading are source-stated requirements,
+            # even when they contain no numeric qualification cue. This
+            # allows deterministic recovery after a partial LLM extraction.
+            if not explicit_constraint and not scoped_sentence:
                 current = None
+                current_heading = ""
                 continue
-        if (
-            _ACTION_START_RE.search(cleaned)
-            and not _REQUIREMENT_CUE_RE.search(cleaned)
-        ):
-            # In structural fallback, imperative/action lines are more likely role
-            # responsibilities than qualifications, even when bullet-prefixed.
+        # Plain imperatives under *Skills* tend to describe job duties, not
+        # a candidate skill claim. Keep that conservative exclusion. Under
+        # broader Qualifications/Requirements headings, a listed completed
+        # duty can itself be an explicit employer criterion. Source context
+        # controls this distinction, never a named software technology.
+        if ("skill" in current_heading and _ACTION_START_RE.search(cleaned)
+                and not _REQUIREMENT_CUE_RE.search(cleaned)):
             continue
 
         for piece in _split_list_line(cleaned):

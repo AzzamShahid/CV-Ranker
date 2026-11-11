@@ -109,17 +109,29 @@ def test_model_related_degree_explanation_cannot_leave_an_unscored_overlap_not_f
     assert final[0].status != "matched"
 
 
-@pytest.mark.parametrize("bad_ids", [
-    ["S001", "S001", "S002", "S003"],
-    ["S001", "S002", "S003", "S999"],
-])
-def test_duplicate_or_unprovided_citations_still_invalidate_model(bad_ids):
+def test_unprovided_citations_still_invalidate_model():
     req = requirement("Inventory control")
     raw = UnifiedResponse(assessments=[UnifiedItem(
         requirement_id="R001", decision="found", relation="entailed",
-        evidence_ids=bad_ids, reason="Managed inventory movement in a warehouse.")])
+        evidence_ids=["S001", "S002", "S999"],
+        reason="Managed inventory movement in a warehouse.")])
     _, _, invalid = _map_response(raw, [req], {"S001", "S002", "S003"})
     assert invalid == {"R001"}
+
+
+def test_duplicate_eligible_citations_are_normalized_without_changing_verdict():
+    req = requirement("Inventory control")
+    raw = UnifiedResponse(assessments=[UnifiedItem(
+        requirement_id="R001", decision="found", relation="entailed",
+        evidence_ids=["S001", "S001", "S002", "S003"],
+        reason="Managed inventory movement in a warehouse.")])
+    notes = []
+    mapped, proposed, invalid = _map_response(
+        raw, [req], {"S001", "S002", "S003"}, normalized_notices=notes)
+    assert invalid == set()
+    assert proposed["R001"].decision == "found"
+    assert mapped.assessments[0].evidence_ids == ["S001", "S002", "S003"]
+    assert len(notes) == 1 and "deduplicated" in notes[0]
 
 
 def test_four_years_of_relevant_work_can_reuse_cited_duty_and_link_its_dated_heading():

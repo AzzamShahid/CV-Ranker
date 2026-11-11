@@ -1,7 +1,8 @@
-"""Phase 7D: conservative source-backed evaluation of *explicit* simple JD AND/OR.
+"""Source-backed validation of JD compound expressions.
 
-No LLM, synonym mapping, cross-option transfer, or fabricated new criteria.
-A compound frozen requirement remains exactly one scoring denominator item.
+Standalone named alternatives are checked literally. Descriptive work clauses
+are judged semantically by the already-validated assessment, with additional
+source and conjunction safeguards. No new AI request or inferred JD criterion.
 """
 from __future__ import annotations
 
@@ -11,7 +12,8 @@ from .schemas import (CompoundCheck, CompoundComponent, EvidenceCitation,
                       RequirementAssessment, ValidatedRequirement)
 from .segments import segment_resume
 from .text_utils import (classify_requirement_tone, instruction_like_evidence,
-                         phrase_present, normalize_whitespace, non_candidate_requirement_copy)
+                         phrase_present, normalize_whitespace, non_candidate_requirement_copy,
+                         has_candidate_action)
 from .assessor import _positive_literal_segment_is_capability_evidence
 
 
@@ -31,6 +33,71 @@ _NEGATED_WORK = re.compile(
     r"produced|automated|managed|trained|evaluated|tested)\b", re.I,
 )
 _ILLUSTRATIVE_SCOPE = re.compile(r"\b(?:including|such as|for example)\b|\be\.g\.", re.I)
+_SCOPE_JOINERS = frozenset({
+    "a", "an", "and", "or", "of", "for", "to", "on", "in", "by", "with",
+    "during", "while", "through", "within", "across", "the", "at", "as",
+    "both", "including", "experience", "knowledge", "ability", "skills",
+    "hands-on", "exposure", "familiarity", "proficiency", "skilled",
+})
+
+
+def _work_anchors(text: str) -> set[str]:
+    """Conservative *lexical* anchors; never a synonym or skill mapping.
+
+    The first six characters allow grammatical variants such as 'corrective'
+    and 'corrections' to share a source anchor. The model remains responsible
+    for semantic equivalence; these anchors can only refuse a vague match.
+    """
+    units = re.findall(r"[A-Za-z][A-Za-z0-9+#]*(?:-[A-Za-z0-9+#]+)*", text)
+    # Keep the complete hyphenated name as well as its meaningful parts:
+    # 'safe-start' contains 'safe', while 'air-jet' retains its exact name.
+    tokens = units + [part for unit in units if '-' in unit for part in unit.split('-')]
+    return {word[:6].casefold() for word in tokens
+            if ((len(word) >= 4 or (2 <= len(word) <= 5 and word.isupper()))
+                and word.casefold() not in _SCOPE_JOINERS)}
+
+
+def _and_clauses_are_grounded(statement: str,
+                              citations: list[EvidenceCitation]) -> bool:
+    """Every explicit mandatory AND arm needs *some* literal work anchor.
+
+    This is a necessary, not sufficient, condition for accepting the previously
+    validated model verdict. OR alternatives within an arm remain alternatives.
+    No interpretation of ambiguous AND/OR precedence is invented.
+    """
+    mandatory = re.split(r"\s+and\s+", statement, flags=re.I)
+    if len(mandatory) < 2:
+        return True
+    cited_anchors = set().union(*(_work_anchors(source.text) for source in citations))
+    return all(
+        # One standalone gerund is a general activity, not a separate subject
+        # that must literally be named in every source ('Monitoring and
+        # reporting ...' can be evidenced by the same reporting activity).
+        bool(re.fullmatch(r"\s*[A-Za-z]{5,}ing\s*", arm, re.I))
+        # An illustrative item AFTER "including" cannot replace a separate
+        # mandatory activity BEFORE it: "manage deployments, including APIs"
+        # requires deployment evidence, not merely an API mention.
+        or bool(_work_anchors(re.split(r"\b(?:including|such as|for example)\b",
+                                       arm, maxsplit=1, flags=re.I)[0])
+                .intersection(cited_anchors))
+        for arm in mandatory
+    )
+
+
+def _descriptive_work_options(req: ValidatedRequirement) -> bool:
+    """Do not apply exact-tool lookup to natural-language job duties.
+
+    Named skill pairs such as 'Python and Django' retain strict literal checks.
+    The heuristic is grammatical only and does not enumerate professions.
+    """
+    c = req.constraint
+    if c.operator == "complex":
+        return True  # Additional conjunction and performed-work gates apply.
+    if c.operator not in {"all_of", "any_of"}:
+        return False
+    return any(re.search(r"\b(?:of|for|with|during|within|through|while|"
+                         r"across|using|including|to|by)\b", option, re.I)
+               for option in c.options)
 
 
 def _illustrative_experience(req: ValidatedRequirement,
@@ -85,6 +152,51 @@ def _illustrative_experience(req: ValidatedRequirement,
             ),
         })
     return None
+
+
+def _semantic_nonatomic_clause(req: ValidatedRequirement,
+                               item: RequirementAssessment) -> RequirementAssessment | None:
+    """Do not erase a cited model verdict solely because an AND/OR is long.
+
+    A structural rule can verify short standalone alternatives, but it cannot
+    decide which work duties satisfy a non-atomic shared object. Only a positive
+    model verdict backed by *performed* original work is retained, with HR
+    review explicitly requested. Each AND arm requires a source lexical anchor.
+    This never promotes a negative, tentative, education or license claim.
+    """
+    c = req.constraint
+    text = req.jd_evidence
+    if (not _descriptive_work_options(req) or item.status != "matched"
+            or c.kind in {"education", "certification", "license", "eligibility"}
+            or not item.evidence_segments or not item.evidence_ids):
+        return None
+    has_and = bool(re.search(r"\band\b", text, re.I))
+    has_or = bool(re.search(r"\bor\b", text, re.I))
+    if not (has_and or has_or):
+        return None
+    performed_sources = [source for source in item.evidence_segments if (
+        source.section in _WORK_SECTIONS
+        and has_candidate_action(source.text)
+        and not _NEGATED_WORK.search(source.text)
+        and not re.search(r"\b(?:never|without|not|no|only\s+learning|"
+                          r"planning\s+to|plan\s+to|intend\s+to|future|"
+                          r"hypothetical|tutorial|currently\s+learning)\b",
+                          source.text, re.I)
+        and not instruction_like_evidence(source.text)
+        and not non_candidate_requirement_copy(source.text)
+    )]
+    if not performed_sources or not _and_clauses_are_grounded(text, performed_sources):
+        return None
+    return item.model_copy(update={
+        "review_recommended": True,
+        "compound_check": CompoundCheck(
+            operator=c.operator, outcome="matched",
+            explanation=("The source-validated model accepted performed work "
+                         "for this descriptive JD clause, with original citations "
+                         "and work anchors for each mandatory AND part. Semantic "
+                         "equivalence remains a model judgment requiring HR review."),
+        ),
+    })
 
 
 def _component(name: str, req: ValidatedRequirement, segments) -> CompoundComponent:
@@ -167,6 +279,10 @@ def apply_compound_checks(*, requirements: list[ValidatedRequirement],
                     "uncertain; human review is required."
                 )
             continue
+        nonatomic = _semantic_nonatomic_clause(requirement, item)
+        if nonatomic is not None:
+            result.append(nonatomic)
+            continue
         # The specialist validators already verified numeric tenure and
         # degree/credential claims against their actual source lines. A
         # syntactic "or" in an experience JD must NOT wipe a sufficient
@@ -196,15 +312,27 @@ def apply_compound_checks(*, requirements: list[ValidatedRequirement],
             details = '; '.join(
                 f'{component.name}: {component.status.replace("_", " ")} '
                 f'({component.reason})' for component in check.components)
+            scope = {
+                'all_of': 'all explicitly required parts',
+                'any_of': 'at least one explicit alternative',
+                'complex': 'the combined conditions',
+            }[check.operator]
             update['reason'] = (
-                f'The frozen JD requires {check.operator.replace("_", " ")} of its '
-                f'explicit alternatives. Source checks found: {details or check.explanation}. '
+                f'The frozen JD requires {scope}. '
+                f'Source checks found: {details or check.explanation}. '
                 f'Final decision: {"Found" if status == "matched" else "Not Found" if status == "not_matched" else "review needed"}.'
             )
         if citations:
             update.update({"evidence_ids": [c.segment_id for c in citations],
                            "evidence_segments": citations,
                            "evidence": " | ".join(c.text for c in citations)})
+        elif item.evidence_segments:
+            # A syntactic veto does not make already source-validated excerpts
+            # disappear. Keep them as *reviewed, uncredited* evidence; the
+            # final status still controls scoring.
+            update.update({"evidence_ids": list(item.evidence_ids),
+                           "evidence_segments": list(item.evidence_segments),
+                           "evidence": item.evidence, "matched_term": None})
         else:
             update.update({"evidence_ids": [], "evidence_segments": [], "evidence": None, "matched_term": None})
         new_item = item.model_copy(update=update)

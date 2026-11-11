@@ -7,3 +7,10 @@ outputs/
 .DS_Store
 # UI local semantic cache: embedding vectors derived from candidate CVs
 .cv_ranker_cache/
+# Streamlit OIDC identity-provider credentials and cookie secrets
+.streamlit/secrets.toml
+.streamlit/secrets.*.toml
+*.pem
+*.key
+*.p12
+*.pfx

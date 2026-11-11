@@ -18,8 +18,10 @@ from pathlib import Path
 from queue import Empty, SimpleQueue
 
 import streamlit as st
+from streamlit import config as streamlit_config
 
 from cv_ranker import CVRanker, Settings
+from cv_ranker.access_control import access_env, evaluate_access
 from cv_ranker.build_info import (ASSESSMENT_PROTOCOL, ASSESSMENT_PROTOCOL_VERSION,
                                   BUILD_ID, UI_RELEASE_VERSION)
 from cv_ranker.config import default_ui_provider
@@ -32,6 +34,10 @@ from cv_ranker.weighted_scoring import (
     weighted_candidate, weighted_leaderboard,
 )
 from cv_ranker.report_bundle import complete_results_zip
+from cv_ranker.recovery_bundle import (
+    MAX_ARCHIVE_BYTES, RECOVERY_KEYS, export_recovery_checkpoint,
+    import_recovery_checkpoint, local_signing_key,
+)
 from cv_ranker.ranking_reasoning import candidate_reasoning, comparative_reasoning
 from cv_ranker.jd_review import approve_jd_rows, editable_jd_rows
 from cv_ranker.resume import assessment_context_key, candidate_resume_keys
@@ -68,6 +74,7 @@ _SNAPSHOT_KEYS = (
     "cv_unified_metrics", "cv_request_metrics", "cv_final_results",
     "cv_resume_cache",
 )
+_RECOVERY_SIGNING_KEY = ROOT / ".cv_ranker_cache" / "recovery_signing.key"
 
 
 def _progress_caption(queue_key: str, started_key: str) -> str:
@@ -89,21 +96,37 @@ def _progress_caption(queue_key: str, started_key: str) -> str:
 
 
 def _styles():
-    st.markdown("""
+    # Streamlit 1.65 exposes the viewer's selected theme type. Keep the
+    # assessment widgets native and match only our custom HTML cards to it.
+    # No JavaScript, saved preference, or model call is involved.
+    try:
+        active_theme = st.context.theme.type
+    except (AttributeError, RuntimeError, KeyError):
+        active_theme = "light"
+    if active_theme == "dark":
+        contrast = ("--cv-ink:#EDF7EF;--cv-card:#1B2D23;--cv-bg:#111D17;"
+                    "--cv-line:rgba(170,218,184,.34);--cv-accent-text:#91E9B9;"
+                    "--cv-amber-text:#FFD28A;--cv-slate-text:#C4D8CF;"
+                    "--cv-button-bg:#6FDEAA;--cv-button-ink:#092017;")
+    else:
+        contrast = ("--cv-ink:#183025;--cv-card:#EFF5EF;--cv-bg:#FAFCF9;"
+                    "--cv-line:rgba(39,91,59,.32);--cv-accent-text:#115C37;"
+                    "--cv-amber-text:#78500A;--cv-slate-text:#475F55;"
+                    "--cv-button-bg:#12613C;--cv-button-ink:#FFFFFF;")
+    css = """
     <style>
-    :root {--cv-navy:#18334c;--cv-blue:#3265a8;--cv-teal:#16877d;
-           --cv-ink:var(--text-color);--cv-line:rgba(113,135,158,.23);
-           --cv-muted:var(--text-color);}
+    :root {--cv-navy:#173D2B;--cv-blue:#277750;--cv-teal:#176B46;
+           /*CV_CONTRAST_PALETTE*/--cv-muted:var(--cv-ink);}
     .block-container {max-width:1350px;padding-top:1.15rem;padding-bottom:2.8rem;}
     [data-testid="stAppViewContainer"] {background:
-      radial-gradient(circle at 96% 0%,rgba(38,122,168,.065),transparent 30%),
-      radial-gradient(circle at 0% 42%,rgba(22,135,125,.035),transparent 34%),
-      var(--background-color);}
+      radial-gradient(circle at 96% 0%,rgba(32,117,76,.055),transparent 30%),
+      radial-gradient(circle at 0% 42%,rgba(80,142,70,.045),transparent 34%),
+      var(--cv-bg);}
     .cv-hero {position:relative;overflow:hidden;display:flex;align-items:center;
       justify-content:space-between;gap:2rem;margin:.15rem 0 1.5rem;
       padding:1.6rem 1.85rem;border-radius:21px;color:#f8fbff;
-      background:linear-gradient(112deg,#112c46 0%,#1b4c68 61%,#127b76 100%);
-      border:1px solid rgba(255,255,255,.13);box-shadow:0 12px 32px rgba(14,42,66,.16);}
+      background:linear-gradient(112deg,#103824 0%,#155D3C 61%,#23824F 100%);
+      border:1px solid rgba(255,255,255,.13);box-shadow:0 12px 32px rgba(17,65,36,.16);}
     .cv-hero:after {content:"";position:absolute;width:17rem;height:17rem;
       top:-10rem;right:9%;border-radius:50%;border:2.5rem solid rgba(255,255,255,.05);
       pointer-events:none;}
@@ -112,7 +135,7 @@ def _styles():
     .cv-hero-description {color:rgba(240,250,255,.86);font-size:.94rem;
       line-height:1.55;margin:0;max-width:47rem;}
     .cv-hero-badge {font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
-      font-weight:800;color:#b7f1e6;}
+      font-weight:800;color:#C8F3D8;}
     .cv-hero-mark {position:relative;z-index:1;display:grid;place-items:center;
       flex-shrink:0;width:4.25rem;height:4.25rem;border-radius:16px;
       background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
@@ -121,28 +144,28 @@ def _styles():
       margin:1.35rem 0 .72rem;padding-bottom:.65rem;
       border-bottom:1px solid var(--cv-line);}
     .cv-section-line {width:4px;min-height:2.65rem;border-radius:8px;
-      background:linear-gradient(180deg,#2374b8,#16a394);flex-shrink:0;margin-top:.12rem;}
+      background:linear-gradient(180deg,#176B46,#57A86D);flex-shrink:0;margin-top:.12rem;}
     .cv-section-eyebrow,.cv-card-eyebrow {font-size:.68rem;letter-spacing:.11em;
-      text-transform:uppercase;font-weight:800;color:#16877d;margin:0 0 .15rem;}
+      text-transform:uppercase;font-weight:800;color:var(--cv-accent-text);margin:0 0 .15rem;}
     .cv-section-heading {font-size:1.16rem;font-weight:770;letter-spacing:-.012em;
       color:var(--cv-ink);margin:0 0 .2rem;line-height:1.32;}
     .cv-section-subtitle {font-size:.83rem;opacity:.72;line-height:1.4;margin:0;color:var(--cv-ink);}
     .cv-insight {position:relative;overflow:hidden;margin:.45rem 0 1rem;
-      border:1px solid var(--cv-line);border-left:4px solid #238c82;
-      border-radius:16px;background:var(--secondary-background-color);
-      box-shadow:0 5px 21px rgba(24,51,76,.055);padding:1.1rem 1.3rem 1.05rem;}
-    .cv-insight.is-blue {border-left-color:#3877b7;}
+      border:1px solid var(--cv-line);border-left:4px solid #26865A;
+      border-radius:16px;background:var(--cv-card);
+      box-shadow:0 5px 21px rgba(24,68,44,.055);padding:1.1rem 1.3rem 1.05rem;}
+    .cv-insight.is-blue {border-left-color:#34805D;}
     .cv-insight.is-amber {border-left-color:#bc8b37;}
     .cv-insight.is-slate {border-left-color:#8394a5;}
     .cv-insight-top {display:flex;flex-wrap:wrap;align-items:center;
       justify-content:space-between;gap:.4rem;margin-bottom:.38rem;}
     .cv-insight-label {font-size:.71rem;text-transform:uppercase;letter-spacing:.075em;
-      color:#218b81;font-weight:800;}
-    .cv-insight.is-blue .cv-insight-label {color:#3979b9;}
-    .cv-insight.is-amber .cv-insight-label {color:#aa782f;}
-    .cv-insight.is-slate .cv-insight-label {color:#748697;}
+      color:var(--cv-accent-text);font-weight:800;}
+    .cv-insight.is-blue .cv-insight-label {color:var(--cv-accent-text);}
+    .cv-insight.is-amber .cv-insight-label {color:var(--cv-amber-text);}
+    .cv-insight.is-slate .cv-insight-label {color:var(--cv-slate-text);}
     .cv-insight-tag {font-size:.71rem;font-weight:700;padding:.23rem .55rem;
-      border-radius:99px;background:rgba(35,140,130,.085);color:var(--cv-ink);
+      border-radius:99px;background:rgba(39,125,77,.085);color:var(--cv-ink);
       border:1px solid var(--cv-line);}
     .cv-insight-heading {margin:0 0 .35rem;font-size:.99rem;font-weight:760;
       line-height:1.45;color:var(--cv-ink);overflow-wrap:anywhere;}
@@ -150,15 +173,15 @@ def _styles():
       font-size:.91rem;line-height:1.64;overflow-wrap:anywhere;}
     .cv-rank-row {display:flex;align-items:flex-start;gap:1rem;
       padding:1rem 1.15rem;margin:.55rem 0;border:1px solid var(--cv-line);
-      border-radius:14px;background:var(--secondary-background-color);
-      box-shadow:0 3px 12px rgba(24,51,76,.035);}
-    .cv-rank-row.is-top {border-left:4px solid #16877d;}
+      border-radius:14px;background:var(--cv-card);
+      box-shadow:0 3px 12px rgba(24,68,44,.035);}
+    .cv-rank-row.is-top {border-left:4px solid #176B46;}
     .cv-rank-row.is-pending {border-left:4px solid #bc8b37;}
     .cv-rank-position {display:flex;align-items:center;justify-content:center;
       flex:0 0 3rem;min-height:3rem;border-radius:11px;
-      background:rgba(48,107,166,.09);color:var(--cv-ink);font-weight:800;
+      background:rgba(48,130,79,.09);color:var(--cv-ink);font-weight:800;
       font-size:.91rem;white-space:nowrap;}
-    .cv-rank-row.is-top .cv-rank-position {background:rgba(22,135,125,.12);}
+    .cv-rank-row.is-top .cv-rank-position {background:rgba(23,107,70,.12);}
     .cv-rank-row.is-pending .cv-rank-position {background:rgba(188,139,55,.12);}
     .cv-rank-content {flex:1;min-width:0;}
     .cv-rank-topline {display:flex;gap:.6rem;justify-content:space-between;
@@ -166,23 +189,23 @@ def _styles():
     .cv-rank-name {font-size:1rem;font-weight:780;color:var(--cv-ink);
       letter-spacing:-.01em;overflow-wrap:anywhere;}
     .cv-rank-score {font-size:.82rem;font-weight:800;padding:.22rem .65rem;
-      border-radius:100px;background:rgba(30,139,130,.095);
+      border-radius:100px;background:rgba(23,107,70,.095);
       border:1px solid var(--cv-line);color:var(--cv-ink);white-space:nowrap;}
     .cv-rank-reason {font-size:.87rem;color:var(--cv-ink);opacity:.86;
       line-height:1.57;overflow-wrap:anywhere;}
     .cv-mini-title {font-size:.79rem;font-weight:800;letter-spacing:.045em;
       text-transform:uppercase;color:var(--cv-ink);margin:.3rem 0 .7rem;}
-    .cv-mini-item {border-left:2px solid #2d9c8e;padding:.5rem .7rem;
-      margin:.38rem 0;border-radius:0 9px 9px 0;background:rgba(29,142,128,.055);}
+    .cv-mini-item {border-left:2px solid #27875B;padding:.5rem .7rem;
+      margin:.38rem 0;border-radius:0 9px 9px 0;background:rgba(29,125,75,.055);}
     .cv-mini-item.is-gap {border-left-color:#c89a49;background:rgba(192,144,53,.06);}
     .cv-mini-name {font-weight:710;color:var(--cv-ink);font-size:.9rem;line-height:1.4;}
     .cv-mini-points {font-size:.76rem;color:var(--cv-ink);opacity:.72;margin:.18rem 0;}
     .cv-mini-description {font-size:.8rem;color:var(--cv-ink);opacity:.8;
       line-height:1.47;margin-top:.25rem;overflow-wrap:anywhere;}
     div[data-testid="stMetric"] {border:1px solid var(--cv-line);
-      border-top:3px solid rgba(30,139,130,.65);border-radius:13px;
-      padding:.75rem 1rem;background:var(--secondary-background-color);
-      box-shadow:0 4px 16px rgba(24,51,76,.045);min-height:6.2rem;}
+      border-top:3px solid rgba(23,107,70,.65);border-radius:13px;
+      padding:.75rem 1rem;background:var(--cv-card);
+      box-shadow:0 4px 16px rgba(24,68,44,.045);min-height:6.2rem;}
     div[data-testid="stMetricLabel"] {font-weight:650;letter-spacing:.01em;}
     div[data-testid="stMetricValue"] {font-size:1.58rem;font-weight:790;
       letter-spacing:-.03em;}
@@ -191,22 +214,40 @@ def _styles():
     div[data-testid="stTabs"] button[role="tab"] {border-radius:11px 11px 0 0;
       font-weight:700;padding:.7rem 1rem;transition:background .18s ease;}
     div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]
-      {background:rgba(30,139,130,.075);}
+      {background:rgba(23,107,70,.075);}
     [data-testid="stExpander"] {border:1px solid var(--cv-line);
-      border-radius:13px;overflow:hidden;background:var(--secondary-background-color);}
+      border-radius:13px;overflow:hidden;background:var(--cv-card);}
     [data-testid="stExpander"] summary {font-weight:680;}
     [data-testid="stDataFrame"] {border:1px solid var(--cv-line);
       border-radius:13px;overflow:hidden;}
     [data-testid="stFileUploader"] {border-radius:13px;}
     [data-testid="stButton"] button[kind="primary"],
     [data-testid="stDownloadButton"] button[kind="primary"] {
-      border-radius:10px;font-weight:750;box-shadow:0 3px 12px rgba(32,104,155,.12);}
+      border-radius:10px;font-weight:750;box-shadow:0 3px 12px rgba(23,107,70,.12);
+      color:var(--cv-button-ink) !important;
+      background:var(--cv-button-bg) !important;
+      border-color:var(--cv-button-bg) !important;}
+    [data-testid="stButton"] button[kind="primary"]:hover,
+    [data-testid="stDownloadButton"] button[kind="primary"]:hover {
+      color:var(--cv-button-ink) !important;filter:brightness(1.06);}
+    [data-testid="stButton"] button[kind="secondary"],
+    [data-testid="stDownloadButton"] button[kind="secondary"] {
+      color:var(--cv-ink) !important;background:var(--cv-card) !important;
+      border-color:var(--cv-line) !important;}
+    [data-testid="stButton"] button[kind="secondary"]:hover,
+    [data-testid="stDownloadButton"] button[kind="secondary"]:hover {
+      color:var(--cv-accent-text) !important;border-color:var(--cv-accent-text) !important;}
+    /* Streamlit may render labels inside a Markdown <p> with its own color.
+       Force the visible label to inherit the tested light/dark button ink. */
+    [data-testid="stButton"] button[kind] :is(p,span),
+    [data-testid="stDownloadButton"] button[kind] :is(p,span) {
+      color:inherit !important;}
     .cv-kicker {font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
-      color:#16877d;font-weight:800;}
+      color:var(--cv-accent-text);font-weight:800;}
     .cv-muted {opacity:.75;font-size:.92rem;}
     .cv-source {white-space:pre-wrap;overflow-wrap:anywhere;padding:.95rem 1.05rem;
-      border:1px solid var(--cv-line);border-left:3px solid #4482ab;
-      border-radius:11px;margin:.45rem 0 .9rem;background:var(--secondary-background-color);
+      border:1px solid var(--cv-line);border-left:3px solid #34805D;
+      border-radius:11px;margin:.45rem 0 .9rem;background:var(--cv-card);
       font-size:.9rem;line-height:1.55;}
     @media(max-width:700px) {
       .block-container {padding-top:.6rem;}
@@ -217,7 +258,8 @@ def _styles():
       .cv-rank-row {padding:.82rem .9rem;gap:.7rem;}
       .cv-rank-position {flex-basis:2.3rem;min-height:2.3rem;font-size:.8rem;}
     }
-    </style>""", unsafe_allow_html=True)
+    </style>"""
+    st.markdown(css.replace("/*CV_CONTRAST_PALETTE*/", contrast), unsafe_allow_html=True)
 
 
 def _section_title(title: str, subtitle: str, *, eyebrow: str = "Assessment insight") -> None:
@@ -518,6 +560,59 @@ def _restore_archived_run(state, index: int) -> None:
         state.pop(key, None)
 
 
+def _restore_portable_run(state, snapshot: dict) -> None:
+    """Apply an authenticated, prevalidated portable run on the UI thread."""
+    active = state.get("cv_manual_assessment_future")
+    automatic = state.get("cv_auto_resume_future")
+    if ((isinstance(active, Future) and not active.done())
+            or (isinstance(automatic, Future) and not automatic.done())):
+        raise ValueError("Wait for the current assessment worker before restoring a run")
+    _archive_current_run(state)
+    for key in (*RECOVERY_KEYS, *_SNAPSHOT_KEYS, "cv_provider_hard_stop",
+                "cv_auto_resume_state", "cv_auto_resume_future",
+                "cv_manual_assessment_state", "cv_manual_assessment_future",
+                "cv_provider_cooldown", "cv_jd_review_pending",
+                "cv_semantic_report", "cv_semantic_error", "cv_semantic_retrieval",
+                "cv_candidate_selector", "cv_candidate_status", "cv_candidate_priority",
+                "cv_candidate_group", "cv_source_candidate", "cv_segment_search",
+                "cv_segment_section", "cv_weight_allocation_error"):
+        state.pop(key, None)
+    for key in list(state):
+        if key.startswith("cv_item_share_") or key.startswith("cv_weight_number_"):
+            state.pop(key, None)
+    for key, value in snapshot.items():
+        state[key] = deepcopy(value)
+    for suffix in ("experience", "education", "jd", "required"):
+        slider = f"cv_weight_slider_{suffix}"
+        if slider in snapshot:
+            state[f"cv_weight_number_{suffix}"] = snapshot[slider]
+    state["cv_active_page"] = "02  Rankings & evidence"
+
+
+def _portable_recovery_panel() -> None:
+    with st.expander("Restore a downloaded recovery checkpoint", expanded=False):
+        st.caption("Restore saved results after refreshing the browser or restarting the server. "
+                   "Your checkpoint is signed to this installation; it contains sensitive "
+                   "CV evidence and is not encrypted. It does not include the uploaded CV files.")
+        upload = st.file_uploader("Recovery checkpoint ZIP", type=["zip"],
+                                  key="cv_portable_recovery_upload", max_upload_size=48)
+        if st.button("Restore saved results", disabled=upload is None,
+                     key="cv_portable_recovery_restore"):
+            try:
+                if getattr(upload, "size", MAX_ARCHIVE_BYTES + 1) > MAX_ARCHIVE_BYTES:
+                    raise ValueError("Recovery ZIP exceeds the 48 MiB limit")
+                snapshot = import_recovery_checkpoint(
+                    upload.getvalue(), local_signing_key(_RECOVERY_SIGNING_KEY))
+                _restore_portable_run(st.session_state, snapshot)
+            except (ValueError, OSError, TypeError) as exc:
+                st.error(f"Recovery not restored: {exc}")
+            else:
+                st.success("Verified results restored without model requests. "
+                           "For unfinished CVs, re-upload the identical sources, "
+                           "reapprove the frozen JD, and choose Resume.")
+                st.rerun()
+
+
 def _save_report(report: RankingReport, label: str, config: Settings, use_llm: bool, is_upload: bool) -> None:
     _archive_current_run(st.session_state)
     if is_upload:
@@ -601,9 +696,12 @@ def _rank_core(
         remaining = settings.openrouter_max_requests_per_assessment - previous_attempts
         if remaining <= 0:
             raise ValueError(
-                "Cloud assessment request budget exhausted for this JD/CV checkpoint. "
-                "Completed and partial results remain saved; increase "
-                "OPENROUTER_MAX_REQUESTS_PER_ASSESSMENT deliberately before resuming.")
+                f"Cloud assessment request budget exhausted: {previous_attempts} "
+                f"of {settings.openrouter_max_requests_per_assessment} HTTP attempts "
+                "have been used for this JD/CV checkpoint. Completed and partial "
+                "results remain saved. If additional provider spending is "
+                "approved, increase OPENROUTER_MAX_REQUESTS_PER_ASSESSMENT "
+                "in .env and restart before resuming. Never reset the checkpoint.")
         run_limit = settings.openrouter_max_requests_per_run
         budget_settings = replace(settings, openrouter_max_requests_per_run=(
             min(remaining, run_limit) if run_limit > 0 else remaining))
@@ -761,7 +859,7 @@ def _sidebar() -> tuple[Settings | None, bool, bool]:
                 help="Maximum keyword/phrase suggestions extracted from the JD. "
                      "YAKE suggestions help discovery but do not automatically count as requirements.",
             )
-            req_limit = st.slider("Frozen JD requirement processing limit", 5, 100, configured.max_requirements, 5,
+            req_limit = st.slider("Frozen JD requirement processing limit", 5, 250, configured.max_requirements, 5,
                                   help="Guardrail only. The engine must not silently score truncated JDs.")
             st.checkbox(
                 "Automatically resume unfinished cloud assessments",
@@ -773,13 +871,17 @@ def _sidebar() -> tuple[Settings | None, bool, bool]:
             )
         with st.expander("Employer policies · optional", expanded=False):
             st.file_uploader("Reviewer-approved JD equivalences (JSON)", type=["json"],
-                             key="approved_aliases", help="Only use reviewer-approved JD-specific equivalent expressions.")
+                             key="approved_aliases", max_upload_size=1,
+                             help="Only use reviewer-approved JD-specific equivalent expressions.")
             st.file_uploader("Employer eligibility gates (JSON)", type=["json"],
-                             key="eligibility_gates", help="Only use employer-approved eligibility requirements.")
+                             key="eligibility_gates", max_upload_size=1,
+                             help="Only use employer-approved eligibility requirements.")
             st.caption("These policies do not add weightage points and are not needed for normal screening.")
         with st.expander("Session controls", expanded=False):
             st.button("Clear current results", on_click=_clear_results,
                       key="cv_clear_active_results", width="stretch")
+        st.caption("Reading comfort: open the app menu → Settings → Theme and "
+                   "select Light, Dark, or System. Results and scoring stay unchanged.")
         st.caption("Cloud mode sends CV excerpts to OpenRouter.")
         st.caption(f"Interface V{UI_RELEASE_VERSION} · Assessment protocol v{ASSESSMENT_PROTOCOL_VERSION}")
         return Settings(
@@ -953,7 +1055,9 @@ def _arm_auto_resume(report: RankingReport, settings: Settings, use_llm: bool,
             "assessment_http_attempts_remaining") == 0:
         return ("Automatic recovery was not armed because this approved JD/CV "
                 "checkpoint reached its configured cloud request budget. "
-                "Previous verified results remain available.")
+                "Previous verified results remain available. To authorize more "
+                "requests, raise OPENROUTER_MAX_REQUESTS_PER_ASSESSMENT in .env "
+                "and restart; do not erase the checkpoint.")
     saved = st.session_state.get("cv_resume_cache", {})
     if saved.get("context_key") != identity[0]:
         return "Automatic resume was not armed because the input checkpoint changed."
@@ -983,6 +1087,11 @@ def _review_jd_panel(settings: Settings, pending: dict) -> JDReviewDraft | None:
     if draft.jd_validation_mode != "llm_validated":
         st.warning("This extraction used a structural fallback. Review all rows carefully; "
                    "the assessment will keep that extraction mode visible.")
+    for warning in draft.warnings:
+        if "JD requirement cap:" in warning or "configured maximum retained" in warning:
+            st.error(warning + " Increase the requirement limit in the sidebar, "
+                     "then extract the JD again before approving. The current "
+                     "list is incomplete and must not be used for ranking.")
     approved_data = pending.get("approved")
     if approved_data is not None:
         approved = JDReviewDraft.model_validate(approved_data)
@@ -1019,6 +1128,12 @@ def _review_jd_panel(settings: Settings, pending: dict) -> JDReviewDraft | None:
     if st.button("Approve and freeze these JD requirements", type="primary",
                  key="cv_jd_freeze_approval"):
         try:
+            if any("JD requirement cap:" in warning or
+                   "configured maximum retained" in warning
+                   for warning in draft.warnings):
+                raise ValueError("JD extraction exceeded its configured requirement limit. "
+                                 "Increase the limit and extract again; incomplete JDs "
+                                 "cannot be approved.")
             approved = approve_jd_rows(
                 draft=draft, rows=(reviewed_rows if isinstance(reviewed_rows, list)
                                    else reviewed_rows.to_dict("records")),
@@ -1034,6 +1149,7 @@ def _review_jd_panel(settings: Settings, pending: dict) -> JDReviewDraft | None:
 
 
 def _run_form(settings: Settings, use_llm: bool, semantic_enabled: bool):
+    _portable_recovery_panel()
     _section_title("Step 1 · Upload documents",
                    "Add the employer's job description and the resumes to compare.",
                    eyebrow="Start assessment")
@@ -1047,10 +1163,15 @@ def _run_form(settings: Settings, use_llm: bool, semantic_enabled: bool):
         if method == "Paste job description":
             jd_text = st.text_area("Job description", placeholder="Paste the required and preferred skills, duties, and qualifications...", height=175, label_visibility="collapsed", key="cv_jd_text")
         else:
-            jd_upload = st.file_uploader("JD file", type=SUPPORTED_UPLOAD_TYPES, accept_multiple_files=False, key="jd_file")
+            jd_upload = st.file_uploader("JD file", type=SUPPORTED_UPLOAD_TYPES,
+                                         accept_multiple_files=False, key="jd_file",
+                                         max_upload_size=10)
 
         st.markdown("**Candidate resumes**")
-        resumes = st.file_uploader("CV files", type=SUPPORTED_UPLOAD_TYPES, accept_multiple_files=True, key="resume_files", help="PDF, Word, TXT or Markdown; scanned PDF images without text are not supported.")
+        resumes = st.file_uploader("CV files", type=SUPPORTED_UPLOAD_TYPES,
+                                   accept_multiple_files=True, key="resume_files",
+                                   max_upload_size=10,
+                                   help="PDF, Word, TXT or Markdown; scanned PDF images without text are not supported.")
 
         alias = st.session_state.get("approved_aliases")
         gate = st.session_state.get("eligibility_gates")
@@ -1317,6 +1438,15 @@ def _advance_recovery_state(state: dict, report: RankingReport, *,
     if provider_hard_stop:
         state["paused"] = True
         state["pause_reason"] = "OpenRouter credentials, credits, or model access require attention"
+        return state
+    if metrics.get("assessment_http_attempts_remaining") == 0:
+        state["paused"] = True
+        used = metrics.get("assessment_http_attempts_cumulative", "all permitted")
+        budget = metrics.get("assessment_http_attempt_budget", "configured")
+        state["pause_reason"] = (
+            f"Cloud HTTP request budget reached ({used}/{budget}). "
+            "Verified work is saved. Raise OPENROUTER_MAX_REQUESTS_PER_ASSESSMENT "
+            "in .env only if more cloud requests are approved; then resume.")
         return state
     current_verified = sum(a.assessment_state == "verified"
                            for candidate in report.candidates
@@ -1755,6 +1885,23 @@ def _ranking(report: RankingReport):
         file_name="cv_ranker_complete_results.zip", mime="application/zip",
         type="primary", width="stretch",
     )
+    with st.expander("Save a restart-safe recovery checkpoint"):
+        st.caption("Download a signed recovery ZIP to retain decisions, source evidence, "
+                   "weights and remaining cloud-request counts across a restart. The file "
+                   "contains sensitive applicant excerpts in plaintext: protect it like "
+                   "your complete results export. Keep the installation's local signing "
+                   "key safe, as a different server cannot verify this ZIP without it. "
+                   "For incomplete assessments, you must re-upload the identical JD/CVs "
+                   "and reapprove the JD before resuming; nothing is auto-uploaded.")
+        try:
+            checkpoint = export_recovery_checkpoint(
+                st.session_state, local_signing_key(_RECOVERY_SIGNING_KEY))
+        except (ValueError, OSError, TypeError) as exc:
+            st.warning(f"Checkpoint export unavailable: {exc}")
+        else:
+            st.download_button("Download signed recovery ZIP", checkpoint,
+                               "cv_ranker_recovery_checkpoint.zip", "application/zip",
+                               key="cv_portable_recovery_download", width="stretch")
 
 
 def _candidate_evidence(report: RankingReport):
@@ -2262,6 +2409,16 @@ def _technical(report: RankingReport):
         unified_stats = st.session_state.get("cv_unified_metrics")
         if isinstance(request_stats, dict) and request_stats:
             st.write("**Request budget and usage**")
+            if request_stats.get("assessment_http_attempt_budget") is not None:
+                spent = request_stats.get("assessment_http_attempts_cumulative", 0)
+                cap = request_stats["assessment_http_attempt_budget"]
+                left = request_stats.get("assessment_http_attempts_remaining", 0)
+                st.caption(
+                    f"Cloud HTTP attempts used for this assessment: {spent}/{cap} "
+                    f"({left} remaining). This includes provider retries and "
+                    "manual/automatic recovery. A source-validation pause is "
+                    "separate from reaching the budget. Raising the cap requires "
+                    "an explicit .env change and may incur additional charges.")
             st.json(request_stats)
             st.caption("Actual attempts include provider retries; token totals are provider-reported "
                        "where available and may be zero when a provider omits usage data.")
@@ -2319,7 +2476,42 @@ def _technical(report: RankingReport):
     _jd_details(report)
 
 
+def _access_gate() -> bool:
+    """Stop before any report, settings sidebar or model action is reachable."""
+    mode, addresses = access_env()
+    address = streamlit_config.get_option("server.address")
+    user = None
+    if mode.strip().lower() == "oidc":
+        user = st.user
+    decision = evaluate_access(
+        mode=mode, server_address=address, emails=addresses,
+        is_logged_in=bool(getattr(user, "is_logged_in", False)) if user is not None else False,
+        email=user.get("email") if user is not None else None,
+        email_verified=user.get("email_verified") is True if user is not None else False,
+    )
+    if decision.action == "allow":
+        return True
+    st.title("TextileHR AI · Restricted access")
+    if decision.action == "login":
+        st.info(decision.reason)
+        if st.button("Sign in with your organization", type="primary"):
+            try:
+                st.login()
+            except Exception:
+                st.error("Organization sign-in is not configured or is unavailable. Contact your administrator.")
+    elif decision.action == "deny":
+        st.error(decision.reason)
+        if st.button("Sign out"):
+            st.logout()
+    else:
+        st.error(decision.reason)
+        st.caption("Use the bundled local launcher or configure OIDC authentication and an explicit email allowlist before any network deployment.")
+    return False
+
+
 def render_app():
+    if not _access_gate():
+        st.stop()
     try:
         assert_runtime_current()
     except RuntimeError as exc:
@@ -2329,11 +2521,11 @@ def render_app():
     settings, use_llm, semantic_enabled = _sidebar()
     st.markdown(
         '<div class="cv-hero" role="banner"><div>'
-        '<div class="cv-hero-badge">Supervisor edition · Evidence-first screening</div>'
+        '<div class="cv-hero-badge">Reliance Weaving Mills Limited · HR supervisor workspace</div>'
         '<h1 class="cv-hero-title">CV Ranker</h1>'
         '<p class="cv-hero-description">Review approved job requirements, compare candidates '
         'with transparent scores, and understand every decision through original CV evidence.</p>'
-        '</div><div class="cv-hero-mark" aria-hidden="true">↗</div></div>',
+        '</div><div class="cv-hero-mark" aria-hidden="true">RW</div></div>',
         unsafe_allow_html=True,
     )
     if settings is None:

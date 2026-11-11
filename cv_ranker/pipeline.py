@@ -171,6 +171,18 @@ class CVRanker:
             jd_diagnostics = draft.diagnostics
             warnings.extend(draft.warnings)
 
+        # An extraction limit is a UI/resource guard, not authorization to
+        # remove employer requirements from the score denominator. This also
+        # protects CLI runs and previously saved approvals made under a
+        # smaller cap; only a complete frozen JD can be ranked.
+        if any("JD requirement cap:" in item or
+               "configured maximum retained" in item
+               for item in warnings):
+            raise ValueError(
+                "JD extraction was truncated by max_requirements. Raise the "
+                "requirement limit and extract/reapprove the complete JD before "
+                "ranking candidates.")
+
         if not requirements:
             raise RuntimeError("No usable JD requirements were produced; ranking cannot proceed.")
         if any(r.constraint.requires_review for r in requirements):

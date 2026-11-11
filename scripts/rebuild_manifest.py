@@ -13,8 +13,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "cv_ranker" / "build_manifest.json"
-EXCLUDED_DIRS = {".git", ".venv", ".pytest_cache", "__pycache__", "outputs"}
-EXCLUDED_FILES = {".env", ".DS_Store", "Thumbs.db"}
+EXCLUDED_DIRS = {
+    ".git", ".venv", ".pytest_cache", "__pycache__", "outputs",
+    ".cv_ranker_cache", ".mypy_cache", ".ruff_cache",
+}
+EXCLUDED_FILES = {
+    ".env", "secrets.toml", ".DS_Store", "Thumbs.db",
+}
+EXCLUDED_SECRET_SUFFIXES = {".key", ".pem", ".p12", ".pfx"}
 
 
 def rebuild() -> int:
@@ -27,6 +33,14 @@ def rebuild() -> int:
         if any(part in EXCLUDED_DIRS for part in relative.parts):
             continue
         if relative.name in EXCLUDED_FILES:
+            continue
+        if relative.name.startswith(".env.") and relative.name != ".env.example":
+            continue
+        if (len(relative.parts) >= 2 and relative.parts[0] == ".streamlit"
+                and relative.name.startswith("secrets.")
+                and relative.suffix == ".toml"):
+            continue
+        if relative.suffix.lower() in EXCLUDED_SECRET_SUFFIXES:
             continue
         files[relative.as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
 

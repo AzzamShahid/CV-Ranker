@@ -14,6 +14,7 @@ from .schemas import (
 from .segments import ResumeSegment, render_segments, resolve_segment_ids, segment_resume
 from .text_utils import (
     canonical_key,
+    has_candidate_action,
     classify_requirement_tone,
     non_candidate_requirement_copy,
     instruction_like_evidence,
@@ -165,7 +166,7 @@ def _positive_literal_segment_is_capability_evidence(req: ValidatedRequirement, 
         "coordinated ", "handled ", "supported ", "prepared ", "administered ",
         "performed ", "conducted ", "executed ", "operated ", "provided ",
     )
-    return any(cue in text for cue in capability_cues)
+    return any(cue in text for cue in capability_cues) or has_candidate_action(text)
 
 
 def _unanchored_semantic_tone(evidence: str) -> str:

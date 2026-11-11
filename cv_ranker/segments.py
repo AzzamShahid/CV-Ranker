@@ -27,6 +27,10 @@ KNOWN_HEADINGS = {
     "professional profile": "summary",
     "education": "education",
     "academic background": "education",
+    "academic qualifications": "education",
+    "educational qualifications": "education",
+    "educational background": "education",
+    "degrees and qualifications": "education",
     "technical skills": "skills",
     "skills": "skills",
     "core skills": "skills",
@@ -35,10 +39,20 @@ KNOWN_HEADINGS = {
     "core competencies": "skills",
     "tools": "skills",
     "technologies": "skills",
+    "technical stack": "skills",
+    "technology stack": "skills",
+    "tech stack": "skills",
+    "tools and frameworks": "skills",
+    "skills and tools": "skills",
+    "tools and technologies": "skills",
+    "skills and technologies": "skills",
     "professional experience": "experience",
     "work experience": "experience",
     "work history": "experience",
     "employment history": "experience",
+    "career history": "experience",
+    "professional history": "experience",
+    "employment record": "experience",
     "experience": "experience",
     "ai projects": "projects",
     "projects": "projects",
@@ -77,6 +91,25 @@ def _heading(line: str) -> str | None:
     key = canonical_key(clean)
     if key in KNOWN_HEADINGS:
         return KNOWN_HEADINGS[key]
+    # Resume layouts often qualify generic section headings with two or more
+    # ordinary adjectives. This is a *layout* rule, not a textile/software
+    # skill map; otherwise the following skills are mislabeled as Education.
+    if re.fullmatch(
+        r"(?:(?:(?:technical|operational|professional|core|key|functional|"
+        r"practical|soft|hard|additional|specialized|specialist)\s+"
+        r"(?:and\s+|&\s+)?){1,4})skills", key, re.I):
+        return "skills"
+    # Common compound capability headers are layout metadata rather than a
+    # fixed dictionary of skills. The terms *beneath* them come from each CV.
+    if (len(clean) <= 75 and re.fullmatch(
+        r"(?:technical |professional |core )?"
+        r"(?:skills|tools|technologies|frameworks|platforms|tech stack|"
+        r"technology stack|technical stack|competencies)"
+        r"(?: (?:and|&) (?:skills|tools|technologies|frameworks|platforms|"
+        r"programming languages|competencies)){1,3}", key, re.I)):
+        return "skills"
+    if re.fullmatch(r"(?:training\s+(?:and|&)\s+)?certifications?", key, re.I):
+        return "certifications"
     # Resume templates frequently combine a canonical section heading with
     # "Notes" or "Additional Information". Keeping it as a heading matters:
     # a degree after work experience must not inherit the "experience" tag.

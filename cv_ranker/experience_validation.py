@@ -15,7 +15,9 @@ from pydantic import Field
 
 from .schemas import EvidenceCitation, RequirementAssessment, StrictModel, ValidatedRequirement
 from .segments import ResumeSegment, segment_resume
-from .text_utils import instruction_like_evidence, phrase_present, classify_requirement_tone, requirement_tones_in_source
+from .text_utils import (instruction_like_evidence, phrase_present,
+                         classify_requirement_tone, requirement_tones_in_source,
+                         has_candidate_action)
 
 
 class DurationClaim(StrictModel):
@@ -78,7 +80,8 @@ _LEARNING = re.compile(
     # limited ability. Classify learning-only duration by its actual grammar.
     r"\b(?:(?:currently|still|only|just)\s+learning|"
     r"learning\s+(?:about|to|from|via)|years?\s+of\s+learning|"
-    r"studying|coursework|theoretical|basic\s+(?:exposure|knowledge)|"
+    r"studying|studied\s+(?:about|in\s+class)|learned\s+(?:about|in\s+class)|"
+    r"coursework|theoretical|basic\s+(?:exposure|knowledge)|"
     r"interested\s+in|plans?\s+to\s+learn|planning\s+to|familiarizing)\b", re.I,
 )
 # These patterns describe the relationship between a year count and a tenure
@@ -131,9 +134,19 @@ _NEGATED_DUTY = re.compile(
     r"did\s+not|haven't|hasn't|didn't)\b", re.I,
 )
 
+# A narrow grammatical fallback for completed first-person actions outside
+# the finite common-verb recognizer. It accepts "I replayed ..." and "we
+# authored ..." without listing programming tools or sector-specific duties.
+# A verb is not proof of JD relevance: the model still checks the exact work.
+_FIRST_PERSON_PAST_ACTION = re.compile(
+    r"\b(?:I|we)\s+(?:(?:personally|also|then)\s+)?"
+    r"[A-Za-z][A-Za-z-]{2,}ed\b", re.I,
+)
+
 
 def _affirmative_duty(text: str) -> bool:
-    return bool(_ROLE_DUTY.search(text) and not _NEGATED_DUTY.search(text)
+    return bool((has_candidate_action(text) or _FIRST_PERSON_PAST_ACTION.search(text))
+                and not _NEGATED_DUTY.search(text)
                 and not _CONTRADICTION.search(text)
                 and not _LEARNING.search(text)
                 and not _JD_COPY.search(text)
@@ -163,6 +176,40 @@ def _model_describes_related_work(reason: str) -> bool:
                           statement))
 
 
+def _contrasted_work_overlap(requirement: ValidatedRequirement,
+                             row: RequirementAssessment) -> bool:
+    """Keep *unscored* sector overlap admitted in a negative model explanation.
+
+    Some model responses say the applicant HAS experience in a different
+    activity, "not [JD-specific activity]", without using the literal word
+    'transferable'. This can warrant HR review only when original cited work
+    is affirmative and a cited professional summary shares at least two of
+    the JD's own distinctive subject words. It never satisfies numeric tenure.
+    """
+    subject = requirement.constraint.subject
+    narrative = (row.reason or '').casefold()
+    if not subject or not re.search(r'\b(?:has|have|worked|experience|'
+                                    r'supervis(?:e|ed|ion)|managed|performed)\b', narrative):
+        return False
+    if not re.search(r'\b(?:not|rather than|instead of|different from)\b', narrative):
+        return False
+    if re.search(r'\b(?:unrelated|no meaningful overlap|not related|'
+                 r'no relevant work)\b', narrative):
+        return False
+    salient = {token for token in re.findall(r'[a-z][a-z0-9]*', subject.casefold())
+               if len(token) >= 4 and token not in _SCOPE_CONNECTORS}
+    if len(salient) < 2:
+        return False
+    summaries = [source for source in row.evidence_segments
+                 if source.section in {'summary', 'experience', 'work_experience'}
+                 and not instruction_like_evidence(source.text)
+                 and not _JD_COPY.search(source.text)
+                 and not _CONTRADICTION.search(source.text)]
+    return any(len(salient.intersection(set(re.findall(
+        r'[a-z][a-z0-9]*', source.text.casefold())))) >= 2
+               for source in summaries)
+
+
 def _role_tenure(segments: list[ResumeSegment]) -> list[RoleTenureClaim]:
     """Derive conservative duration from a role header, never from a CV total.
 
@@ -172,11 +219,27 @@ def _role_tenure(segments: list[ResumeSegment]) -> list[RoleTenureClaim]:
     """
     headers: list[tuple[int, ResumeSegment, re.Match[str]]] = []
     for index, segment in enumerate(segments):
-        if segment.section != "experience" or len(segment.text) > 230:
+        if segment.section not in {"experience", "work_experience", "summary", "other"}:
             continue
-        match = _ROLE_DATES.search(segment.text)
-        if match:
-            headers.append((index, segment, match))
+        dates = list(_ROLE_DATES.finditer(segment.text))
+        # Multiple employer date ranges glued into one PDF paragraph cannot
+        # safely be treated as one job with one set of duties. Likewise,
+        # require the dated-role interval near its heading rather than in a
+        # research/project timeline buried inside a long narrative.
+        if len(dates) != 1 or dates[0].start() > 150:
+            continue
+        match = dates[0]
+        if segment.section in {"summary", "other"}:
+            # Unheaded/poorly classified CV layouts commonly place an entire
+            # full-time role and its duty on one extracted PDF line. Accept
+            # those as dated *role candidates* only with an explicit tenure
+            # label and a genuine action after the date. A generic resume
+            # summary, credential, named skill or project year range fails.
+            trailing = segment.text[match.end():]
+            if (not re.match(r"(?i)^\s*(?:[|,;:]\s*)?\(?full[\s-]?time\b", trailing)
+                    or not _affirmative_duty(trailing)):
+                continue
+        headers.append((index, segment, match))
     claims: list[RoleTenureClaim] = []
     today = date.today()
     for position, (index, segment, match) in enumerate(headers):
@@ -194,6 +257,11 @@ def _role_tenure(segments: list[ResumeSegment]) -> list[RoleTenureClaim]:
             # January is the conservative lower bound for dated work.
             end_month = (_MONTH_NAMES[match.group("end_month")[:3].casefold()]
                          if match.group("end_month") else 1)
+        # An explicit future end date cannot count as experience already
+        # completed. Likewise an employment interval cannot start in future.
+        if ((end_year, end_month) > (today.year, today.month)
+                or (start_year, start_month) > (today.year, today.month)):
+            continue
         months = (end_year - start_year) * 12 + end_month - start_month
         if not 0 <= months <= 1200:
             continue
@@ -201,7 +269,7 @@ def _role_tenure(segments: list[ResumeSegment]) -> list[RoleTenureClaim]:
                       else len(segments))
         duty_ids = []
         for duty in segments[index + 1:next_index]:
-            if duty.section != "experience":
+            if duty.section not in {"experience", "work_experience"}:
                 break
             # The PDF sectioner may keep a later ALL-CAPS chapter heading
             # inside the Experience section. Its following paragraphs are
@@ -211,13 +279,11 @@ def _role_tenure(segments: list[ResumeSegment]) -> list[RoleTenureClaim]:
                 break
             if _affirmative_duty(duty.text):
                 duty_ids.append(duty.segment_id)
-        # Some text files/PDF parsers preserve the header and its first duty
-        # in ONE original segment; its two physical lines may both be cited
-        # by that single legitimate ID without fabricating a second source.
-        if (len(segment.source_lines) >= 2
-                and len(_ROLE_DATES.findall(segment.text)) == 1
-                and any(_affirmative_duty(line)
-                        for line in segment.source_lines[1:])):
+        # PDF extraction can produce an entire header, "| Full time", and
+        # completed duty in ONE physical line (including a >230-char line).
+        # Its genuine source ID can prove both the dates and performed action.
+        trailing = segment.text[match.end():]
+        if _affirmative_duty(trailing):
             duty_ids.insert(0, segment.segment_id)
         if duty_ids:
             claims.append(RoleTenureClaim(
@@ -541,8 +607,17 @@ def check_experience(
                 return ExperienceCheck(outcome='ambiguous', minimum_years=minimum,
                                        subject=c.subject,
                                        explanation='The CV mentions the subject and an unscoped career duration separately; years cannot be attributed to the subject.')
+        dated_intervals_seen = any(
+            _ROLE_DATES.search(seg.text)
+            for seg in segments if seg.section not in {
+                'education', 'certifications', 'achievements', 'metadata', 'non_candidate'})
+        explanation = (
+            'Calendar date ranges were present, but their relevant professional '
+            'duties and qualifying non-overlapping tenure were not established.'
+            if dated_intervals_seen else
+            'No sufficiently scoped professional duration or supported dated employment interval was found.')
         return ExperienceCheck(outcome='not_evidenced', minimum_years=minimum,
-                               subject=c.subject, explanation='No explicit, appropriately scoped duration with valid year units was found.')
+                               subject=c.subject, explanation=explanation)
     if c.subject:
         source_tones = requirement_tones_in_source(resume_text, c.subject)
         if 'positive' in source_tones and ('negated' in source_tones or 'uncertain' in source_tones):
@@ -628,6 +703,89 @@ def _successful_experience_reason(check: ExperienceCheck,
             'not independently confirmed employment.')
 
 
+def _cited_summary_role_scope(*, requirement: ValidatedRequirement,
+                              row: RequirementAssessment,
+                              group: list[RoleTenureClaim],
+                              segments_by_id: dict[str, ResumeSegment]
+                              ) -> tuple[list[str], str] | None:
+    """Recover explicitly scoped, model-cited career tenure with role provenance.
+
+    A PDF-wrapped professional summary can state the complete year count and
+    work subject in one original paragraph, while the numeric parser rightly
+    refuses to merge separate physical lines. This narrower source-ledger
+    bridge requires ALL of: an existing positive model verdict, a cited summary
+    with sufficient years and the JD's own subject words, a cited dated role
+    whose duration corroborates that assertion, and an affirmative duty in
+    THAT role sharing the JD work scope. No title-only or unrelated-tenure credit.
+    """
+    subject = requirement.constraint.subject
+    minimum = requirement.constraint.minimum_years
+    if (row.status != 'matched' or not subject or minimum is None
+            or not row.evidence_ids or not group):
+        return None
+    cited = set(row.evidence_ids)
+    if not all(role.role_segment_id in cited for role in group):
+        return None
+    # Tokens are derived solely from the frozen JD. No industry synonym list.
+    topic = {word for word in re.findall(r'[a-z][a-z0-9]*', subject.casefold())
+             if word not in _SCOPE_CONNECTORS and word not in _GENERIC_WORK_NOUNS}
+    if not topic:
+        return None
+    role_months = _role_months_without_double_counting(tuple(group))
+    if role_months < minimum * 12:
+        return None
+    summary = None
+    duration = None
+    duration_label = None
+    for sid in row.evidence_ids:
+        source = segments_by_id.get(sid)
+        if source is None or source.section != 'summary' or len(source.text) > 300:
+            continue
+        if (_JD_COPY.search(source.text) or _LEARNING.search(source.text)
+                or _CONTRADICTION.search(source.text)
+                or instruction_like_evidence(source.text)):
+            continue
+        if not topic.issubset(set(re.findall(r'[a-z][a-z0-9]*', source.text.casefold()))):
+            continue
+        for claim in _DURATION.finditer(source.text):
+            low, high = _duration_interval(source.text, claim)
+            # The duration must grammatically govern paid/professional work.
+            if (low < minimum or low > role_months / 12 + 0.5
+                    or not _TENURE_AFTER_DURATION.search(source.text[claim.end():])):
+                continue
+            months = re.match(r'\s+(\d{1,2}\s+months?)\b', source.text[claim.end():], re.I)
+            summary, duration = source, low
+            duration_label = claim.group(0) + (' ' + months.group(1) if months else '')
+            break
+        if summary is not None:
+            break
+    if summary is None or duration is None:
+        return None
+    # Every credited employer's OWN affirmative duties need a direct lexical
+    # link to the JD topic. This step confirms provenance but does not replace
+    # the model's earlier semantic assessment of the complete requirement.
+    duty_ids = []
+    for role in group:
+        relevant = next((sid for sid in role.duty_segment_ids
+                         if (segments_by_id.get(sid) is not None
+                             and _affirmative_duty(segments_by_id[sid].text)
+                             and topic.intersection(set(re.findall(
+                                 r'[a-z][a-z0-9]*', segments_by_id[sid].text.casefold()))))),
+                        None)
+        if relevant is None:
+            return None
+        duty_ids.append(relevant)
+    explanation = (
+        f'The original CV summary reports {duration_label} of relevant '
+        'professional experience in the same source passage as the JD work '
+        'scope. The model cited this summary and the dated employer role; '
+        'affirmative duties in that role corroborate the scope, and its '
+        f'non-overlapping dates meet the {minimum:g}-year minimum. '
+        'Employment details are CV-reported and still require HR verification.'
+    )
+    return duty_ids, explanation
+
+
 def apply_experience_checks(*, requirements: list[ValidatedRequirement],
                             assessments: list[RequirementAssessment],
                             resume_text: str) -> tuple[list[RequirementAssessment], list[str], bool]:
@@ -673,10 +831,23 @@ def apply_experience_checks(*, requirements: list[ValidatedRequirement],
                              if row.status == 'matched' and all(
                                  cited.intersection(role.duty_segment_ids)
                                  for role in group)), None)
+            summary_proof = None
+            if credited is None:
+                for group in check.role_groups:
+                    summary_proof = _cited_summary_role_scope(
+                        requirement=req, row=row, group=group,
+                        segments_by_id=source_by_id)
+                    if summary_proof is not None:
+                        credited = group
+                        check = check.model_copy(update={'explanation': summary_proof[1]})
+                        break
             supported = credited is not None
             if credited:
                 dated_heading_ids = [role.role_segment_id for role in credited
                                      if role.role_segment_id not in cited]
+                if summary_proof is not None:
+                    dated_heading_ids.extend(sid for sid in summary_proof[0]
+                                             if sid not in cited and sid not in dated_heading_ids)
             status = ('matched' if supported else
                       'uncertain' if row.status == 'matched' else row.status)
         elif check.outcome == 'not_evidenced' and row.status in {'matched', 'uncertain'}:
@@ -738,7 +909,8 @@ def apply_experience_checks(*, requirements: list[ValidatedRequirement],
         transfer = bool(status != 'matched' and has_related_duty
                         and (row.unified_status == 'Transferable' or
                              (row.unified_status in {'Found', 'Not Found'}
-                              and _model_describes_related_work(row.reason))))
+                              and (_model_describes_related_work(row.reason)
+                                   or _contrasted_work_overlap(req, row)))))
         unified = 'Transferable' if transfer else row.unified_status
         reason = row.reason
         if transfer:
@@ -753,6 +925,8 @@ def apply_experience_checks(*, requirements: list[ValidatedRequirement],
             # Not Found text or a generic "does not establish" explanation.
             # Store one source-grounded explanation for UI and every export.
             reason = _successful_experience_reason(check, source_by_id) or row.reason
+        elif status == 'matched' and check.outcome == 'role_semantic' and summary_proof is not None:
+            reason = summary_proof[1]
         elif status != row.status:
             reason = ('The cited experience does not establish the complete '
                       f'JD minimum: {check.explanation}')

@@ -2,10 +2,25 @@
 
 **Repository:** CV Ranker, Supervisor Edition, Phase 7G  
 **Reviewed:** 2026-11-10  
-**UI release:** 4.9.42  
-**Assessment build:** `phase7g-v4-9-39-individual-criterion-why-restored-2026-11-10`; protocol 31
+**UI release:** 4.9.45  
 
-This is a source-inventory and reference audit, **not** a declaration that every unimported function is dead. Streamlit callbacks, CLI entry points and test fixtures can be referenced dynamically. Suggestions below distinguish deletion from archiving and refactoring. No runtime code, tests, scoring logic, assessment prompts or historical benchmark evidence were deleted by this documentation pass.
+**Phase 2E packaging safeguard (4.9.45):** Streamlit's `.streamlit/secrets.toml` and `secrets.*.toml` (OIDC credentials/cookie secrets), non-example `.env.*` variants and private-key extensions are explicitly excluded from the hashed source distribution. A synthetic regression test exercises the manifest builder with planted fake secrets; those items must never be included in release ZIPs. No applicant output or database is deleted as part of this change.
+
+**Phase 2C disposition (4.9.44):** Added one cohesive `cv_ranker/recovery_bundle.py` module for signed portable checkpoints. Reused existing frozen-JD/input identities and report models; did not duplicate assessment, scoring or source verification logic. The generated per-installation key lives in ignored `.cv_ranker_cache/` and must never be packaged. No additional source files were deleted in this phase.
+**Assessment build:** `phase7g-v4-9-43-mixed-batch-recovery-2026-11-10`; protocol 32
+
+This is a source-inventory and reference audit, **not** a declaration that every unimported function is dead. Streamlit callbacks, CLI entry points and test fixtures can be referenced dynamically. Suggestions below distinguish deletion from archiving and refactoring. The 4.9.43 pass archived documentation and fixed one validated recovery bug, but did not delete tests, scoring formulas, model prompts, compatibility scripts or historical benchmark evidence.
+
+## Completed safe cleanup (4.9.43)
+
+| Disposition | Exact action | Recoverability |
+|---|---|---|
+| Archived | All 47 prior `docs/RELEASE_NOTES_V4_*.md` moved into `docs/history/releases/`. | The original Markdown contents remain in the distributed source ZIP. |
+| Archived | `PROJECT_MAP.md`, `PROJECT_SUMMARY.md`, `PROJECT_STATUS.md`, `TECHNICAL_DECISIONS.md` and `VALIDATION.md` moved into `docs/history/legacy_reference/`. | Complete original files retained; the canonical content is in `docs/ARCHITECTURE.md`. |
+| Added | `docs/INDEX.md` and 4.9.43 release notes; updated canonical README and architecture references. | Navigation is explicit; the older release records are linked as history. |
+| Preserved | Python modules, older diagnostic launchers, `.venv`, evaluation evidence and all sample fixtures. | No unverified dead-code deletion was performed. Build packaging excludes generated environments and sensitive output. |
+
+**External links:** Historical notes may contain old relative file links. They were preserved as records rather than rewritten to appear current; use the [documentation index](INDEX.md) and the archived filename to locate a moved reference. No application code or tests depend on the old documentation paths (manifest hashes were regenerated after these moves).
 
 ## 1. Proposed removal and consolidation actions
 
@@ -16,9 +31,9 @@ This is a source-inventory and reference audit, **not** a declaration that every
 | P0 | `.env`, `outputs/`, `.cv_ranker_cache/`, applicant exports and temporary upload files | **Never ship, commit or move into `/docs`.** Delete only after retention/security review. | Secrets and applicant-derived evidence may be sensitive; the manifest builder and Git ignore these paths. |
 | P1 | Root `README.md` (old 56 KB chronological changelog) | **Replace with concise current-state README.** Preserve the old text as `docs/history/README_RELEASE_CHRONICLE_PRE_UNIFIED.md`. | The old README repeats dozens of milestone notes and outdated instructions. The original remains traceable in history. |
 | P1 | `docs/ARCHITECTURE.md` (old description) | **Replace with authoritative current architecture.** Preserve superseded text in `docs/history/ARCHITECTURE_PRE_UNIFIED.md`. | Previous document incorrectly excluded embeddings/cloud inference and described older scoring. |
-| P1 | `docs/PROJECT_MAP.md`, `docs/PROJECT_SUMMARY.md`, `docs/PROJECT_STATUS.md`, `docs/TECHNICAL_DECISIONS.md`, `docs/VALIDATION.md` | **Consolidate current facts into `docs/ARCHITECTURE.md`.** After link migration, move these to `docs/history/legacy_reference/`; do not treat their historical benchmark figures as current. | These files overlap and sometimes conflict on active features and build versions. They remain in place until external references are checked. |
+| P1 | `docs/history/legacy_reference/` (five former root-level docs) | **Done: consolidated current facts into `docs/ARCHITECTURE.md` and archived original files.** Do not treat their historical benchmark figures as current. | No code/test dependencies found for the prior paths; retained for provenance. |
 | P1 | `docs/SUPERVISOR_UI_GUIDE.md`, `docs/SUPERVISOR_WALKTHROUGH.md`, `docs/DEMO_GUIDE.md`, `docs/OPENROUTER_SETUP.md`, `docs/BENCHMARK_GUIDE.md` | **Retain as targeted operating manuals**, but update/version them and link from the unified guide; avoid restating complete architecture in each. | Useful task-specific details, though older guides may describe now-superseded behavior. |
-| P2 | `docs/RELEASE_NOTES_V4_*.md` (47 files), `docs/V48_*.md`, `docs/checkpoints/`, `docs/history/` | **Archive by milestone** under `docs/history/releases/`, `docs/history/decisions/`, `docs/history/checkpoints/` in a separate link-repair change; keep original evidence intact. | Chronological development and prior decisions are audit records, not the live specification. Moving them now would break existing relative links. |
+| P2 | `docs/history/releases/` (47 archived releases), `docs/V48_*.md`, `docs/checkpoints/` | **Done:** archive prior release notes. **Remaining:** evaluate possible archival of `V48_*` and checkpoints in a later link-repair release. | Chronological development and prior decisions are records, not the live specification; historic link text is retained. |
 | P2 | `scripts/run_phase7d_demo.cmd`, `scripts/run_phase7e_*.cmd`, `scripts/run_phase7f*.cmd`, old benchmark/trace wrappers (22 `run_*.cmd` in `scripts/`) | **Mark as legacy/diagnostic; move only genuinely unused launchers to `scripts/legacy/` after test and documentation reference migration.** Keep `run_ui.cmd`, `run_tests.cmd`, `run_runtime_check.cmd`, `run_supervisor_demo.cmd` in root. | Several wrappers are referenced by tests or other wrappers; unverified blanket deletion is unsafe. |
 | P2 | `evaluation/results/repeatability/trial_01_*.json`, `trial_02_*.json`, `trial_03_*.json` | **Optionally deduplicate storage via an indexed archive**, retaining all six logical trial IDs, metadata and hashes. | Same-batch trials have byte-identical output (two groups of three), but those repeats are evidence of repeatability; never simply erase them. |
 | P2 | `sample_data/applied_ai_jd.txt` and `sample_data/applied_ai_documents/jd/Applied_AI_ML_Engineer_Updated_JD.txt` | **Keep both aliases until consumers migrate to one canonical fixture.** Then replace the secondary copy with a documented fixture-generation step. | Byte-identical, but both paths are referenced by different tests and a demo launcher. |
@@ -60,9 +75,11 @@ CV_Ranker_Supervisor_Edition/
 │   └── build_manifest.json     # signed-by-hash inventory (not cryptographic signature)
 ├── docs/
 │   ├── ARCHITECTURE.md          # authoritative current behavior
+│   ├── INDEX.md                  # current versus historical navigation
 │   ├── REPOSITORY_AUDIT.md      # disposition and migration register
+│   ├── RELEASE_NOTES_V4_9_43.md # current release changes
 │   ├── guides/                  # optionally relocate maintained how-tos
-│   └── history/                 # preserved dated release records
+│   └── history/                 # preserved releases and legacy references
 ├── scripts/
 │   ├── rebuild_manifest.py | package_source_release.py
 │   ├── diagnostics/            # maintained investigations

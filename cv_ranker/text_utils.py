@@ -130,6 +130,34 @@ def instruction_like_evidence(text: str | None) -> bool:
     return any(re.search(pattern, value, flags=re.IGNORECASE) for pattern in patterns)
 
 
+# This is grammar, not a job-skill dictionary. It checks whether a candidate
+# passage describes an action; semantic JD relevance remains with the LLM.
+# A single shared cue prevents the citation, experience and retrieval gates
+# from disagreeing about present-tense work like "coordinate" or "report".
+_CANDIDATE_ACTION = re.compile(
+    r"\b(?:built|builds?|building|develop(?:ed|s|ing)?|deliver(?:ed|s|ing)?|"
+    r"implement(?:ed|s|ing)?|deploy(?:ed|s|ing)?|design(?:ed|s|ing)?|"
+    r"creat(?:e|ed|es|ing)|manag(?:e|ed|es|ing)|maintain(?:ed|s|ing)?|"
+    r"operat(?:e|ed|es|ing)|supervis(?:e|ed|es|ing)|coordinat(?:e|ed|es|ing)|"
+    r"inspect(?:ed|s|ing)?|investigat(?:e|ed|es|ing)|troubleshoot(?:s|ing|ting)?|"
+    r"report(?:ed|s|ing)?|monitor(?:ed|s|ing)?|prepar(?:e|ed|es|ing)|"
+    r"plan(?:s|ned|ning)?|read(?:s|ing)?|interpret(?:ed|s|ing)?|"
+    r"review(?:ed|s|ing)?|verif(?:y|ied|ies|ying)|evaluat(?:e|ed|es|ing)|"
+    r"test(?:ed|s|ing)?|conduct(?:ed|s|ing)?|perform(?:ed|s|ing)?|"
+    r"provid(?:e|ed|es|ing)|support(?:ed|s|ing)?|train(?:ed|s|ing)?|"
+    r"lead(?:s|ing)?|led|work(?:ed|s|ing)?|handl(?:e|ed|es|ing)|"
+    r"integrat(?:e|ed|es|ing)|configur(?:e|ed|es|ing)|automated?|automating|"
+    r"architect(?:ed|s|ing)?|produc(?:e|ed|es|ing)|repair(?:ed|s|ing)?|"
+    r"schedul(?:e|ed|es|ing)|track(?:ed|s|ing)?|assess(?:ed|es|ing)?|"
+    r"analy[sz](?:e|ed|es|ing)|reduc(?:e|ed|es|ing)|improv(?:e|ed|es|ing)|"
+    r"collaborat(?:e|ed|es|ing)|administ(?:er|ered|ers|ering))\b", re.I)
+
+
+def has_candidate_action(text: str) -> bool:
+    """Recognize an action claim, not evidence that the JD was satisfied."""
+    return bool(text and _CANDIDATE_ACTION.search(text))
+
+
 def canonical_key(value: str) -> str:
     value = normalize_for_evidence(value)
     value = re.sub(r"[^\w+#&./-]+", " ", value, flags=re.UNICODE)
@@ -245,6 +273,11 @@ def extract_or_requirement(text: str) -> str | None:
 
     if re.search(r"\s+and/or\s+", clean, flags=re.IGNORECASE):
         parts = re.split(r"\s+and/or\s+", clean, flags=re.IGNORECASE)
+    elif re.search(r",\s*or\s+", clean, flags=re.IGNORECASE):
+        # An Oxford-comma list is a list of alternatives, not a single
+        # combined option ("A, B" versus "C"). Only source punctuation
+        # determines the split; no domain-specific alternative is invented.
+        parts = re.split(r",\s*or\s+|,\s*|\s+or\s+", clean, flags=re.IGNORECASE)
     elif re.search(r"\s+or\s+", clean, flags=re.IGNORECASE):
         parts = re.split(r"\s+or\s+", clean, flags=re.IGNORECASE)
     elif "/" in clean and clean.count("/") <= 3:

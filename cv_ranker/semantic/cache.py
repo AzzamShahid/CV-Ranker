@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sqlite3
 from pathlib import Path
 
@@ -13,8 +14,25 @@ from .embedding import EmbeddingError, normalize
 class SQLiteVectorCache:
     def __init__(self, path: str | Path):
         self.path = Path(path)
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._conn = sqlite3.connect(str(self.path))
+        self.path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        if self.path.is_symlink():
+            raise EmbeddingError("Embedding cache must not be a symbolic link")
+        # Keep derived applicant vectors private from other OS accounts.
+        # A preexisting cache is retained, never destroyed or truncated.
+        flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0)
+        try:
+            fd = os.open(self.path, flags, 0o600)
+        except FileExistsError:
+            pass
+        else:
+            os.close(fd)
+        if os.name == "posix":
+            self.path.chmod(self.path.stat().st_mode & 0o700)
+        self._conn = sqlite3.connect(str(self.path), timeout=15.0)
+        self._conn.execute("PRAGMA busy_timeout = 15000")
+        self._conn.execute("PRAGMA journal_mode = WAL")
+        self._conn.execute("PRAGMA synchronous = NORMAL")
+        self._conn.execute("PRAGMA secure_delete = ON")
         self._conn.execute("""
             CREATE TABLE IF NOT EXISTS embeddings (
                 cache_key TEXT PRIMARY KEY,

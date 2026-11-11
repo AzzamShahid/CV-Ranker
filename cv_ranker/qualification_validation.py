@@ -143,6 +143,128 @@ def _field_equal(expected: str, observed: str) -> bool:
     return False
 
 
+def _explicit_same_degree_or_fields(requirement: ValidatedRequirement) -> tuple[str, ...]:
+    """Read named OR *fields* inheriting one degree from the frozen JD.
+
+    E.g. "Bachelor's degree in A or B, or a diploma in C" describes A/B
+    at bachelor's level. A separate diploma, related/other field, or license
+    is NOT treated as that bachelor's degree. No field synonym list.
+    """
+    first = requirement.constraint.field_of_study
+    text = normalize_whitespace(requirement.jd_evidence)
+    if not first:
+        return ()
+    fields = [first]
+    if (not re.search(r'\bor\b', text, re.I)
+            or re.search(r'\band\b', text, re.I)):
+        return tuple(fields)
+    occurrence = re.search(r'\bin\s+' + re.escape(first) + r'\b', text, re.I)
+    if occurrence is None:
+        return tuple(fields)
+    remainder = text[occurrence.end():]
+    while True:
+        candidate = re.match(
+            r'^\s*(?:,\s*)?or\s+(.+?)(?=\s+or\s+|[,;.]|$)', remainder, re.I)
+        if not candidate:
+            break
+        # Another explicitly named credential or a family word does not
+        # inherit the current degree level by implication.
+        option = candidate.group(1).strip()
+        if (not re.fullmatch(r'[A-Za-z][A-Za-z0-9 &/\-]{1,75}', option)
+                or re.search(r'\b(?:a|an|any|other|related|equivalent|similar|'
+                             r'degree|diploma|certificate|license|licence|'
+                             r'credential|bachelor|master|associate|doctoral|'
+                             r'year|years|undergraduate|qualification)\b', option, re.I)
+                or re.match(r'\d', option)):
+            break
+        fields.append(option)
+        remainder = remainder[candidate.end():]
+    return tuple(fields)
+
+
+def _accepted_degree_field(requirement: ValidatedRequirement, field: str | None) -> bool:
+    return bool(field and any(
+        _field_equal(accepted, field)
+        for accepted in _explicit_same_degree_or_fields(requirement)))
+
+
+_DURATION_WORDS = {"one": 1, "two": 2, "three": 3, "four": 4,
+                   "five": 5, "six": 6}
+
+
+def _explicit_named_diploma_options(requirement: ValidatedRequirement) -> list[tuple[str, str, int | None]]:
+    """Read an exact, named diploma OR arm from the *employer's own* words.
+
+    Never treat an unnamed diploma or another acronym as equivalent. A stated
+    program length must also appear in the CV. These generic constraints
+    work across disciplines and credential acronyms; there is no alias table.
+    """
+    text = normalize_whitespace(requirement.jd_evidence)
+    if re.search(r'\band\b', text, re.I):
+        return []
+    pattern = re.compile(
+        r'\b(?i:or)\s+(?:(?i:a|an)\s+)?'
+        r'(?:(?P<duration>\d+|one|two|three|four|five|six)[ -](?i:years?)\s+)?'
+        r'(?P<label>[A-Z]{2,8})\s+(?i:diploma\s+in)\s+'
+        r'(?P<field>[A-Za-z][A-Za-z0-9 &/\-]{1,75})'
+    )
+    options: list[tuple[str, str, int | None]] = []
+    for match in pattern.finditer(text):
+        field = re.split(r'\s+or\s+|\s+and\s+', match.group('field'),
+                         maxsplit=1, flags=re.I)[0].strip()
+        if not field or re.search(r'\b(?:other|related|equivalent)\b', field, re.I):
+            continue
+        length = match.group('duration')
+        years = ((int(length) if length.isdigit() else _DURATION_WORDS[length.casefold()])
+                 if length else None)
+        options.append((match.group('label'), field, years))
+    return options
+
+
+def _named_diploma_claims(requirement: ValidatedRequirement, lines) -> list[QualificationClaim]:
+    claims: list[QualificationClaim] = []
+    for label, _, _ in _explicit_named_diploma_options(requirement):
+        for line, segment in lines:
+            if segment.section != 'education':
+                continue
+            for occurrence in re.finditer(r'\b' + re.escape(label) + r'\b', line, re.I):
+                tail = line[occurrence.end():]
+                named_field = re.match(
+                    r'\s+(?:(?:diploma|degree)\s+)?(?:(?:in|of)\s+)?'
+                    r'([A-Za-z][A-Za-z0-9 &/\-]{0,75})', tail, re.I)
+                if not named_field:
+                    continue
+                field = _STOP_FIELD.split(named_field.group(1), 1)[0].strip(' .-')
+                if field:
+                    claims.append(QualificationClaim(
+                        segment_id=segment.segment_id, quote=line, state=_state(line),
+                        degree_level='diploma', field_of_study=field,
+                        credential_name=label))
+    return claims
+
+
+def _education_claim_accepted(requirement: ValidatedRequirement,
+                              claim: QualificationClaim) -> bool:
+    if (claim.degree_level == requirement.constraint.degree_level
+            and (not requirement.constraint.field_of_study
+                 or _accepted_degree_field(requirement, claim.field_of_study))):
+        return True
+    if claim.degree_level != 'diploma' or not claim.credential_name or not claim.field_of_study:
+        return False
+    for label, field, years in _explicit_named_diploma_options(requirement):
+        if (claim.credential_name.casefold() != label.casefold()
+                or not _field_equal(field, claim.field_of_study)):
+            continue
+        duration_names = ([str(years)] + [word for word, count
+                                         in _DURATION_WORDS.items() if count == years]
+                          if years is not None else [])
+        if years is None or re.search(
+            r'\b(?:' + '|'.join(duration_names) + r')[ -]years?\b',
+            claim.quote, re.I):
+            return True
+    return False
+
+
 def _jd_requests_field_category(requirement: ValidatedRequirement) -> bool:
     """Recognize a *grammatical* family/related-field policy, not occupations.
 
@@ -236,11 +358,17 @@ def _education(requirement: ValidatedRequirement, lines) -> QualificationCheck:
             if level is None:
                 continue
             # Bare BS/MS in a Skills section can mean a tool or abbreviation.
-            # Require an explicit 'in <field>' outside Education for these forms.
+            # Outside Education, accept an explicitly documented degree award
+            # (university/college or award/completion grammar) even when a
+            # poorly extracted PDF omitted its Education heading. A bare
+            # "BS X" skill list entry still cannot establish a credential.
             compact = re.sub(r'[^a-z]', '', m.group('label').casefold())
-            if compact in {'bs', 'ms'} and seg.section != 'education' and not re.match(
-                r'\s+(?:degree\s+)?in\s+\w+', line[m.end():], re.I
-            ):
+            explicit_in = bool(re.match(r'\s+(?:degree\s+)?in\s+\w+', line[m.end():], re.I))
+            award_context = bool(re.search(
+                r'\b(?:university|college|institute|graduated|completed|awarded|'
+                r'conferred|obtained)\b', line, re.I))
+            if (compact in {'bs', 'ms'} and seg.section != 'education'
+                    and not explicit_in and not award_context):
                 continue
             field = _degree_field(line, m)
             claim = QualificationClaim(segment_id=seg.segment_id, quote=line,
@@ -249,12 +377,28 @@ def _education(requirement: ValidatedRequirement, lines) -> QualificationCheck:
             claims.append(claim)
             if expected_level == level:
                 same_level.append(claim)
-            if expected_level == level and (not expected_field or (field and _field_equal(expected_field, field))):
+            if _education_claim_accepted(requirement, claim):
                 compatible.append(claim)
+    for claim in _named_diploma_claims(requirement, lines):
+        claims.append(claim)
+        if _education_claim_accepted(requirement, claim):
+            compatible.append(claim)
     if not claims:
         return QualificationCheck(kind='education', outcome='not_evidenced',
                                   explanation='No explicit degree claim found in the CV.')
-    if expected_level is None or (c.operator != 'single' and not broad_category):
+    # An employer may accept an explicitly named degree OR another credential.
+    # Holding the first, source-exact degree option suffices without guessing
+    # whether a different diploma/field is equivalent. A mandatory AND, a
+    # different degree, or a pending claim stays under human review.
+    direct_or_degree = bool(
+        c.operator != 'single' and expected_level and expected_field
+        and re.search(r'\bor\b', requirement.jd_evidence, re.I)
+        and not re.search(r'\band\b', requirement.jd_evidence, re.I)
+        and phrase_present(expected_field, requirement.jd_evidence)
+        and any(claim.state == 'claimed' for claim in compatible)
+    )
+    if expected_level is None or (c.operator != 'single' and not broad_category
+                                  and not direct_or_degree):
         return QualificationCheck(kind='education', outcome='ambiguous', claims=claims,
                                   explanation='The JD degree level or alternative qualification rule needs review.')
     positives = [claim for claim in compatible if claim.state == 'claimed']
@@ -538,13 +682,16 @@ def apply_qualification_checks(*, requirements: list[ValidatedRequirement],
                               and _degree_level_can_overlap(
                                   required=requirement.constraint.degree_level,
                                   claimed=x.degree_level)), None))
-            selected = selected or next((x for x in check.claims if x.state == 'claimed' and
-                             ((check.kind == 'education' and requirement.constraint.degree_level == x.degree_level
-                               and (not requirement.constraint.field_of_study or
-                                    (x.field_of_study and _field_equal(requirement.constraint.field_of_study, x.field_of_study))))
-                              or (check.kind != 'education' and
-                                  phrase_present(_cert_subject(requirement.name)[0] if check.kind == 'certification'
-                                                 else _license_subject(requirement.name)[0], x.quote)))), None)
+            selected = selected or next((
+                x for x in check.claims if x.state == 'claimed' and (
+                    (check.kind == 'education'
+                     and _education_claim_accepted(requirement, x))
+                    or (check.kind != 'education' and phrase_present(
+                        _cert_subject(requirement.name)[0]
+                        if check.kind == 'certification'
+                        else _license_subject(requirement.name)[0], x.quote))
+                )
+            ), None)
             selected = selected or check.claims[0]
             seg = by_segment[selected.segment_id]
             evidence, ids = seg.text, [seg.segment_id]
@@ -565,6 +712,16 @@ def apply_qualification_checks(*, requirements: list[ValidatedRequirement],
                           "is related to the requested field but does not establish the "
                           "exact named degree; Transferable is for HR review and earns "
                           "no direct requirement point.")
+        elif check.outcome == 'satisfied' and is_changed:
+            supported_degree = next((x for x in check.claims
+                                     if x.state == 'claimed'
+                                     and _education_claim_accepted(requirement, x)), None)
+            if supported_degree:
+                reason = (f"The CV reports a completed {supported_degree.degree_level} "
+                          f"{supported_degree.credential_name or 'degree'} "
+                          f"in {supported_degree.field_of_study or 'the required field'}. "
+                          "This matches an explicitly accepted JD qualification; "
+                          "credential authenticity has not been independently checked.")
         elif is_changed and status != 'matched':
             reason = (f"The reported qualification does not establish the exact JD "
                       f"condition: {check.explanation}")

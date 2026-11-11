@@ -97,12 +97,12 @@ def test_five_fictional_candidates_have_18_resolved_criteria_without_id_loss(tmp
         assert metrics.unresolved_criteria == 0
         assert all(row.assessment_state == "verified" for row in decisions)
         assert sum(row.unified_status == "Found" for row in decisions) == present
-        assert len(llm.calls) == 3  # 18 criteria, 7+7+4; no per-criterion calls.
+        assert len(llm.calls) == 4  # 18 criteria, 5+5+5+3; no per-criterion calls.
         total_calls += len(llm.calls)
         results.append(score_candidate(
             candidate_name=f"Worker-{present}", requirements=requirements,
             assessments=decisions, evaluation_mode="llm_assessed", errors=[]))
-    assert total_calls == 15
+    assert total_calls == 20
     assert [person.candidate_name for person in assign_ranks(results)] == [
         "Worker-18", "Worker-14", "Worker-9", "Worker-4", "Worker-0"]
     assert all(person.rank is not None for person in results)
@@ -123,7 +123,7 @@ def test_last_requirement_bad_citation_is_repaired_with_one_keyed_call(tmp_path)
             requirements, segments, "\n".join(s.text for s in segments),
             candidate_id="fictional-correction")
     assert metrics.correction_calls == 1
-    assert len(llm.calls) == 4
+    assert len(llm.calls) == 5
     assert llm.calls[-1] == ["R018"]
     assert metrics.unresolved_criteria == 0
     assert len(decisions) == 18

@@ -26,7 +26,7 @@ def _bilal_integration():
     return text, segments, skills, work, req
 
 
-def test_repeated_incorrect_highlight_and_paraphrased_final_quote_no_longer_withhold():
+def test_split_skill_label_repairs_optional_highlight_without_second_paid_request():
     text, segments, skills, work, req = _bilal_integration()
 
     class Model:
@@ -61,9 +61,9 @@ def test_repeated_incorrect_highlight_and_paraphrased_final_quote_no_longer_with
         "R008": [SimpleNamespace(source=SimpleNamespace(segment_id=sid))
                  for sid in (skills.segment_id, work.segment_id)]})
     rows, metrics = engine.assess([req], segments, text, candidate_id="bilal")
-    assert engine.llm.calls == 2
+    assert engine.llm.calls == 1
     assert metrics.correction_calls == 0
-    assert metrics.final_verification_calls == 1
+    assert metrics.final_verification_calls == 0
     assert metrics.unresolved_ids == []
     assert rows[0].assessment_state == "verified"
     assert rows[0].unified_status == "Found"
@@ -72,8 +72,7 @@ def test_repeated_incorrect_highlight_and_paraphrased_final_quote_no_longer_with
                        source.text == original.text for original in segments)
                for source in rows[0].evidence_segments)
     assert "Integrated hosted LLM APIs into a document review application" not in rows[0].evidence
-    assert any("ignored non-verbatim model quotation" in msg
-               for msg in metrics.resolved_validation_notices)
+    assert not any("Grouped correction failed" in msg for msg in metrics.warnings)
 
 
 def test_independent_rejects_fabricated_or_out_of_scope_segment_id_even_with_good_reason():
@@ -146,7 +145,7 @@ def test_failed_independent_source_validation_still_withholds_credit():
             if self.calls == 1:
                 return UnifiedResponse(assessments=[UnifiedItem(
                     requirement_id="R008", decision="found", relation="direct",
-                    evidence_ids=[skills.segment_id],
+                    evidence_ids=[work.segment_id],
                     matched_term="LLM integrations", reason="Reported integrations.")])
             return schema.model_validate({"R008": {
                 "decision": "found", "relation": "direct",
@@ -160,7 +159,7 @@ def test_failed_independent_source_validation_still_withholds_credit():
     engine.top_k = 8
     engine.progress_callback = None
     engine.retriever = SimpleNamespace(retrieve_by_query=lambda *_, **__: {
-        "R008": [SimpleNamespace(source=SimpleNamespace(segment_id=skills.segment_id))]})
+        "R008": [SimpleNamespace(source=SimpleNamespace(segment_id=work.segment_id))]})
     rows, metrics = engine.assess([req], segments, text, candidate_id="bilal")
     assert engine.llm.calls == 2
     assert rows[0].assessment_state == "unverified"

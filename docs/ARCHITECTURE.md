@@ -1,8 +1,8 @@
 # CV Ranker — Unified architecture and operating contracts
 
-**Current reference:** Supervisor Edition · Phase 7G · UI 4.9.42 · 10 November 2026  
-**Assessment identity:** `phase7g-v4-9-39-individual-criterion-why-restored-2026-11-10`  
-**Protocol:** `segment_ids_semantic_llm` version 31  
+**Current reference:** Supervisor Edition · Phase 7G · UI 4.9.45 · 10 November 2026  
+**Assessment identity:** `phase7g-v4-9-43-mixed-batch-recovery-2026-11-10`  
+**Protocol:** `segment_ids_semantic_llm` version 32  
 **Scope:** implemented source behavior, not a promise of independent hiring accuracy.
 
 This is the **canonical technical reference** for the current checkout. Prior phase reports, implementation plans, release notes and historical benchmarks under `docs/` and `evaluation/results/` are preserved for chronology, not used as current behavioral specifications. See [repository audit](REPOSITORY_AUDIT.md) for staged cleanup actions and [README](../README.md) for quick start.
@@ -105,10 +105,16 @@ report = ranker.run(
 - `CVRanker.run(jd_path, resume_paths, *, approved_jd=None, resume_report=None, resume_candidates=None) -> RankingReport`: operates on multiple resume files. The UI always supplies the approved draft; the CLI's compatibility path allows implicit JD preparation.
 - `ScoreWeights(experience=10, education=10, jd=80, requirement_shares=...)` and `weighted_leaderboard(report, weights)`: call-free supervisor scoring over existing decisions. See section 5 for allocation semantics.
 - `complete_results_zip(report, weights, final_results=..., source_ledgers=..., technical=...) -> bytes`: builds reviewer export **from existing state**, no model replay.
+- `recovery_bundle.export_recovery_checkpoint(state, signing_key) -> bytes` and `import_recovery_checkpoint(blob, signing_key) -> dict`: strict JSON/schema-checked, HMAC-SHA256-signed reviewer-controlled run recovery. This is a distinct format from the complete-results export and is not encrypted.
+- `access_control.evaluate_access(...) -> AccessDecision`: no-model access policy. Local mode explicitly requires a loopback listener; optional OIDC mode requires a configured reviewer email allowlist, an authenticated session, and a verified email claim. The gate runs before the dashboard renders. See [production security](PRODUCTION_SECURITY.md).
 
 ### Source validation and incomplete assessments
 
 The score boundary requires **exactly one** assessment per frozen requirement. An AI response with missing/duplicate IDs, unsourced quoted text or a mismatched `matched_term` is subject to bounded correction and explicit failure states. Repeated identical invalid requests are paused to protect cloud quota. If any requirement remains technically unverified, the candidate's percentage/rank is **withheld**; accepted per-criterion judgments and retrieval leads remain available for human inspection. Never convert an invalid model response to `Not Found` merely to complete a leaderboard.
+
+**Mixed-batch correction (v32):** A grouped correction may retry only a subset of invalid requirements. The corrected and still-invalid IDs are reconciled **only inside that subset**. Other invalid requirements, such as a model-provided inaccurate optional highlight deferred to the independent source review, remain unverified until explicitly adjudicated. In particular, omitting an ID from the corrective request is neither proof that it was repaired nor permission to remove its evidence checkpoint. The final independent review can still validate the original source, but rejected or unknown citations retain an unverified state. This avoids accidental cross-item resolution and protects already validated peer decisions.
+
+**Optional source highlights:** The model's `matched_term` is non-authoritative quotation metadata. When a short named competency is explicitly listed as an affirmative CV skill with all JD label words in order and at most two intervening words per pair, the validator can discard a non-verbatim highlight without a new model request. This narrow **lexical anchor** does not apply to negated/learning-only statements, work-history sections or experience-duration criteria; it neither supplies synonyms nor changes the model's structured decision. Any remaining semantic ambiguity still uses the bounded independent adjudicator, and original citations/tone checks remain mandatory.
 
 ## 5. Scoring and explaining a rank
 
@@ -130,9 +136,21 @@ Its earned points equal `possible_i` **only** for a verified `Found`; otherwise 
 - UI initial CV evaluation and manual/automatic recovery can run in a worker, while Streamlit UI state tracks progress. JD extraction/approval is a separate stage.
 - A resume checkpoint binds uploaded JD/CV bytes, approved JD, provider/model/settings, optional employer policies and assessment build ID. Changing these rejects reuse rather than mixing decisions from different conditions.
 - Verified requirement decisions are reused. Incomplete rows are re-assessed selectively; earlier successful batches are retained.
+- A bounded grouped correction does not reset a separate deferred-highlight ID, and a valid correction remains saved even if the final independent review rejects another ID.
+- Independent verification now covers every unfinished requirement in bounded groups. A malformed multi-ID model response is retried once using smaller source/response groups, without resending verified IDs or accepting invented citations. Optional second-look reviews remain bounded; an individual invalid citation remains unverified.
 - OpenRouter attempts are paced and bounded by `OPENROUTER_MAX_REQUESTS_PER_ASSESSMENT` across resume attempts for the same checkpoint; a per-run ceiling also exists. **JD extraction is not included in that CV-assessment ceiling.**
+- A stalled source-validation review does **not** imply that the HTTP budget has been exhausted. Execution details report cumulative attempts and the configured remainder separately. The cumulative cap is an intentional paid-request safety guard, editable in `.env` after authorization without changing assessment identity.
 - Automatic retries stop when no progress, provider cooldown/hard stop or budget limits apply. Recoverable technical interruption never silently manufactures a score.
-- Session checkpoints are **in memory**, not durable across a full server restart. Exports provide records but are not a transparent server-side resumable job database.
+- Active Streamlit assessment state is **in memory**. Starting with UI 4.9.44, a reviewer may **explicitly download** an authenticated recovery ZIP with a report, final decisions, source ledgers, dynamic category/item weights, previous resume checkpoint and cumulative HTTP-attempt count. Import after refresh/restart verifies the signature **before trusting or displaying** the content. Only allowlisted fields are restored; model/API credentials are never exported. A new assessment is not started automatically upon import.
+- The HMAC-SHA256 key is randomly created on this installation at `.cv_ranker_cache/recovery_signing.key`, with restrictive local permissions where supported. It is intentionally outside releases and ignored by Git. Operators must back it up securely for a planned installation move; a different key refuses an existing ZIP. Signing detects accidental or malicious edits but provides **no confidentiality**; these downloads contain applicant excerpts in plaintext.
+- To **continue** a partially finished run after import, the reviewer must reupload the *identical* JD/CV bytes, obtain approval of the *same* frozen requirements and use matching settings. `_checkpoint_matches` and the worker's input-identity validation still run. Prior attempts count toward the configured OpenRouter budget, preventing a restart from resetting quota. Complete results can be viewed without original files.
+- There is **no automatic durable background worker queue, encrypted persistence database or per-tenant, role-based data authorization system**. Crashes before an explicit ZIP download still lose in-memory progress. Production rollout requires a formally designed retention, authorization, encryption and crash-consistency layer.
+
+### 4.9.45 deployment guardrail and cache concurrency
+
+The default `.streamlit/config.toml` pins the service to `127.0.0.1`, enables CORS/XSRF, disables static serving and limits uploads/messages. `CVR_ACCESS_MODE=local` is default; an externally bound listener is refused. When `CVR_ACCESS_MODE=oidc`, Streamlit's `st.login` provides identity authentication and the application checks `st.user.email_verified is True` and exact `CVR_ALLOWED_EMAILS` membership before rendering data. This implementation does **not** select an identity provider, verify deployment TLS, add per-tenant DB isolation or provide a complete authorization system.
+
+The `SQLiteVectorCache` uses a restricted owner-mode database file on POSIX, refuses symlink cache targets, enables SQLite WAL, secure deletion and a bounded busy timeout. It caches hashes and vectors, not plaintext CVs, but these are still applicant-derived artifacts requiring retention and access controls. WAL/SHM sidecar files can be generated and must be covered by that policy. The existing two-worker UI executor remains process-wide and is **not** certified for high-concurrency multi-tenant operation.
 
 ## 7. Configuration and environment variables
 
@@ -164,6 +182,7 @@ Additional non-environment configuration lives in `Settings`: YAKE candidate cou
 | Final criteria table / CSV | `ui_support` and `ui/dashboard.py` | Per-criterion status, separate **Why this decision**, original source checkpoints and review flags. |
 | Weighted leaderboard / CSV | `weighted_scoring.py`, `ui_support.py`, `report_bundle.py` | Uses approved active weights, distinct `Why this rank` and **Complete / Review suggested / Ranking withheld** semantics. |
 | Complete reviewer ZIP | `report_bundle.complete_results_zip` | Includes original JD when available, approved criteria, allocations, candidate results, per-criterion Why, source ledgers and technical diagnostics. **Sensitive applicant record.** |
+| Signed portable recovery ZIP | `recovery_bundle.export_recovery_checkpoint` | Manual restart recovery of in-memory results, weights, source ledgers and request counters. HMAC-authenticated, plaintext and installation-key-bound. **Sensitive applicant record.** |
 
 OpenRouter receives uploaded JD text and CV excerpts. Embedding search uses local Ollama and a local SQLite cache containing applicant-derived vectors. Never include `.env`, the cache, user-provided CVs, or generated sensitive reports in the source release. Retain/apply access controls and a deletion schedule according to your organization’s data-handling policy. Treat the downloadable complete ZIP as controlled HR evidence.
 
@@ -194,5 +213,5 @@ The generated manifest protects against accidentally loading mixed files but is 
 
 1. This file is the **single source of truth** for implemented architecture, contracts and environment settings.
 2. `README.md` is the current entry point and quick start; it links here rather than duplicating the design specification.
-3. Release notes, `V48_*` design records, old project summaries, checkpoint logs and historical validation reports are **not** authoritative for the current build.
+3. Historical release notes are archived in [`docs/history/releases/`](history/releases/); superseded overview documents live in [`docs/history/legacy_reference/`](history/legacy_reference/). `V48_*` design records, checkpoint logs and historical validation reports are **not** authoritative for the current build.
 4. When behavior changes, update the corresponding module tests, this architecture reference, any affected user guide, and the build manifest together. A UI-only visual change should not change assessment identity or rerun paid model assessments.

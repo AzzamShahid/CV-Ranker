@@ -78,6 +78,14 @@ def _operator(text: str) -> tuple[LogicalOperator, list[str]]:
     if explicit_or and " or " in explicit_or:
         alternatives = requirement_options(explicit_or)
         if 2 <= len(alternatives) <= 3:
+            # Repeated unscoped ORs joining both a bare activity and a
+            # longer shared object are not independent atomic skill names.
+            # "Operation or supervision of X or Y" must not be evaluated
+            # as isolated "Operation" and "supervision of X" abilities.
+            if (simple.casefold().count(" or ") > 1
+                    and min(len(p.split()) for p in alternatives) == 1
+                    and max(len(p.split()) for p in alternatives) >= 3):
+                return "complex", []
             return "any_of", alternatives
     if re.search(r"\b(?:and|or)\b", simple, re.I):
         if re.search(r"\band\b", simple, re.I) and re.search(r"\bor\b", simple, re.I):
@@ -86,7 +94,11 @@ def _operator(text: str) -> tuple[LogicalOperator, list[str]]:
         pieces = [p.strip(" ,.;") for p in re.split(rf"\s+{sep}\s+", simple, flags=re.I)]
         # Only structurally *simple* short alternatives are extracted. Long
         # clauses stay complex/reviewed, rather than inventing logic precedence.
-        if len(pieces) in (2, 3) and all(1 <= len(p.split()) <= 4 for p in pieces) and not _YEAR.search(simple):
+        if (len(pieces) in (2, 3)
+                and all(1 <= len(p.split()) <= 4 for p in pieces)
+                and not any(re.search(r"\b(?:of|for|with|in|to|both)\b", p, re.I)
+                            for p in pieces)
+                and not _YEAR.search(simple)):
             return ("any_of" if sep == "or" else "all_of"), pieces
         return "complex", []
     return "single", []

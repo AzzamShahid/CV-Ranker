@@ -51,7 +51,10 @@ class Settings:
     yake_top_k: int = 40
     yake_max_ngram: int = 3
     yake_dedup_threshold: float = 0.90
-    max_requirements: int = 30
+    # Sufficient headroom for multi-discipline JDs; never silently discard
+    # explicit source criteria to fit a small model's preferred batch size.
+    # Candidate assessment still uses bounded batches and cloud request caps.
+    max_requirements: int = 100
     assessment_batch_size: int = 20
     second_look_unmatched: bool = True
     focused_abbreviation_retry: bool = True

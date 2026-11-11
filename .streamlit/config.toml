@@ -1,2 +1,51 @@
 [browser]
 gatherUsageStats = false
+
+[server]
+# A CV screening workspace must not accidentally listen on every interface.
+# Public/remote deployments require CVR_ACCESS_MODE=oidc, an email allowlist,
+# an identity provider and a separately secured HTTPS reverse proxy.
+address = "127.0.0.1"
+enableCORS = true
+enableXsrfProtection = true
+enableStaticServing = false
+maxUploadSize = 48
+maxMessageSize = 64
+
+# Reliance-inspired corporate green, with user-switchable Light / Dark / System
+# from Streamlit's standard app menu. No external font or asset serving.
+[theme]
+base = "light"
+showWidgetBorder = true
+showSidebarBorder = true
+baseRadius = "0.65rem"
+font = "sans-serif"
+headingFont = "sans-serif"
+
+[theme.light]
+primaryColor = "#12613C"
+backgroundColor = "#FAFCF9"
+secondaryBackgroundColor = "#EFF5EF"
+textColor = "#183025"
+linkColor = "#115D38"
+borderColor = "#9CB7A5"
+
+[theme.dark]
+primaryColor = "#6FDEAA"
+backgroundColor = "#111D17"
+secondaryBackgroundColor = "#1B2D23"
+textColor = "#EDF7EF"
+linkColor = "#92E8B7"
+borderColor = "#577766"
+
+[theme.light.sidebar]
+backgroundColor = "#EBF3EC"
+secondaryBackgroundColor = "#E2EEE5"
+primaryColor = "#12613C"
+textColor = "#183025"
+
+[theme.dark.sidebar]
+backgroundColor = "#16251C"
+secondaryBackgroundColor = "#22382A"
+primaryColor = "#86E6B4"
+textColor = "#EDF7EF"

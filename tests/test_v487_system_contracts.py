@@ -194,8 +194,8 @@ def test_output_capacity_caps_group_size_without_extra_verification_passes():
     llm = RecordedLLM(lambda request: UnifiedResponse(assessments=[]))
     groups = plan_evidence_batches(requirements, sources, hits, llm,
                                    max_requirements=18, max_hits=8)
-    assert len(groups) == 3
-    assert max(len(group) for group, _, _ in groups) <= 7
+    assert len(groups) == 4
+    assert max(len(group) for group, _, _ in groups) <= 5
 
 
 def test_cross_department_source_verdicts_are_preserved_without_field_catalogue(tmp_path):

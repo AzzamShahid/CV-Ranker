@@ -7,7 +7,7 @@ Launch on Windows with ``run_ui.cmd``.
 import streamlit as st
 
 st.set_page_config(
-    page_title="CV Ranker | Candidate Screening",
+    page_title="TextileHR AI | Reliance Weaving Mills",
     page_icon="📋",
     layout="wide",
     initial_sidebar_state="expanded",
