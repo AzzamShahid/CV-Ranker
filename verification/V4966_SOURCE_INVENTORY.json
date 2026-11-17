@@ -1,0 +1,4628 @@
+{
+  "build": "v4.9.66/v52",
+  "root": "CV_Ranker_Supervisor_Edition",
+  "scope": "archive and Python parse inventory; NOT line-by-line forensic verification",
+  "file_count_excluding_own_output": 563,
+  "by_category": {
+    "config_or_data": 57,
+    "assets_or_other": 33,
+    "deployment_or_ci": 1,
+    "documentation": 155,
+    "production_source": 60,
+    "verification_or_utilities": 123,
+    "tests": 134
+  },
+  "python_syntax_errors": [],
+  "entries": [
+    {
+      "path": ".env.example",
+      "category": "config_or_data",
+      "bytes": 2121,
+      "sha256": "e73442aa95889ae3c733c5040380f74c4901003fbb66dd1da6657a7e3beffa6f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": ".gitignore",
+      "category": "assets_or_other",
+      "bytes": 295,
+      "sha256": "661341fa9dd9f272ca7e3f926b0901bdcb191d1a06422ee01b216f3a049e52c4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": ".streamlit/config.toml",
+      "category": "deployment_or_ci",
+      "bytes": 1313,
+      "sha256": "447ebc9c717ba6fa46540891944f15203652a1bfbd995687ebd10c18a7c3266c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "README.md",
+      "category": "documentation",
+      "bytes": 21292,
+      "sha256": "77e2251bc0a3095189ac3ee30bebbf505e0a5db85e9ee1e867133a506f23b450",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "app.py",
+      "category": "assets_or_other",
+      "bytes": 425,
+      "sha256": "fb55b9c9f0b3dcc740b0aaa703f5d29ec1ececa2945674a46c24d67a84ba08f2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 2
+    },
+    {
+      "path": "cv_ranker/__init__.py",
+      "category": "production_source",
+      "bytes": 96,
+      "sha256": "52f04e66ecf69baa95383c1171c76ebc60e5cdf373a6d4e7a945b591ec3f7c6a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 2
+    },
+    {
+      "path": "cv_ranker/access_control.py",
+      "category": "production_source",
+      "bytes": 2659,
+      "sha256": "ea20eec59654a2810de927f2a1edefa3c30b977b0e0511a7db2377ddf475fd2f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/alias_approvals.py",
+      "category": "production_source",
+      "bytes": 8016,
+      "sha256": "9a961d66a13800c6dca9ad03fe4f3289829c459b06c304bcdfcb9d04b1087bac",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 10
+    },
+    {
+      "path": "cv_ranker/assessment_clock.py",
+      "category": "production_source",
+      "bytes": 903,
+      "sha256": "82717bd0d64fd1812d5a08b4841e8454b2222bbf4cf71d7bec81e132cc4e5f7f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/assessor.py",
+      "category": "production_source",
+      "bytes": 76852,
+      "sha256": "38f21f897fc322381a38ec4788de3891bd7ddd123da686c0d37d662f27e7c763",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 24,
+      "imports": 12
+    },
+    {
+      "path": "cv_ranker/build_info.py",
+      "category": "production_source",
+      "bytes": 404,
+      "sha256": "3dd439f7289a6d36ebbea87b8b7805c5ba9251a6e5cb65d1d404076799a77680",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 0
+    },
+    {
+      "path": "cv_ranker/build_manifest.json",
+      "category": "production_source",
+      "bytes": 65787,
+      "sha256": "cc94eeb2e26b631d05af093459c26021bc37455390f514ff079666767c0bd9b5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "cv_ranker/compound_validation.py",
+      "category": "production_source",
+      "bytes": 25169,
+      "sha256": "11c2e91433236851bbc2979b591889d6bbe8e01b47b9ffeb5f0ef8a120024f66",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 6
+    },
+    {
+      "path": "cv_ranker/condition_review.py",
+      "category": "production_source",
+      "bytes": 23588,
+      "sha256": "0961e3f5737b2f782156d3fb92954e46b318daf9751ecea3b6c97ea9aeb9cb72",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 13
+    },
+    {
+      "path": "cv_ranker/config.py",
+      "category": "production_source",
+      "bytes": 7937,
+      "sha256": "34d2ba7f1f3f3cbcc952d0c9f7bd751f675367464280c252e71c66e345976257",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 4
+    },
+    {
+      "path": "cv_ranker/constraints.py",
+      "category": "production_source",
+      "bytes": 2748,
+      "sha256": "f2a9062894f21ffbc2646d0263e5967e8d2e76d94b36e6f6ea366d49452efa93",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 4
+    },
+    {
+      "path": "cv_ranker/criteria_scope.py",
+      "category": "production_source",
+      "bytes": 3736,
+      "sha256": "100ef8d1d5c1189699c0274cafabccfbae9027eec2557998e3490720f89ff8e6",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 4
+    },
+    {
+      "path": "cv_ranker/documents.py",
+      "category": "production_source",
+      "bytes": 6368,
+      "sha256": "95489f5932e2edaf7765cd015e9bd3d0669f688e2796f416ec926987322d866a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/eligibility.py",
+      "category": "production_source",
+      "bytes": 5375,
+      "sha256": "0ee531006408eaa9468b58f8fc4654424b48134027f6982b5865c29af85a4e72",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/evidence_bridge.py",
+      "category": "production_source",
+      "bytes": 3620,
+      "sha256": "fd4a2a365830934802d7ff2060645423163c1e70c294a89d39aa2bda061cf547",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/experience_validation.py",
+      "category": "production_source",
+      "bytes": 58721,
+      "sha256": "29e4e4ddfaa3cc4ebb3c51b46e1075ace821071a9865492e492b7d391406ae96",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 22,
+      "imports": 10
+    },
+    {
+      "path": "cv_ranker/failure_diagnostics.py",
+      "category": "production_source",
+      "bytes": 2692,
+      "sha256": "3c72165d466aae1fa86eb06368293f59ae5ad9ea754ea925ff68c19d36dbd180",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 1
+    },
+    {
+      "path": "cv_ranker/fallback.py",
+      "category": "production_source",
+      "bytes": 22270,
+      "sha256": "431115f32f1d857631769bd96e17f9c8516072c5efb26e4c1f54083ad3964ad9",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/jd.py",
+      "category": "production_source",
+      "bytes": 28388,
+      "sha256": "c345795299a85c2e980ad73d3aad66e86005fd7efd03de707a843fffcca1a415",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/jd_coverage.py",
+      "category": "production_source",
+      "bytes": 2387,
+      "sha256": "cd78b01fdb1482a67966b9dd70165ad98939acfff8872c21afc632442be94ca7",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 4
+    },
+    {
+      "path": "cv_ranker/jd_expression.py",
+      "category": "production_source",
+      "bytes": 2718,
+      "sha256": "30b20e69a676a302242a2ce20f6c3fd648f0f623d73be1b570d35c68f610b058",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 3
+    },
+    {
+      "path": "cv_ranker/jd_review.py",
+      "category": "production_source",
+      "bytes": 9518,
+      "sha256": "95f901f0e8fd2bb044bbae49a4950a2173f6b8f9286fac4b12b0835f88db15a2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 8
+    },
+    {
+      "path": "cv_ranker/llm.py",
+      "category": "production_source",
+      "bytes": 26487,
+      "sha256": "4b6805176b1df7bb6888f5703cf9c677247a5f53666b2ca7fb31bd4b9069d544",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 17,
+      "imports": 12
+    },
+    {
+      "path": "cv_ranker/operation_ledger.py",
+      "category": "production_source",
+      "bytes": 3735,
+      "sha256": "2660f95354f2c8786cce8852bee7ade7781958ff5f533366b0f7de77c86035e2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/pipeline.py",
+      "category": "production_source",
+      "bytes": 42713,
+      "sha256": "cfe14a2c9c044e1989c7a6f894980dcd8cda18b83805b9c99362b49729d38b21",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 34
+    },
+    {
+      "path": "cv_ranker/qualification_validation.py",
+      "category": "production_source",
+      "bytes": 42628,
+      "sha256": "aa91291bb83467aaeddcbc776f11d712a62751e0b512f82f98b4c1b3e3c690dd",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 23,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/ranking_reasoning.py",
+      "category": "production_source",
+      "bytes": 15408,
+      "sha256": "211acff070397d81e293ab89398c644216c7b14545920b3fedb6219bd3c43c7a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 6,
+      "imports": 4
+    },
+    {
+      "path": "cv_ranker/recovery_bundle.py",
+      "category": "production_source",
+      "bytes": 10247,
+      "sha256": "0be80752cc672fc6646f7d294dc36b50afa0e07edb61e16f1b6cba8f23b41863",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 16
+    },
+    {
+      "path": "cv_ranker/report.py",
+      "category": "production_source",
+      "bytes": 5291,
+      "sha256": "a2fb1722e5abbf9e5b2d6b06d69ef939ae5e73d4079301196b5f332b262e558b",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 3
+    },
+    {
+      "path": "cv_ranker/report_bundle.py",
+      "category": "production_source",
+      "bytes": 6009,
+      "sha256": "4e19955bde5e11c50e6335d7e7e7ed5c70d932036cde18e7e1e4856694428a93",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 9
+    },
+    {
+      "path": "cv_ranker/requirement_typing.py",
+      "category": "production_source",
+      "bytes": 19526,
+      "sha256": "b1ec7b9ef4434644076fd917163626fc6d54214b5e0d8c9f213af5cbd6b27db2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/resume.py",
+      "category": "production_source",
+      "bytes": 4695,
+      "sha256": "273efe24ca5aca8dcbeaed4a4bae34a42b4bef583f191ca795771f19973fcfd2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/retrieval_priorities.py",
+      "category": "production_source",
+      "bytes": 2762,
+      "sha256": "82dcdfcb8f50e0b5e45d5396b59f2697f2501df8c3c1e50dcaac5f7336592f6c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 2
+    },
+    {
+      "path": "cv_ranker/runtime_check.py",
+      "category": "production_source",
+      "bytes": 4609,
+      "sha256": "0cab87e7c7bb407dda929ea2f015f1c278f73d485ea403a39b38e06e4c327b42",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/schemas.py",
+      "category": "production_source",
+      "bytes": 13768,
+      "sha256": "47c96fe6ad46d157fe49cf6985b69b5fe9174b6962e071d6ce2b340646f52613",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 6
+    },
+    {
+      "path": "cv_ranker/scoring.py",
+      "category": "production_source",
+      "bytes": 5846,
+      "sha256": "b4a6fcba45018bd798a48840fd7cfa5062326d1b8a3c485079ac6a378b5ad28f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 2
+    },
+    {
+      "path": "cv_ranker/segments.py",
+      "category": "production_source",
+      "bytes": 17709,
+      "sha256": "d314782231a699258e811a0946901e0313b5437ec20a56135871343d4d544de4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 3
+    },
+    {
+      "path": "cv_ranker/semantic/__init__.py",
+      "category": "production_source",
+      "bytes": 676,
+      "sha256": "61bc8928e22734d63624591da44d21081e1a02adfedf8fb4257a99680d5dfdb4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/semantic/adapters.py",
+      "category": "production_source",
+      "bytes": 765,
+      "sha256": "2afe40f70ed0c0de117a0fc535d7ff7114fce00f163dcfae972fdb27288dc200",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 1
+    },
+    {
+      "path": "cv_ranker/semantic/cache.py",
+      "category": "production_source",
+      "bytes": 3685,
+      "sha256": "054b8c1a7daf621bbd146fb5651b0a8dcfae672a95793f0a09df9337a53779ee",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 8
+    },
+    {
+      "path": "cv_ranker/semantic/core.py",
+      "category": "production_source",
+      "bytes": 7251,
+      "sha256": "3764503c106d8f7861d8f149be4202f1360f6d38d80998bc707611cf31b5ddd6",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/semantic/coverage_scoring.py",
+      "category": "production_source",
+      "bytes": 9361,
+      "sha256": "c4acac07c4713bee45df6b5b3b4acf7b7ed8e8236e2282e29de9fab0733172ba",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/semantic/decomposition.py",
+      "category": "production_source",
+      "bytes": 9244,
+      "sha256": "c784456be6d1c11f3f3561981f2d35769f8b23c0e228a9c67d9da6ccf319f92c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 6,
+      "imports": 6
+    },
+    {
+      "path": "cv_ranker/semantic/embedding.py",
+      "category": "production_source",
+      "bytes": 5275,
+      "sha256": "b1664724c837a7a76da5707abb58c4345629a0015d2e1e37889a362f46b8893d",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/semantic/integration.py",
+      "category": "production_source",
+      "bytes": 11042,
+      "sha256": "237c55a69807bccbc201ac8bd06574104e1a3eb68aec2f92d6106c73489b3cf7",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 14
+    },
+    {
+      "path": "cv_ranker/semantic/relationship_consistency.py",
+      "category": "production_source",
+      "bytes": 5631,
+      "sha256": "0035f369beef1d3aacf2c76ff0549befd76acb264b2a37986ac73b9f4a973e21",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 3
+    },
+    {
+      "path": "cv_ranker/semantic/transferability.py",
+      "category": "production_source",
+      "bytes": 45318,
+      "sha256": "a64edec65ea95205d81c615d3ffab422c0c4621c55c4f6a7c323058f6f9d6a7b",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 14
+    },
+    {
+      "path": "cv_ranker/source_snapshot.py",
+      "category": "production_source",
+      "bytes": 2939,
+      "sha256": "eb610824bdac06f97310834adaf6ea54ad78c1b99ed6cba952d19205708086c7",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 6
+    },
+    {
+      "path": "cv_ranker/source_subject_guard.py",
+      "category": "production_source",
+      "bytes": 3073,
+      "sha256": "ec6ceaeac593940e56f9cc945841fb09540c2e2a9a901132c7487172c54e9624",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 3
+    },
+    {
+      "path": "cv_ranker/text_utils.py",
+      "category": "production_source",
+      "bytes": 34342,
+      "sha256": "d5203e13c3d12c764072471794d382efce6fc555c106934a6619731159ce368c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 36,
+      "imports": 2
+    },
+    {
+      "path": "cv_ranker/ui/__init__.py",
+      "category": "production_source",
+      "bytes": 80,
+      "sha256": "45cbe31b22c2768e9e12ffa54455d473148e3671676cf939502ba2682ebd52b1",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 0
+    },
+    {
+      "path": "cv_ranker/ui/dashboard.py",
+      "category": "production_source",
+      "bytes": 156739,
+      "sha256": "571dbbc4a9af3a3e518e20d72e081a06cfc7c48c8b37282c648978122755fb3c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 55,
+      "imports": 38
+    },
+    {
+      "path": "cv_ranker/ui/evidence_inspection.py",
+      "category": "production_source",
+      "bytes": 3227,
+      "sha256": "e6e536255feb6d757b04bf593779bcf2dc2c9c08503436d5329a7d3009bbf26a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 6
+    },
+    {
+      "path": "cv_ranker/ui/final_decisions.py",
+      "category": "production_source",
+      "bytes": 39929,
+      "sha256": "f6e269a1e790f1d6ab4ee5d08fc583817223a63c03894f9e346262c54381117d",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 14
+    },
+    {
+      "path": "cv_ranker/ui/semantic_workflow.py",
+      "category": "production_source",
+      "bytes": 7949,
+      "sha256": "b4d4db7944abb0a642001c1af2ec492eeeff25dafc1c012e6a6b214135139e76",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 7
+    },
+    {
+      "path": "cv_ranker/ui/unified_decisions.py",
+      "category": "production_source",
+      "bytes": 8027,
+      "sha256": "2959f4c4975fdab04e45b5bc430149f4926a5b240e5f875596968805a3a277e3",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 3
+    },
+    {
+      "path": "cv_ranker/ui_support.py",
+      "category": "production_source",
+      "bytes": 13849,
+      "sha256": "4382ea372468790d20fd97664bf157ab4112a5d39b73d7e6dc7b91b27de7b709",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 11,
+      "imports": 10
+    },
+    {
+      "path": "cv_ranker/unified.py",
+      "category": "production_source",
+      "bytes": 148525,
+      "sha256": "cc9f805846b1ed9db81e0c541da497d858a296f102067bc21c9f729d4547dea4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 42,
+      "imports": 31
+    },
+    {
+      "path": "cv_ranker/weighted_scoring.py",
+      "category": "production_source",
+      "bytes": 20196,
+      "sha256": "8cee086c73837fc2df125f43fad1aa103fd390829fa2ce746b2283d5abf17062",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 5
+    },
+    {
+      "path": "cv_ranker/yake_extractor.py",
+      "category": "production_source",
+      "bytes": 787,
+      "sha256": "4f0957898a8d2cbfab2d0225eecf18ac7ddc4b1c0ac07b14aa57de5d88125f9d",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 3
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "category": "documentation",
+      "bytes": 28401,
+      "sha256": "7b164ac4a21e851b70dc44373778a763728cd5e3eab0bf13fc691ad6b3728b56",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/BENCHMARK_GUIDE.md",
+      "category": "documentation",
+      "bytes": 9913,
+      "sha256": "c632dd63343fe8495ea18aaa2a307cad7a1e3724a5eb57284b2cb663b5a99c30",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/CONDITION_REVIEW_CONTRACT_V4965.md",
+      "category": "documentation",
+      "bytes": 6826,
+      "sha256": "52ded345f19411e0bd07409dd05304cf80e809eac4a7a89d4e6f59bf723f2180",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/DECISION_CONTRACT.md",
+      "category": "documentation",
+      "bytes": 3855,
+      "sha256": "3ec4ce4c63de8576d3c487fda06d204c5fd7bb0f8950da210e2ba988e1de41d1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/DEMO_GUIDE.md",
+      "category": "documentation",
+      "bytes": 3106,
+      "sha256": "ea4f91002c12c41fcc6f063fc4527ad4344d50c9fc740053d5e0c85d91b5b7a0",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/FAILURE_TAXONOMY_AND_RECOVERY.md",
+      "category": "documentation",
+      "bytes": 2026,
+      "sha256": "2176efde8bb73f58d6599ca0a8d80817920f726ffea233a31394280deac59437",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/FORENSIC_AUD_001_013_IMPLEMENTATION_STATUS_V4962.md",
+      "category": "documentation",
+      "bytes": 6848,
+      "sha256": "5e926fbde71c9889e56e6229db64faa9bacc9d5f5301b6fe06fb1252b539a7c3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/INDEX.md",
+      "category": "documentation",
+      "bytes": 1851,
+      "sha256": "61d0690b43e3aae3393b2ee34fd17e079c181807e9dc67bdff6ab967ee8c06a8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/JD_SOURCE_COVERAGE.md",
+      "category": "documentation",
+      "bytes": 2224,
+      "sha256": "ab544599bd422c2bb4b0ec2b395410d75735614bfcc3db82dccc4896d2e8685b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/ONE_CLICK_TRANSFERABILITY.md",
+      "category": "documentation",
+      "bytes": 5140,
+      "sha256": "5a458ba9147145dbc3ad64f9792c4083f12f6a8d2012e3adb4aed6fca3356e8a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/OPENROUTER_SETUP.md",
+      "category": "documentation",
+      "bytes": 4026,
+      "sha256": "af90c70c8edbe0cea80d527d089762644ef11173959eb1c7ac0c655c27685b16",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/PHASE_5_TO_10_STATUS.md",
+      "category": "documentation",
+      "bytes": 4908,
+      "sha256": "75708d2ea3091817e08e0de79c52fb88d57b539d1c8de456621c406a829af618",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/PRESENTATION_CHECKLIST.md",
+      "category": "documentation",
+      "bytes": 1724,
+      "sha256": "2ed00541acced34fc6a0d0a1bf1004ff40afb8c31930742e8384d685e28d6296",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/PRODUCTION_SECURITY.md",
+      "category": "documentation",
+      "bytes": 9905,
+      "sha256": "d045ff8cfda7ba885b695ed111eec4641e493a42412800f94c7ab672042f60f4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/PROJECT_STATUS.md",
+      "category": "documentation",
+      "bytes": 1333,
+      "sha256": "a46c9198073e21a2990ff45af827fa5e2e2cf32ce5a92c1bbc706b4557f645b1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/R015_CLASS_FAILURE_DIAGNOSIS_AND_VERIFICATION.md",
+      "category": "documentation",
+      "bytes": 5123,
+      "sha256": "5ef939635f4f2be1779df880795f2e803d84817e9e6ec9a0c3cc50f2b0c652b2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_43.md",
+      "category": "documentation",
+      "bytes": 3407,
+      "sha256": "f074df3e8009fb6f8270d9bb31f863029d70b57584f91a1f5cb3c453f2cb8154",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_44.md",
+      "category": "documentation",
+      "bytes": 4686,
+      "sha256": "875f49386c5d1d557ea46654a0a2989ce771bd99d5ad1315e86e96cdf9533c61",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_45.md",
+      "category": "documentation",
+      "bytes": 3664,
+      "sha256": "24fafb82ef46855184281adffa940338b3213c77d83e8c14ac313c7552d7d9c1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_46.md",
+      "category": "documentation",
+      "bytes": 3504,
+      "sha256": "efc6d0ffae58173e3a2a2e86323154363ceb4c973433fa3b3f9c32145c465134",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_47.md",
+      "category": "documentation",
+      "bytes": 4454,
+      "sha256": "af49b3ca74a727298f7121c7be68fda72d4be5302a35fbc6a1dc3cb0a8b0eb88",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_48.md",
+      "category": "documentation",
+      "bytes": 5417,
+      "sha256": "a332b8806070532a5726dc76502752c76e4324d05293372a1c4556c3f2e17e0c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_49.md",
+      "category": "documentation",
+      "bytes": 3864,
+      "sha256": "fd860e3660a3b51a48a1e99f86d16c7d6ebc89a768e6f525e75ddd84b23bc114",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_50.md",
+      "category": "documentation",
+      "bytes": 4091,
+      "sha256": "1b152782872cb7bdc8bbd10a05dbfbde62377300ab200bbe432f95541ea4878e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_51.md",
+      "category": "documentation",
+      "bytes": 4910,
+      "sha256": "518474d421aaaed94eaf0025c394ad23936dc3320a64b89bcc86fa76d73ef233",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_52.md",
+      "category": "documentation",
+      "bytes": 5062,
+      "sha256": "bb37a3356108432a9e17c65f4a97607408191265f466483ef21cd35f35734f12",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_53.md",
+      "category": "documentation",
+      "bytes": 3547,
+      "sha256": "200d9c6c0d0685212ab3ff7296e42504956e173cfdd54fa828959455cefab85b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_54.md",
+      "category": "documentation",
+      "bytes": 2564,
+      "sha256": "50e09e12cb7e1b49534b5b442488dc67e089a1bab7d4f49f2fc32e8246ae0c70",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_55.md",
+      "category": "documentation",
+      "bytes": 3708,
+      "sha256": "cab26d5b8f27e01d32c07e8b2e6dc89c42b0ddfed74440c7d88deb8e6f63d3b9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_56.md",
+      "category": "documentation",
+      "bytes": 5716,
+      "sha256": "287a2e7cd90e8d2417b283b4a462ded7c691b54d3dbf783a9fcea2b454d72390",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_57.md",
+      "category": "documentation",
+      "bytes": 6912,
+      "sha256": "fc9fb0d908c4057aa11b627ac40f0646efeeed1ba348b9e878d68be0f407cba1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_58.md",
+      "category": "documentation",
+      "bytes": 4811,
+      "sha256": "f5aec7accc187167af027465d2e840d59c7b15a6986d92f80a5015263925187e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_59.md",
+      "category": "documentation",
+      "bytes": 5322,
+      "sha256": "ebc89463dfdee4e4ff362c15bce67556329716516dfcdfd47b69cc667873444b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_60.md",
+      "category": "documentation",
+      "bytes": 6078,
+      "sha256": "a7f9eccac4a4acc40fb87b6916a116ac963fa0dc27dcd0349a35fb0965b843b4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_61.md",
+      "category": "documentation",
+      "bytes": 5885,
+      "sha256": "607920648e6a08b8b76e18ac2bda96e851336e122eeaa1719b766696e5acb971",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_62.md",
+      "category": "documentation",
+      "bytes": 9464,
+      "sha256": "cf22a89c1a8d669a1919688f01d6ddaaf07da7e7ffd0d7943ca8efe9a11d0866",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_64.md",
+      "category": "documentation",
+      "bytes": 7630,
+      "sha256": "c6da995e72b7aa4efa9c8d3ca719202a481aa0b600e782e042fc3a6ad13fbda1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_65.md",
+      "category": "documentation",
+      "bytes": 4136,
+      "sha256": "240e35cd1bd17be6d1add78bc5c38ced306f85ba3b387e5d0be67ee406eb57fc",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/RELEASE_NOTES_V4_9_66.md",
+      "category": "documentation",
+      "bytes": 1425,
+      "sha256": "550d39f704850b8ffa20ab6e379977699bce2aecc38bdaf51697831192afc659",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/REMEDIATION_STATUS_V4_9_58.md",
+      "category": "documentation",
+      "bytes": 1910,
+      "sha256": "7fa87f2b34d335ec6d51d99610013330d3ebebc2b152a528659a0fcc58f2b16c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/REMEDIATION_STATUS_V4_9_59.md",
+      "category": "documentation",
+      "bytes": 1437,
+      "sha256": "e82bc4615103a407bfda43d562401f9ebab0a00b4683ef9df643b0daa222886e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/REMEDIATION_STATUS_V4_9_60.md",
+      "category": "documentation",
+      "bytes": 1258,
+      "sha256": "fc6df875865d2c4718d4d454d3df1f4882c0f90f15b4a43c654d4c0c86eae536",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/REMEDIATION_STATUS_V4_9_61.md",
+      "category": "documentation",
+      "bytes": 1347,
+      "sha256": "ab0eeda552526499f0b5bd99aa57619c3e82275c562aeffab16e47c0ebcb0f66",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/REPOSITORY_AUDIT.md",
+      "category": "documentation",
+      "bytes": 12292,
+      "sha256": "87511049cd0b3019ddfdcf3779b87cd3270fe949d580f02a1c47eba488002b44",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/SUPERVISOR_UI_GUIDE.md",
+      "category": "documentation",
+      "bytes": 2632,
+      "sha256": "03405881b15fd2cdc9d224bc9ac8e362e5124e17d2571f614635ac36dadce066",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/SUPERVISOR_V46_CHECKLIST.md",
+      "category": "documentation",
+      "bytes": 2175,
+      "sha256": "d0fe5bece1cc73244d5708ca7b56df48db047526dffb5b1daf444c82d22e5a13",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/SUPERVISOR_V47_CHECKLIST.md",
+      "category": "documentation",
+      "bytes": 1793,
+      "sha256": "b310399798819fd6265f8b781bb74fdc8e5ae55285f168d5aca11bcaa19e02e4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/SUPERVISOR_WALKTHROUGH.md",
+      "category": "documentation",
+      "bytes": 5321,
+      "sha256": "293447d14e50f89fbcc038c9eaf53365225daf94b76662f0b8df705f7b0a55e2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_10_TENTATIVE_EVIDENCE_CONTRACT.md",
+      "category": "documentation",
+      "bytes": 3524,
+      "sha256": "0f4a53a30842fe4cc05db2ac642c3e0d75ab74f8f850fd1d2dcfe8cbd05af0eb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_11_SCOPED_EVIDENCE_FINAL_VERIFICATION.md",
+      "category": "documentation",
+      "bytes": 2666,
+      "sha256": "e0ebd75970395408879e19c9d8c946605a8173014234ca5c365c9c06053c6326",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_1_TEST_FIXES.md",
+      "category": "documentation",
+      "bytes": 1464,
+      "sha256": "58e2ae2f3a9f8aed81cda7a89ef73a79a4d374670ba9a5d205142de11c1447c7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_2_LIVE_FIXES.md",
+      "category": "documentation",
+      "bytes": 2441,
+      "sha256": "05a324f6e4e31022ebe70347e535da5140528afc03f39f5387dedbb668b78eb9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_3_LIVE_CALIBRATION.md",
+      "category": "documentation",
+      "bytes": 4688,
+      "sha256": "44a6558f4269caa6ec5f6ee6ae07881d10642c9cd11b5963f09eb78baeab8601",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_4_DOMAIN_NEUTRAL_PROMPTS.md",
+      "category": "documentation",
+      "bytes": 3500,
+      "sha256": "3d5af79a5ae630a194083ca0ee59210ba65abc56deeec126e8aaccc31672e69f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_5_SOURCE_CONSISTENCY.md",
+      "category": "documentation",
+      "bytes": 2976,
+      "sha256": "f8e840ec25d51166fce59569b798cce5fa1ec98868367a7e2a78400fe9490ce1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_6_VALIDATOR_RECOVERY.md",
+      "category": "documentation",
+      "bytes": 3040,
+      "sha256": "f4bd4581a48dfbace7dd98f15a5513403345c3b45592786a94abdc56f2f8c48f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_7_SYSTEMIC_CONTRACT_REPAIR.md",
+      "category": "documentation",
+      "bytes": 4937,
+      "sha256": "bd17402c5a2df01b30b51c2ec719be83b537845a37fa2fd15c898bb88f30edf1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_8_REQUIRED_ID_CONTRACT.md",
+      "category": "documentation",
+      "bytes": 4341,
+      "sha256": "7f4f6ae9ec5f37d9dd8d9682350bc5d752794ab26a2e2efa94ee06a0cca98a4d",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_9_COPIED_SOURCE_NEGATION_REPAIR.md",
+      "category": "documentation",
+      "bytes": 4122,
+      "sha256": "6ae99b2ad9b2eec13c280db598688854b60eac810abad42d0b4dc6a0a14e6935",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V48_UNIFIED_SEMANTIC_PLAN.md",
+      "category": "documentation",
+      "bytes": 4271,
+      "sha256": "15a16977dff3924ebd4d412780bbbd5a700184ecb5d26e5f9fdd60b805147eee",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4963_IMPLEMENTATION_LEDGER.md",
+      "category": "documentation",
+      "bytes": 10804,
+      "sha256": "55c00299bbddca0a3c578f1b1171b6f14ce94ad59e5bf0005d9b7a6168d51bad",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4963_PROMPT_SOURCE_INVENTORY.json",
+      "category": "documentation",
+      "bytes": 4675,
+      "sha256": "381676b29eeaa117b7a6f3a989f762fb6632e92be711e18d19cc1ee6a744cbb4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4964_IMPLEMENTATION_LEDGER.md",
+      "category": "documentation",
+      "bytes": 7315,
+      "sha256": "d134a3e10a86c52fb95591c27dac0e936816f5545eddcd1c84bf674af51d97a8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4964_PROMPT_SOURCE_INVENTORY.json",
+      "category": "documentation",
+      "bytes": 4675,
+      "sha256": "cb0876c48ec92ac9e3c1282410b99d8dd868bcbca74742dadc87703b0d37901c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4965_IMPLEMENTATION_LEDGER.md",
+      "category": "documentation",
+      "bytes": 8936,
+      "sha256": "7dd5c5534d2ce395687e6bb2dcede5b6d2c8cef5305a6a482ff2e1455d423304",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4965_PROMPT_RUNTIME_INVENTORY.json",
+      "category": "documentation",
+      "bytes": 6029,
+      "sha256": "92b36c1f24dcab859226fdaf3a500af2c2e11ef6bfe28f6cc449d93fef44eecc",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4966_RELEASE_DOSSIER.md",
+      "category": "documentation",
+      "bytes": 7893,
+      "sha256": "f4a8e4072052b0a1c92d7c753d65dcb9684d6a0d20eaa75177bedb81e12fe6d1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/V4966_TRACEABILITY_REGISTER.md",
+      "category": "documentation",
+      "bytes": 54590,
+      "sha256": "f437e83da6510d6e4cd3380dcf720250f1a90de6fb30e7e5ecd6057df86bd84b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/checkpoints/PHASE_7G_DECOMPOSITION.md",
+      "category": "documentation",
+      "bytes": 2892,
+      "sha256": "f8d16750e8d2e550e131dfd12b6fd427d5b49b5b34695cf3038d43019219f7ea",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/checkpoints/PHASE_7G_LIVE_RUN_FIX.md",
+      "category": "documentation",
+      "bytes": 2339,
+      "sha256": "9fd7a8e90b73c8ee0430a703021bc05a09eb9da7f25ddf06b82112366f9240c7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/checkpoints/PHASE_7G_NONPOSITIVE_EVIDENCE_AUDIT.md",
+      "category": "documentation",
+      "bytes": 3976,
+      "sha256": "f48008b44b327fcb68cac82b3afb500d9dca4c23721055c75b12e64014fba1aa",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/checkpoints/PHASE_7G_SEMANTIC_CONSISTENCY_REVIEW.md",
+      "category": "documentation",
+      "bytes": 3824,
+      "sha256": "63f517c9fd215b63346a9b411f62ce8bdd9664445c66d26b655b79b4629dad37",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/checkpoints/PHASE_7G_TRANSFERABILITY_SHADOW.md",
+      "category": "documentation",
+      "bytes": 3329,
+      "sha256": "a60e2f4f5fe8de7fbc00d7cdcb8a60109068d9b870e3b066d3d7b2a034b29d2b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/ARCHITECTURE_PRE_UNIFIED.md",
+      "category": "documentation",
+      "bytes": 6068,
+      "sha256": "bd088dac4bf3bb08fd8f9b340c1b14b780af23e6ec596e586ba115bca84b174c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_4_SOURCE_ANCHOR.md",
+      "category": "documentation",
+      "bytes": 5630,
+      "sha256": "464d18847a9841fc0d5e6393984f78d24753cb5c8fddd00982db39503d87aee5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_5_SECOND_LOOK.md",
+      "category": "documentation",
+      "bytes": 6366,
+      "sha256": "f3cf25f877ade57b67177053ed116e40de182a34b6af5537f292d6277dc5f637",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_6B_ABBREVIATION_CLARIFICATION.md",
+      "category": "documentation",
+      "bytes": 3968,
+      "sha256": "dbb10ca3ab6d807097f6a6d5877e7e9bb7e45a067a10683d90d744405877d14f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_6C_ACRONYM_DIAGNOSTICS.md",
+      "category": "documentation",
+      "bytes": 4446,
+      "sha256": "e5f247a09f9a73e6f36eb6b6b6cbad6a6ba2de9a45399b64c3cc7eec50573442",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_6D_EXACT_INITIALISM_EXPERIMENT.md",
+      "category": "documentation",
+      "bytes": 5180,
+      "sha256": "b6b53cd370665bcf60c3a5030f0b6562f3800b99a27d78c2c391bc0f23ae00a6",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_6E_REVIEWED_EQUIVALENCE.md",
+      "category": "documentation",
+      "bytes": 5861,
+      "sha256": "42325ec227f25116b55b9a525192692ea497e8496d0fe7f6fdff589143062cc9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_6_INTEGRITY_HOTFIX.md",
+      "category": "documentation",
+      "bytes": 4119,
+      "sha256": "1fa8986ced22e46908b2f95eb4854e7e5b2083ab9fcd6b353fa71561f03764dd",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7A_TYPED_REQUIREMENTS.md",
+      "category": "documentation",
+      "bytes": 6703,
+      "sha256": "9790a8af1b1576d59ff8f998b2172cae6eabebbcbd975745bb288afcee2a8d60",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7B_EXPERIENCE_VERIFICATION.md",
+      "category": "documentation",
+      "bytes": 7013,
+      "sha256": "ea76f68e9d893f731994f4f1fef09955f99506db8c21ad6cfd4624933aa09282",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7C_QUALIFICATION_VERIFICATION.md",
+      "category": "documentation",
+      "bytes": 8805,
+      "sha256": "f563aaef97cad7e647225cb48ae0c37a2a3f4c3cb80d7f2e6394c6b1613c10fb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7D_COMPOUND_ELIGIBILITY.md",
+      "category": "documentation",
+      "bytes": 9150,
+      "sha256": "c2c99f3fd57f505ce37e0226abe8e87a8767a4b99b4081ece7cc907b41b81ce7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7E_INDUSTRIAL_BENCHMARK.md",
+      "category": "documentation",
+      "bytes": 8649,
+      "sha256": "fbccf950535f5bbfe660da4b9bd1e5a6d9ddba70d99a5bf8dcffd75c3ce478ce",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7F1_LIVE_SAFETY.md",
+      "category": "documentation",
+      "bytes": 3863,
+      "sha256": "df4f9aa594cf91b3732344bbf36f9e2d4c38ef31117c7df70fb4a27e49ca9661",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7F2_FORENSIC_ROOT_CAUSE.md",
+      "category": "documentation",
+      "bytes": 4987,
+      "sha256": "e8516ee8c04144dc2a88474710191ebd016364e05087e034a3154d86d8c709d2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7F_EVIDENCE_INTEGRITY_REPAIR.md",
+      "category": "documentation",
+      "bytes": 6833,
+      "sha256": "a43881c120ebca880a24359f905d5b54216cc821097a3987aed39e53696c71b4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_CHECKPOINT1_VALIDATION.md",
+      "category": "documentation",
+      "bytes": 2331,
+      "sha256": "8120c859900257f628a12bb62c295f39ca20f6eb94642abb232ba0c601f627f7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_DEMO_FIX.md",
+      "category": "documentation",
+      "bytes": 2248,
+      "sha256": "804e159f595358784180d3a80a5eae2ab1e048fcd316501cfc9ff969bb7833cb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_LATEST_OLLAMA_SETUP.md",
+      "category": "documentation",
+      "bytes": 2008,
+      "sha256": "9cb46253d0bb893062bbf0a9cd9d62be00705c7c78f0b7e5620b274745f73f4e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_SHADOW_INTEGRATION.md",
+      "category": "documentation",
+      "bytes": 5625,
+      "sha256": "9a8854a889c6005d8508f64257155c7fa49c5e5ad5640e53aff96501e8c5fb9d",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_TRANSFERABILITY_REPAIR_V2.md",
+      "category": "documentation",
+      "bytes": 4722,
+      "sha256": "d119794d4a4fd0c6f710c62f34dfa0f2902ca7154ae94227021a64ecd7dad95c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_V4_1_FAVORABLE_EVIDENCE_REPAIR.md",
+      "category": "documentation",
+      "bytes": 3413,
+      "sha256": "492f9d2eaeb0488300c329c09368e0c723ef5ebb79be785146422fabaccc1448",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_V4_EVIDENCE_INTEGRITY_AND_UI.md",
+      "category": "documentation",
+      "bytes": 2602,
+      "sha256": "f28e8733f7868a704cdf7a19d4c5afb80100dffcd03cd33c4d1df9fab5603a16",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_V4_SINGLE_CV_ACCURACY_REPAIR.md",
+      "category": "documentation",
+      "bytes": 5164,
+      "sha256": "fac427ddd7989501681c55761c05d3f844a301591c08048cd9da9f8b431629e8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_V4_UNIFIED_FINAL_EVIDENCE.md",
+      "category": "documentation",
+      "bytes": 5701,
+      "sha256": "f92bbdc3cc119ff63685ebff932927540bb25b9c3d0eb4d64b520105660aa73b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/PHASE_7G_VERIFIED_SCORING.md",
+      "category": "documentation",
+      "bytes": 4620,
+      "sha256": "bc6a271d6fdd898c0f7e15e32e8e6f6a178e087d970763227e1ac7abf4308614",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/README_RELEASE_CHRONICLE_PRE_UNIFIED.md",
+      "category": "documentation",
+      "bytes": 56051,
+      "sha256": "572a93e499d8220adfe579bafdcd3ed78731b6f97f6183ca4eb698b58c5b62e4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/README_V4_1.md",
+      "category": "documentation",
+      "bytes": 10247,
+      "sha256": "0f16583b056070d510c6452418dbb281492b1ca8194ba6f74027a8b97c27439e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/legacy_reference/PROJECT_MAP.md",
+      "category": "documentation",
+      "bytes": 2814,
+      "sha256": "7f7fcd28dfc2dfb1433ece3273e2e47431e7184634a783bf24fdb5eb30641da2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/legacy_reference/PROJECT_STATUS.md",
+      "category": "documentation",
+      "bytes": 3416,
+      "sha256": "e415c59ddab0e5328df139bb1a49465bd81c6c74c5ae054fae58a1a2a8135d6c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/legacy_reference/PROJECT_SUMMARY.md",
+      "category": "documentation",
+      "bytes": 2311,
+      "sha256": "20c500fc26d30b2676537e0a6124075fb975df0298e34ae17bcf832562c923e5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/legacy_reference/TECHNICAL_DECISIONS.md",
+      "category": "documentation",
+      "bytes": 3413,
+      "sha256": "702b8e2aabdb9ddf1d3a5d7b53a9c2fb4927177ed90ec15509a376c0aa90febd",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/legacy_reference/VALIDATION.md",
+      "category": "documentation",
+      "bytes": 8128,
+      "sha256": "0f71394c879d451afb2aed20a4ffc6549d4565b047b56106574c1e713ad71fe6",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_2.md",
+      "category": "documentation",
+      "bytes": 2605,
+      "sha256": "0d9ea36f8d7c5ef6fef886b99a4d9c368277a4ff736a39a07c0634c8e15fd58b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_3.md",
+      "category": "documentation",
+      "bytes": 3684,
+      "sha256": "e572463c47b84ee078eb735861211ee63236c41e9353487d423d64eec1b3c482",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_4.md",
+      "category": "documentation",
+      "bytes": 4788,
+      "sha256": "fec312bfbe27dcfc6d164fd44b0876692c9024b54ae0af6952288b502de1a844",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_5.md",
+      "category": "documentation",
+      "bytes": 2978,
+      "sha256": "2600873116c16a8767c5139251f8736e0b58779e8c40124c985853381d55bc59",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_6.md",
+      "category": "documentation",
+      "bytes": 4046,
+      "sha256": "6e1fc4ec7b7c76b52bba577bcb74bc593a54b1d9fd655effa14389d717b80af1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_7.md",
+      "category": "documentation",
+      "bytes": 3200,
+      "sha256": "0c232c8c1b82fd3a2833f1f995157cd6a5f5424e06538776985392704843089c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_10.md",
+      "category": "documentation",
+      "bytes": 4924,
+      "sha256": "b9c1e51f3bea534b5f87b4b7dcbeb95b545d3c7bbe1d4f02bb3874f8c9788fcf",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_11.md",
+      "category": "documentation",
+      "bytes": 3349,
+      "sha256": "e328b1391ccf6bb28c58ccd6d6791e1ffa836767729bf7154ca4a9ecd1b74668",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_12.md",
+      "category": "documentation",
+      "bytes": 2614,
+      "sha256": "cc1ef3ed141ae354801b80aa776331254f702e5cc365a8beca4172045d0585be",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_13.md",
+      "category": "documentation",
+      "bytes": 2226,
+      "sha256": "170096f9db08389a76e275a0820b5a19e068d9ae4369d87c9667153f6710db5c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_14.md",
+      "category": "documentation",
+      "bytes": 4082,
+      "sha256": "1402368c52838494bc91b9a349022b03cc5bc5a340afca246f1dd2cc8cc4127b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_15.md",
+      "category": "documentation",
+      "bytes": 2120,
+      "sha256": "04494b441fc3293200736de325b55b3ca14ea5c98796b1332ec57e9fd463e7b1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_16.md",
+      "category": "documentation",
+      "bytes": 2383,
+      "sha256": "ceacaea4ac120ee9f11a5081d4a57ae5cfb063d7aea8d8f510a23b6e6633ed3a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_17.md",
+      "category": "documentation",
+      "bytes": 2908,
+      "sha256": "80d150433db545afb7dbbe69b9a371edb9ed78524b8ac2cbf8beeef8ad6e4e8f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_18.md",
+      "category": "documentation",
+      "bytes": 2966,
+      "sha256": "f2919a6e33218b64d9a4f17063058d4656ca4ec9c1b6e2aaac558ff37b0d09dd",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_19.md",
+      "category": "documentation",
+      "bytes": 2143,
+      "sha256": "1dcd2c652851a3197611bc1c6a8051f233a82dad9c874cc5399f913837746a64",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_2.md",
+      "category": "documentation",
+      "bytes": 6236,
+      "sha256": "fede5608b18f236d6d1e05e1766016ed682ac888d57f6d3af25d34a157760212",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_20.md",
+      "category": "documentation",
+      "bytes": 2061,
+      "sha256": "1e93e1a7b014cd9b560c2b5b61f55b7c32cfc7d710d3e3f225a8fb07e452b569",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_21.md",
+      "category": "documentation",
+      "bytes": 2025,
+      "sha256": "9419a0f3adff2509dc87d54138e9304d47b9e135b7634e7334ea3db407d7fab5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_22.md",
+      "category": "documentation",
+      "bytes": 2024,
+      "sha256": "53977fde6804885b694a2f7002813734ea4d5ce90b655143c5aaa85631afbdb5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_23.md",
+      "category": "documentation",
+      "bytes": 2308,
+      "sha256": "b209fcdafa7a7b50d3a4af28a60f457e748666b5a4f3c77e6f1364495977531a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_24.md",
+      "category": "documentation",
+      "bytes": 2250,
+      "sha256": "c180f97d3a48bc8a32d4a91dd1baa8b3faab7e159b94d533e6e3f757180e5f1c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_25.md",
+      "category": "documentation",
+      "bytes": 2088,
+      "sha256": "51642e47926abef828c94480ed3ea62259c0c201ab4ac216c0fbc599f21b5743",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_26.md",
+      "category": "documentation",
+      "bytes": 1384,
+      "sha256": "3cee4f5043614aae48a1c26f04dbe4a29f669fb55ad61a23dca47aef27ae7b01",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_27.md",
+      "category": "documentation",
+      "bytes": 2011,
+      "sha256": "58c9189f08cedf9d2d13aa08247998f6620e0359e45d15a906e258c61cad33b4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_28.md",
+      "category": "documentation",
+      "bytes": 904,
+      "sha256": "c29ecb39d4a96a78ef1d80b78dfd7fc6770903bd0fac0b01f257479fc7e1146a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_29.md",
+      "category": "documentation",
+      "bytes": 2366,
+      "sha256": "628cfd55f357307e66fa9f14689fd22e8971922e7907210090a20df326d019d5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_3.md",
+      "category": "documentation",
+      "bytes": 5253,
+      "sha256": "9d11902455927cfb714e53796ffaadbe2a3adb1ff77016c537f7c73571efa5dc",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_30.md",
+      "category": "documentation",
+      "bytes": 2653,
+      "sha256": "6ab89aac194623f9fce0ce793eb2960ae161a84b54b5ad3779a2b5a9ffb8a896",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_31.md",
+      "category": "documentation",
+      "bytes": 4947,
+      "sha256": "24016a45352cf205c00555ea2ef1babc25269a8f04cec2630f6bcdd10286c7a5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_32.md",
+      "category": "documentation",
+      "bytes": 1947,
+      "sha256": "4df14a6b6f9d69e9421c693137db9a50f2f7fff94ba6eb9a3d20c771856f09cb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_33.md",
+      "category": "documentation",
+      "bytes": 4441,
+      "sha256": "fe1a493d6c8d9fc8c35919a0c3e2c999547a18b5aaa3a86dfbfc9d49751c0122",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_34.md",
+      "category": "documentation",
+      "bytes": 3331,
+      "sha256": "833be105bb65f8efb0467b83f82f3d72e82ba25001f9a31f76644c7229bf43bd",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_35.md",
+      "category": "documentation",
+      "bytes": 3134,
+      "sha256": "db20b7e73814529819ff6790706edb2cb80c5fc3e28c2d0329e1a3e6ebe40f9a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_36.md",
+      "category": "documentation",
+      "bytes": 3772,
+      "sha256": "981947240875919c71c8ae4d366a8562fc958eb058dbff36c13351b21d423a1b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_37.md",
+      "category": "documentation",
+      "bytes": 3920,
+      "sha256": "d2db9d9e38b4a2bf6072a9bcf531de9e562b3e7b67cdd8c0cd3f9131e1388350",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_38.md",
+      "category": "documentation",
+      "bytes": 3281,
+      "sha256": "fd064a1abdc0cdd36fe483be6fdf09f365ff450da3e0e8055f1ebd5115aa6a32",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_39.md",
+      "category": "documentation",
+      "bytes": 2990,
+      "sha256": "8743757650210389e87d555d3429ff34acdb19121b3bd6df12310e02dc192e07",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_4.md",
+      "category": "documentation",
+      "bytes": 6476,
+      "sha256": "4d35932ea9a3ecabf5b7d6180f59f1112dfe4710d0adcb6834a91dcfca844037",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_40.md",
+      "category": "documentation",
+      "bytes": 2242,
+      "sha256": "6e3c0d0694e9bf5b75029f27809d0101d4c94e47f29c2f581b8f57b467ddb89f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_41.md",
+      "category": "documentation",
+      "bytes": 3404,
+      "sha256": "84c7c31abcc3120760cec9fee528c0891a9b76e867964ec5d5ee145a19e38e1e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_42.md",
+      "category": "documentation",
+      "bytes": 2357,
+      "sha256": "8137f720c582a66fcb6f3861c9d667394a28f35e49f50992b451830ad108dd90",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_5.md",
+      "category": "documentation",
+      "bytes": 5075,
+      "sha256": "ec30653b0c9da8b2804cc6bc7a520107a4e8fca76e9a9c5655f515b188db3341",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_6.md",
+      "category": "documentation",
+      "bytes": 3392,
+      "sha256": "d5a05917658d864d101e4e16f300f142be36a43c82191ea9931b57938066c987",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_7.md",
+      "category": "documentation",
+      "bytes": 5595,
+      "sha256": "09d3750d5d5d827b7dcaefcdca1f93663ac98c2ea8e069c065bef330dc4b053d",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_8.md",
+      "category": "documentation",
+      "bytes": 6347,
+      "sha256": "30ed82db0333d88f15a27f868694bc25c4701abb00e1bd616d194aea01c7ddd4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "docs/history/releases/RELEASE_NOTES_V4_9_9.md",
+      "category": "documentation",
+      "bytes": 6583,
+      "sha256": "885ec4554123a2e95e067285cadc8c0176d9fc0eb36ca65c9ec460e5ca51523c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "doctor.py",
+      "category": "assets_or_other",
+      "bytes": 10278,
+      "sha256": "03c1b99c175f3afcc0be88dfe7e767dfa209528e7b2af33e89d738398fbc08bb",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 15
+    },
+    {
+      "path": "evaluation/__init__.py",
+      "category": "verification_or_utilities",
+      "bytes": 78,
+      "sha256": "1f5a646c1dc2d9e83d4cc6557b4a5ffa6eda9dda4be68c6a526fc37d118bee5c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 0
+    },
+    {
+      "path": "evaluation/benchmark_cases.json",
+      "category": "verification_or_utilities",
+      "bytes": 6713,
+      "sha256": "17b22fa24916c530d6c7c2802d535d8af5f945e20a258e7f8ec0bc093c02bb8b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/compare_batch_runs.py",
+      "category": "verification_or_utilities",
+      "bytes": 4003,
+      "sha256": "95e5a8af362a16528e4157cb5071e1423056b02b8b48d674760b6a453b5daa17",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 4
+    },
+    {
+      "path": "evaluation/compare_benchmarks.py",
+      "category": "verification_or_utilities",
+      "bytes": 7088,
+      "sha256": "9aa13da28567341e50ddf660151211e95f521541641d8135c1c4f1104c1e6682",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 6
+    },
+    {
+      "path": "evaluation/compare_industrial.py",
+      "category": "verification_or_utilities",
+      "bytes": 4216,
+      "sha256": "8d651caf4d849e09408b6d0285c1b4e4fe666c2cee4625935e0bf300f8e63e34",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 5
+    },
+    {
+      "path": "evaluation/evaluate_benchmark.py",
+      "category": "verification_or_utilities",
+      "bytes": 25811,
+      "sha256": "2eecaadea68df67318576a6b6f2f2fe266e18a2e5c44890364cb620503260ee1",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 11,
+      "imports": 17
+    },
+    {
+      "path": "evaluation/evaluate_industrial.py",
+      "category": "verification_or_utilities",
+      "bytes": 25712,
+      "sha256": "75e83ef206503b7406f60b050382a09b897be9a48c418ee1542f8fff70c267a6",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 12
+    },
+    {
+      "path": "evaluation/evaluate_supervisor.py",
+      "category": "verification_or_utilities",
+      "bytes": 11201,
+      "sha256": "56aff89514881840e603c25b31abb02b419e095fb5dce94fdc6d9486fed1b9e0",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 18
+    },
+    {
+      "path": "evaluation/industrial_dataset/LABELING_PROTOCOL.md",
+      "category": "verification_or_utilities",
+      "bytes": 2283,
+      "sha256": "36902ed6ef427d2c1ba726f42abc67284ed1a460b5506334ad04ad3737461d4f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/ai_ml/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 180,
+      "sha256": "2dda6a9aed2cd6964b4a5e7005c4e119576469c55850ff1b7575c517d14ac7a8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/ai_ml/resumes/abbreviations.txt",
+      "category": "verification_or_utilities",
+      "bytes": 113,
+      "sha256": "0dee8914a54e04f5ad7f7a3f228d1435eda84cc3c18611d1f2b6b456bd4f36c9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/ai_ml/resumes/different.txt",
+      "category": "verification_or_utilities",
+      "bytes": 118,
+      "sha256": "1081a9261cdb5b881f757527bf3679b717501ed9faafcdec92f172729d069333",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/ai_ml/resumes/full.txt",
+      "category": "verification_or_utilities",
+      "bytes": 143,
+      "sha256": "b29dc5edf6ae919e435834016fb161a263486fae67fa3e6ae2ab53b9bde91742",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/ai_ml/resumes/studying.txt",
+      "category": "verification_or_utilities",
+      "bytes": 172,
+      "sha256": "7f983258c670364b214584223105984693771c7cf8644a57aa418259b75a9eb2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/ai_ml/resumes/unscoped_years.txt",
+      "category": "verification_or_utilities",
+      "bytes": 112,
+      "sha256": "58807dc6987894a577b8b6fe9b11b9b0b351b564ac4bb8b303590858d4e2d981",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/backend/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 135,
+      "sha256": "8477d75f6df5286e9c78e0e72a14759fbb279a02d0874f490ef3a3d7b55a1091",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/backend/resumes/junior.txt",
+      "category": "verification_or_utilities",
+      "bytes": 104,
+      "sha256": "94a0fca01ea710c4a5d7e5c7fbc8dbbbda3bb2e840486fb5db964ee7f3fe298c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/backend/resumes/learning.txt",
+      "category": "verification_or_utilities",
+      "bytes": 125,
+      "sha256": "63b0d7306310b15bee5d7ce1631d215e5158aac6ca5b84ede0b3603334a1ca77",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/backend/resumes/negated.txt",
+      "category": "verification_or_utilities",
+      "bytes": 158,
+      "sha256": "9037549b757a03b4db8dd8a371a852e8798a55c2c252ef540a02868e93e79a97",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/backend/resumes/other_stack.txt",
+      "category": "verification_or_utilities",
+      "bytes": 85,
+      "sha256": "971f629717c53fb40629615e5ec1809359010ed984a5bcaaf9d154e0ca2c5366",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/backend/resumes/senior.txt",
+      "category": "verification_or_utilities",
+      "bytes": 112,
+      "sha256": "eed7326bcda4fbb9d387b6cf85b0f8d94826978ddc15260c4ec5f5c5b2a4e756",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/customer_support/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 162,
+      "sha256": "b056b4727e45d49188c09cf9d4ba8ed5f71060c3cf0695b7fb7e301437c4953a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/customer_support/resumes/full.txt",
+      "category": "verification_or_utilities",
+      "bytes": 139,
+      "sha256": "65f1ad0363266a04bcc82a7d7437b3012319cc6516b730d350d431069bb7ccf3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/customer_support/resumes/learning.txt",
+      "category": "verification_or_utilities",
+      "bytes": 151,
+      "sha256": "41c1ef99145005e04ab9e1f757f14e13fc131d80a4873ed4bd7b20bfc826c943",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/customer_support/resumes/other.txt",
+      "category": "verification_or_utilities",
+      "bytes": 108,
+      "sha256": "e986dc1e900af3ee400a98058f5f5e68c522d94828b0cd357b7b53473aebf023",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/customer_support/resumes/short.txt",
+      "category": "verification_or_utilities",
+      "bytes": 130,
+      "sha256": "412d3799b5503881e1dbcafafc4e8ceb5d7a177ab16a6d0bcf8e4c8bdc4cd49c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/customer_support/resumes/unscoped.txt",
+      "category": "verification_or_utilities",
+      "bytes": 122,
+      "sha256": "aeb2a930558bc041d5d2d778cbe8aeee05ec6571b89c8f41f2d13bceda8d30fa",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/finance/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 164,
+      "sha256": "196d7513df9c9fffe26355fda74e2e59ef741b577592e3471c0e73939bfb74ec",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/finance/resumes/full.txt",
+      "category": "verification_or_utilities",
+      "bytes": 141,
+      "sha256": "8827fab1d501fc26d2200f2c92da25ef8ce7c915537652e46a41fa089fb096c3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/finance/resumes/in_progress.txt",
+      "category": "verification_or_utilities",
+      "bytes": 133,
+      "sha256": "20b2cbf578d480de89744697b8f2462355d36b27de45366561586fec90f8942b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/finance/resumes/learning.txt",
+      "category": "verification_or_utilities",
+      "bytes": 161,
+      "sha256": "d41fdd3c04e58f1d783d0c5941fc2c97ec8a2e6da1d6df4c16a318c64a197794",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/finance/resumes/negated.txt",
+      "category": "verification_or_utilities",
+      "bytes": 150,
+      "sha256": "705a3c974fc258d32a10eeac421be147462560bf7fb95fdbee5e55173753997a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/finance/resumes/wrong_degree.txt",
+      "category": "verification_or_utilities",
+      "bytes": 129,
+      "sha256": "8db533039b50f9b6eb2d30d8c763d608f2f8fb0bc790c7e5f4ccb2f5f1d5ae54",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/healthcare/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 179,
+      "sha256": "310774cce4feb60d1b9c4c63eab782ae20356b840fe22a23c9869eafeaf71373",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/healthcare/resumes/different.txt",
+      "category": "verification_or_utilities",
+      "bytes": 124,
+      "sha256": "a6604f09d35b2da20778f96b802ea8ea0c566bf42b99c205bbf136d6882d8839",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/healthcare/resumes/expired.txt",
+      "category": "verification_or_utilities",
+      "bytes": 133,
+      "sha256": "2eaf61e824d06fbfcf98625f1d660ad49b6e6281329dec1e52a7ce081e3782bb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/healthcare/resumes/full.txt",
+      "category": "verification_or_utilities",
+      "bytes": 164,
+      "sha256": "e1b1e70b5b2e835d3eb540069eb434ba53fd9376fbdc6862a4d02f7aca0ce928",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/healthcare/resumes/studying.txt",
+      "category": "verification_or_utilities",
+      "bytes": 164,
+      "sha256": "a920b5115fb7a98c186e3fcfb2529c1ff098bad142865d6732ae0bf9b1f8cd25",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/healthcare/resumes/unknown_status.txt",
+      "category": "verification_or_utilities",
+      "bytes": 125,
+      "sha256": "0b4b85dc5797b7b5d7d242da65f2a0f80b3f9556d4af48898d49b9dd7655c356",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/hr/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 132,
+      "sha256": "03b272e3e07b7edf452c5157a515e60271b8fd1794d56e8c0f75609ca723c795",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/hr/resumes/different.txt",
+      "category": "verification_or_utilities",
+      "bytes": 99,
+      "sha256": "74478c51a346f42d3fc02d5c481aabc1a99df7c8347a408aee7d1daef04eb580",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/hr/resumes/full.txt",
+      "category": "verification_or_utilities",
+      "bytes": 109,
+      "sha256": "c107ca686136edad476d6e7eb8f9e53f7908d3df646d70d876a913462486f144",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/hr/resumes/general_tenure.txt",
+      "category": "verification_or_utilities",
+      "bytes": 113,
+      "sha256": "76be3a1dcbed3251bc58d1584fb9fd04c434d6cc25d009fce088a1ac798f19df",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/hr/resumes/junior.txt",
+      "category": "verification_or_utilities",
+      "bytes": 90,
+      "sha256": "56a48dce26a8852a75e9798c1797ca005113a133dc82ad3c6ea9996b498f3567",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/hr/resumes/learning.txt",
+      "category": "verification_or_utilities",
+      "bytes": 123,
+      "sha256": "7c219dc2caa938ae86d1ac5ac886cbe84551459feefa39e340d6721fe3360c38",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/labels.json",
+      "category": "verification_or_utilities",
+      "bytes": 44439,
+      "sha256": "95d6955099ab8e95c1fe43d6d65c0f25cde84d8d45a2b2a650c311223c954fc1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/manufacturing/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 166,
+      "sha256": "e3cebacfd60a39b17641aa0f921d86c6910dfcb7ea7fe85de4ae3113be9654b9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/manufacturing/resumes/different.txt",
+      "category": "verification_or_utilities",
+      "bytes": 99,
+      "sha256": "4f6ac724f199f151c278561e5f3cbd66a2562c8eafe184d3faf40752beb3d3da",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/manufacturing/resumes/full.txt",
+      "category": "verification_or_utilities",
+      "bytes": 143,
+      "sha256": "1a68d7b0e5f8d6fae4cfaca89823e00bdd2d0c0495d7a8f97e4ebbaa2200241c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/manufacturing/resumes/short.txt",
+      "category": "verification_or_utilities",
+      "bytes": 139,
+      "sha256": "7e0d77ed760a78fcebada873f7308b96cbd150eaf27cba0ef1c1578dac2ef61d",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/manufacturing/resumes/training.txt",
+      "category": "verification_or_utilities",
+      "bytes": 162,
+      "sha256": "95184a2b0740b2236373f0e7ddc88ae0ad776711a975117064c095d1f4f6929c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/manufacturing/resumes/unscoped.txt",
+      "category": "verification_or_utilities",
+      "bytes": 141,
+      "sha256": "0cf7ed78215791f7d794fba9375ccd2db0ba6cb787c66e961aa63f863b655f27",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/procurement/jd.txt",
+      "category": "verification_or_utilities",
+      "bytes": 161,
+      "sha256": "781bedc914f83b9b9dbf461b16f20a79e92ebbf6def36408f5f42d22f6675dbc",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/procurement/resumes/full.txt",
+      "category": "verification_or_utilities",
+      "bytes": 138,
+      "sha256": "05cba755165dc347f663bc181319235e4e2b2481a1024b986b6bdd5a4d3d45d7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/procurement/resumes/junior.txt",
+      "category": "verification_or_utilities",
+      "bytes": 133,
+      "sha256": "39be32ac59b0bcf294525a8e627c558f4b6975a8a80a5f30d6712efaef39c8e9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/procurement/resumes/other.txt",
+      "category": "verification_or_utilities",
+      "bytes": 115,
+      "sha256": "fa8d6bd4bfe227b6861f7f386d88a56534942352d6cd68589c754bcaf7e709d3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/procurement/resumes/training.txt",
+      "category": "verification_or_utilities",
+      "bytes": 154,
+      "sha256": "5acc5db2634c68a40584ee46461bc4be5569cc7e8a66ab33eae9191642ebd684",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/industrial_dataset/procurement/resumes/unscoped.txt",
+      "category": "verification_or_utilities",
+      "bytes": 141,
+      "sha256": "c02a01c75581beecd42553e06daefee7591f84ad0159afd3e073ffbcb120aaa3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/repeatability_probe.py",
+      "category": "verification_or_utilities",
+      "bytes": 11845,
+      "sha256": "bbab6657c01916b535e1bf53a85d2d74cc0a88250cca373fd210fcf3204272dd",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 10
+    },
+    {
+      "path": "evaluation/results/industrial/phase7e_fallback_baseline.json",
+      "category": "verification_or_utilities",
+      "bytes": 194958,
+      "sha256": "1abd24786494d5287f00ad8a3e4f1fabd13d65ca08c771282046f34aac96ebb8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/industrial/phase7e_fallback_report.md",
+      "category": "verification_or_utilities",
+      "bytes": 7283,
+      "sha256": "22b497fe84b80890cf01b16dfcff46fdd39712969189b2dad01c4998b5283129",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/industrial/phase7f_comparison.json",
+      "category": "verification_or_utilities",
+      "bytes": 15298,
+      "sha256": "f68664d4673c56e1f4987c66b50f1c4fa6ae3c8384f664e166f146bfa6632c61",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/industrial/phase7f_fallback_verified.json",
+      "category": "verification_or_utilities",
+      "bytes": 189079,
+      "sha256": "dbc341fe5e2d594433e83dfad3cee62e7bf74e4d73a70c6c16d4ded8f62f975b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/industrial/phase7f_fallback_verified.md",
+      "category": "verification_or_utilities",
+      "bytes": 2806,
+      "sha256": "1fc36830e306d414acbff852e06c13549c729d7c3ce5d7a1d6b0008e9cab6adb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/industrial/phase7f_initialism_optin_verified.json",
+      "category": "verification_or_utilities",
+      "bytes": 189438,
+      "sha256": "6906862378ddd97eaa8a1e4128499a80e3be476e79f46ec5409feb4901c51932",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/industrial/phase7f_initialism_optin_verified.md",
+      "category": "verification_or_utilities",
+      "bytes": 2556,
+      "sha256": "7bf2e77a26708ccde38547600fe2498bacdd0162c93c1181386dcb57cd7aa2e5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/repeatability/repeatability_summary.json",
+      "category": "verification_or_utilities",
+      "bytes": 19031,
+      "sha256": "0ff9384d3e57e285e7e48e780c682917a6af093e844906bd1d0a3ec88375f8ed",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/repeatability/trial_01_batch_20.json",
+      "category": "verification_or_utilities",
+      "bytes": 20084,
+      "sha256": "b58db5417f77f19071b18729aad7270d70aee8134baf89b7ed8da6f17d248f20",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/repeatability/trial_01_batch_3.json",
+      "category": "verification_or_utilities",
+      "bytes": 23296,
+      "sha256": "7d8cf409aa5f2538f447418ea1d1c1aadb1fa06d4dadb2769217d57e6b4ccdc3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/repeatability/trial_02_batch_20.json",
+      "category": "verification_or_utilities",
+      "bytes": 20084,
+      "sha256": "b58db5417f77f19071b18729aad7270d70aee8134baf89b7ed8da6f17d248f20",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/repeatability/trial_02_batch_3.json",
+      "category": "verification_or_utilities",
+      "bytes": 23296,
+      "sha256": "7d8cf409aa5f2538f447418ea1d1c1aadb1fa06d4dadb2769217d57e6b4ccdc3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/repeatability/trial_03_batch_20.json",
+      "category": "verification_or_utilities",
+      "bytes": 20084,
+      "sha256": "b58db5417f77f19071b18729aad7270d70aee8134baf89b7ed8da6f17d248f20",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/results/repeatability/trial_03_batch_3.json",
+      "category": "verification_or_utilities",
+      "bytes": 23296,
+      "sha256": "7d8cf409aa5f2538f447418ea1d1c1aadb1fa06d4dadb2769217d57e6b4ccdc3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "evaluation/trace.py",
+      "category": "verification_or_utilities",
+      "bytes": 3565,
+      "sha256": "16c02c42e71c446d5732f639e5c21f32693103bf3dfb52b8142c172b2b031890",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 3
+    },
+    {
+      "path": "main.py",
+      "category": "assets_or_other",
+      "bytes": 3199,
+      "sha256": "0808c093bc84e3d0df16627f232af7f787183546f03a7f6769eb2b21eab245f9",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 6
+    },
+    {
+      "path": "pytest.ini",
+      "category": "config_or_data",
+      "bytes": 39,
+      "sha256": "aaabed120d2fb059160bb38bf8843dc0bbb6abca5f013dffb5228bfffb9a3404",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "requirements-remote.txt",
+      "category": "config_or_data",
+      "bytes": 193,
+      "sha256": "d64b75c5328d4b2c90cf6ed5bfb28c200ddc831f72f8cc3ef128cb696795538c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "requirements.txt",
+      "category": "config_or_data",
+      "bytes": 265,
+      "sha256": "3b9187428ba57b2d9c4d199085239e46be01a2c65bd5a909aa30f4bc8a15af27",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "run_runtime_check.cmd",
+      "category": "config_or_data",
+      "bytes": 187,
+      "sha256": "405361c8d22675c98bbfa6fb1e3721ded9ca07e36a06dc46b7c41ea2f8318113",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "run_supervisor_demo.cmd",
+      "category": "config_or_data",
+      "bytes": 152,
+      "sha256": "13ee6eff1b865a9fe2419cd338368f9468110d5558cc40f08330a1892a1ad230",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "run_tests.cmd",
+      "category": "config_or_data",
+      "bytes": 227,
+      "sha256": "9e4264605bfd39ffe2c1abe3e447b69fdad8eb0d65f60ea0f4323dcfef5b1605",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "run_ui.cmd",
+      "category": "config_or_data",
+      "bytes": 1046,
+      "sha256": "c7e5771ebb8907459456eb65a6ade97b85689448a64eea17c1f7a9c316e8a334",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/README.md",
+      "category": "documentation",
+      "bytes": 2252,
+      "sha256": "f30bd6040fca8f838b36f43fc7effcc35504c24ed7e9b8a6eaec95db01e7ccf1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/candidate_scenarios.csv",
+      "category": "assets_or_other",
+      "bytes": 4221,
+      "sha256": "6d40488e0b49c031ced1d659316853d5caadb834bbb652f65e1a77d558e42e6c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/01_aisha_direct_senior.docx",
+      "category": "assets_or_other",
+      "bytes": 40519,
+      "sha256": "a198bee0b2958cef1d4dfa3149010d44beeb0ceeb6920b8c51faa2efb1833ca2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/02_bilal_direct_fullstack.docx",
+      "category": "assets_or_other",
+      "bytes": 40601,
+      "sha256": "93a76b029ceb7bb400eb33d1ba61d8a78b06101813302143b5f46550465bf985",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/03_sara_functional_transfer.docx",
+      "category": "assets_or_other",
+      "bytes": 40505,
+      "sha256": "05d73b22fa060fbef10bd529898ee1d9b3fef058dfeb94f17eddbc92675a8e22",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/04_omar_forecasting_transfer.docx",
+      "category": "assets_or_other",
+      "bytes": 38703,
+      "sha256": "18b42b78423edd281548d6c10fd63c6bd30c3a13f99e9506c66edffdcb2250b8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/05_nadia_mlops_functional.docx",
+      "category": "assets_or_other",
+      "bytes": 38779,
+      "sha256": "11874dee3247b32431c5fe8375a9246a3241859f88019e407cdaedc6ff8c7d2b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/06_rida_medical_imaging.docx",
+      "category": "assets_or_other",
+      "bytes": 38837,
+      "sha256": "b5c8ed5fb62389b232d6f016924a431b78775aad8091fff4dcef936133221b11",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/07_hina_unrelated_tenure.docx",
+      "category": "assets_or_other",
+      "bytes": 38519,
+      "sha256": "2f7982974a6407877a9aa5ff42cf1eb2c6a20b93bb01b0fb22bd8b236b6089ba",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/08_taimoor_research_transfer.docx",
+      "category": "assets_or_other",
+      "bytes": 38677,
+      "sha256": "e7d16c6bfd20ef087d33b61744d75a139f14e927f62b13a310afc7e41367d394",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/09_amal_cloud_integrations.docx",
+      "category": "assets_or_other",
+      "bytes": 38915,
+      "sha256": "7d6416c11a4ac94849200acef1de3e2838afeb2a853c0a4c2b036bfccc0dafa2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/10_farhan_under_3_years.docx",
+      "category": "assets_or_other",
+      "bytes": 38544,
+      "sha256": "f3e8fb1babba7b3e56c5eadc269c27d3a8671f39eefb317290819b3993a26dec",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/11_zain_learning_only.docx",
+      "category": "assets_or_other",
+      "bytes": 38495,
+      "sha256": "a90620b72a68d863133ee31d9d4ec825ee876a6c612fef21d26dc58e944962de",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/docx/12_salman_copied_jd_negations.docx",
+      "category": "assets_or_other",
+      "bytes": 38652,
+      "sha256": "2f46a74f308ad2414cb834484d7750852dabdd4c6e420a964a8541506605fa4b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/jd/Applied_AI_ML_Engineer_Updated_JD.docx",
+      "category": "assets_or_other",
+      "bytes": 38720,
+      "sha256": "39150d764e88465bd55881e03fc653d40c5d2d1284e6a1fb094b7866e76dcacb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/jd/Applied_AI_ML_Engineer_Updated_JD.pdf",
+      "category": "assets_or_other",
+      "bytes": 48273,
+      "sha256": "01adab6290a8caf8078f87575e1f257139183da589bd0bb0af7d2efb2368f380",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/jd/Applied_AI_ML_Engineer_Updated_JD.txt",
+      "category": "config_or_data",
+      "bytes": 2272,
+      "sha256": "b812f80f902ada934e73c98323a0c8a6763a01e6e0453e3537b6ae24dcfda7eb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/01_aisha_direct_senior.pdf",
+      "category": "assets_or_other",
+      "bytes": 65683,
+      "sha256": "1b743a575ecc0c07d6589d8d80397cbf07b8fc0053623b72d2f4b7d28d4b04cc",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/02_bilal_direct_fullstack.pdf",
+      "category": "assets_or_other",
+      "bytes": 65813,
+      "sha256": "769eab112b145f4057c57b801f68d6f09a141d42a38c7d970a7d3ffe6a7072af",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/03_sara_functional_transfer.pdf",
+      "category": "assets_or_other",
+      "bytes": 66488,
+      "sha256": "2c61de82edfd6e83411b8b637db8074c62b0aab0e453c79e4d2a364d4ff4754a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/04_omar_forecasting_transfer.pdf",
+      "category": "assets_or_other",
+      "bytes": 44657,
+      "sha256": "ca87f2e13066eb7e0a708a117557e003d09de7a75e9575614652a7573eb7e825",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/05_nadia_mlops_functional.pdf",
+      "category": "assets_or_other",
+      "bytes": 45556,
+      "sha256": "4c4cca3416e1ed13878e1d457ba997b02a17963a33d64ab36c193226da82a05f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/06_rida_medical_imaging.pdf",
+      "category": "assets_or_other",
+      "bytes": 43792,
+      "sha256": "5d4cddbcad4de848bf3bac99f9b936116f6ec4901907bdad743f4c81d033aeae",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/07_hina_unrelated_tenure.pdf",
+      "category": "assets_or_other",
+      "bytes": 41823,
+      "sha256": "2dbc71dfc0ea1cf3e072024c8549097ca2b37435271404279f9d3a8a6c18ce28",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/08_taimoor_research_transfer.pdf",
+      "category": "assets_or_other",
+      "bytes": 44822,
+      "sha256": "dbf9ea871b50a99ababc57a11005236b0b83671e3d03ce429fb7c27808acfa94",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/09_amal_cloud_integrations.pdf",
+      "category": "assets_or_other",
+      "bytes": 44118,
+      "sha256": "2d45e6b085a06c9e8e28f3825fc57d742842fbb8a9a2ab35e574cf34c7d0780b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/10_farhan_under_3_years.pdf",
+      "category": "assets_or_other",
+      "bytes": 44126,
+      "sha256": "81da63afddf9986700d262e73e865a3d15d978c1a02b069091f53c471812e26a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/11_zain_learning_only.pdf",
+      "category": "assets_or_other",
+      "bytes": 42618,
+      "sha256": "7df0866432ae71ce07fad2ac9107834349fc33b43cd66095e88a2545142250a2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_documents/pdf/12_salman_copied_jd_negations.pdf",
+      "category": "assets_or_other",
+      "bytes": 42527,
+      "sha256": "20f620f0789ceba7e5f3922b88659a54153959ddc4a7dd48943a132cd36848cc",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_jd.txt",
+      "category": "config_or_data",
+      "bytes": 2272,
+      "sha256": "b812f80f902ada934e73c98323a0c8a6763a01e6e0453e3537b6ae24dcfda7eb",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/01_aisha_direct_senior.txt",
+      "category": "config_or_data",
+      "bytes": 3701,
+      "sha256": "4e45e10d3c033e7f00ee090bcd61b01269b5b84459958d1da2f2ab5486d1e647",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/02_bilal_direct_fullstack.txt",
+      "category": "config_or_data",
+      "bytes": 3657,
+      "sha256": "d67bc8a54c46b6322a8ff67fa69a5fc899d9d797ae8b154163d17c2072ae325e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/03_sara_functional_transfer.txt",
+      "category": "config_or_data",
+      "bytes": 3920,
+      "sha256": "aff6daca309d5d5ab6512328ec796f4d7239c539499a2c7c327c63df8bdc6b06",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/04_omar_forecasting_transfer.txt",
+      "category": "config_or_data",
+      "bytes": 1903,
+      "sha256": "654f818be2525493011c0ed0dd0396137e39892682885e0edf2ceae46e3c8b0b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/05_nadia_mlops_functional.txt",
+      "category": "config_or_data",
+      "bytes": 2048,
+      "sha256": "cc7a6abc788e8d9d4b803d552f06c0ecebcc05d940633d964ff5fbc4f4095cf1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/06_rida_medical_imaging.txt",
+      "category": "config_or_data",
+      "bytes": 1796,
+      "sha256": "e6fff65c2c326cfb4bcb3925697cf9c1a19d5876fa035a6abf06759624f186a9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/07_hina_unrelated_tenure.txt",
+      "category": "config_or_data",
+      "bytes": 1509,
+      "sha256": "0876f5557b74dd2a013350d42982251792eee8e065808411e8a6efbcbe0ccb00",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/08_taimoor_research_transfer.txt",
+      "category": "config_or_data",
+      "bytes": 1882,
+      "sha256": "4b068de53908a329858da8cc9df6aa79f8829776f8a269d91684946992274931",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/09_amal_cloud_integrations.txt",
+      "category": "config_or_data",
+      "bytes": 1938,
+      "sha256": "48cee00b5dc42f9d6862927b9d1b3ce2014b36f059eb4a4e6eaae19fbcb898d7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/10_farhan_under_3_years.txt",
+      "category": "config_or_data",
+      "bytes": 1517,
+      "sha256": "2fa499f61952e2852dadd2104a6752f719296d7152c750beca5ea4088a3e82de",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/11_zain_learning_only.txt",
+      "category": "config_or_data",
+      "bytes": 1448,
+      "sha256": "18f94c553f27203867f77813b6d73d92435c87ba782576f3f50cf83b0a0cff53",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_resumes/12_salman_copied_jd_negations.txt",
+      "category": "config_or_data",
+      "bytes": 1737,
+      "sha256": "dc8ac478103e60db2647fbad71f06b425877c38270dd672f5572edad2fb13335",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/applied_ai_supervisor_jd.txt",
+      "category": "config_or_data",
+      "bytes": 1509,
+      "sha256": "935eae6012dc788df34058abeef9791b2eac13ed46478310050725a68e84d433",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/backend_jd.txt",
+      "category": "config_or_data",
+      "bytes": 373,
+      "sha256": "cee8125bba681ce1d40acef79ed6cf1a35ae977f1323d1624e1a7e8be5ac97e1",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/backend_resumes/01_strong.txt",
+      "category": "config_or_data",
+      "bytes": 562,
+      "sha256": "1b64ef5cf43cffc6ecaf5952566e47e11984e6eec8f9d329151be4db82a7e870",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/backend_resumes/02_medium.txt",
+      "category": "config_or_data",
+      "bytes": 370,
+      "sha256": "1118afcccdb2468b48aaefbec39147ad00b6852ed55a8aeef4bdff1499d51b22",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/backend_resumes/03_weak.txt",
+      "category": "config_or_data",
+      "bytes": 270,
+      "sha256": "ccc2a268b9fe59946f53c067a6b598a8dc7e8890c74d235deef04e59f69deeb7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/backend_resumes/04_negation_and_learning.txt",
+      "category": "config_or_data",
+      "bytes": 304,
+      "sha256": "21bf918082852200f17006ec1fc8ab1d6ec51829aa21f66f4753ceabd3a3856a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/compound_eligibility_policy.EXAMPLE.json",
+      "category": "config_or_data",
+      "bytes": 456,
+      "sha256": "77d52931140b145d2f5c67d0dcbd25ef25a9829e287fe0daafcda5c3f318b8ce",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/compound_jd.txt",
+      "category": "config_or_data",
+      "bytes": 122,
+      "sha256": "d8870f11c7aefecb79c9edadfab7baac951508df06d907be5704b17d8af6993e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/compound_resumes/01_full.txt",
+      "category": "config_or_data",
+      "bytes": 110,
+      "sha256": "7228e46f356f5af4519b1ba2b81b4f3e84d141bd6e6e58f3ed5322aecc2abaa7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/compound_resumes/02_partial_and.txt",
+      "category": "config_or_data",
+      "bytes": 29,
+      "sha256": "9bbbbae119c4278ff8b764a5fc4c7cf8a8eff7073bb5589b0a3075dc90d203f7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/compound_resumes/03_learning_django.txt",
+      "category": "config_or_data",
+      "bytes": 67,
+      "sha256": "4f0f8841c3c5384bc0a44393eb50290e06a7fa1aab565dabb98a8fc22cd4a82a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/compound_resumes/04_no_or.txt",
+      "category": "config_or_data",
+      "bytes": 28,
+      "sha256": "79f8ef794df1c87d9c6f3bacd2e74db2a93a3efc7a0e6556ada5efdd823c2c4c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/compound_resumes/05_contradiction.txt",
+      "category": "config_or_data",
+      "bytes": 74,
+      "sha256": "7f66d7e7b0b64f3824df236c581d043d19401c5c5d3ad32c7b50515060d8b87d",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/experience_jd.txt",
+      "category": "config_or_data",
+      "bytes": 54,
+      "sha256": "787d27a334b1b4386a494498454cdbf5f102e37c8a79dc18adbb7833253eb693",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/experience_resumes/01_6_years_python.txt",
+      "category": "config_or_data",
+      "bytes": 101,
+      "sha256": "54a69fe5081cb10787cc45959ee37c0fcdb1002045b21a7b180f407c2d674a7d",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/experience_resumes/02_2_years_python.txt",
+      "category": "config_or_data",
+      "bytes": 103,
+      "sha256": "4b2f55793599b93c19f0f6b032b1dc39f7634ad272301ae7f79a4fc0d97ed5c6",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/experience_resumes/03_6_years_java.txt",
+      "category": "config_or_data",
+      "bytes": 97,
+      "sha256": "b0a4ebffe57e2b7b2c7660389cce0808bca001b7e446fcb9592dcd6f50ec580e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/experience_resumes/04_unclear_years.txt",
+      "category": "config_or_data",
+      "bytes": 102,
+      "sha256": "9688f6215965160765a32cf4e0e62883500af50bf62ee2e9576839fcbd15cd75",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/hr_jd.txt",
+      "category": "config_or_data",
+      "bytes": 238,
+      "sha256": "dbeaa20987218cea827c5a2f410eab77248d0dbf4b6421612a504672041c43de",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/hr_resumes/01_hr_strong.txt",
+      "category": "config_or_data",
+      "bytes": 494,
+      "sha256": "2b9f1348662b985cc1d28da486318a67e2f3b3069e532a6e9d19177b138d59b0",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/hr_resumes/02_hr_medium.txt",
+      "category": "config_or_data",
+      "bytes": 292,
+      "sha256": "4d190a07b6426bf0948d2c255c1d57ce33d4021044cf54bd74a056520065399d",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/hr_resumes/03_hr_weak.txt",
+      "category": "config_or_data",
+      "bytes": 266,
+      "sha256": "4e4d91c6c914c3ed1c9879bc02ed802665444f8f2cd577a17be94a51871c790e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/license_jd.txt",
+      "category": "config_or_data",
+      "bytes": 47,
+      "sha256": "34a5cd605558d923efc272803b5d181461a71f687ec6e4b50f241e30c74218fa",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/license_resumes/01_active.txt",
+      "category": "config_or_data",
+      "bytes": 40,
+      "sha256": "29f46ca4074899baa8ced0cb868424867122cefb0032bee752e950cadc42bc38",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/license_resumes/02_status_unknown.txt",
+      "category": "config_or_data",
+      "bytes": 27,
+      "sha256": "dde29ba7ec865c80d1e125d4a7eac3f486cf9dc86879cd967ae26adbe818264f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/license_resumes/03_expired.txt",
+      "category": "config_or_data",
+      "bytes": 35,
+      "sha256": "db2f07946ceab08a70f2dd5307b5efe7d899b4332166b01db58dcef19b2192bf",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/license_resumes/04_title_only.txt",
+      "category": "config_or_data",
+      "bytes": 50,
+      "sha256": "278f273030f85a6ba575caf0cdfabf019e4ebf7b3798e55b87205f9814f6b8a2",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/qualification_jd.txt",
+      "category": "config_or_data",
+      "bytes": 81,
+      "sha256": "cab14f8b4127ca50b7716f989f4a0262678598d6f78e1a40a2e1f029b9093a4a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/qualification_resumes/01_qualified.txt",
+      "category": "config_or_data",
+      "bytes": 99,
+      "sha256": "f23c2774ddbdc9edf54980c00f972137560d5572c9cc06041a7fc96a5ba2ddcf",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/qualification_resumes/02_degree_in_progress.txt",
+      "category": "config_or_data",
+      "bytes": 142,
+      "sha256": "64db4313f72e759d3bb93c09664ed34bac180976d87583ac136bee32284b0a0a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/qualification_resumes/03_different_credentials.txt",
+      "category": "config_or_data",
+      "bytes": 72,
+      "sha256": "1f8c0bce9ad1c1ebf94cd627d76580d428ac46c0ee8155bd341b3eecc539933c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/transfer_jd.txt",
+      "category": "config_or_data",
+      "bytes": 579,
+      "sha256": "4c8c75d1a564e077131bd0a52a6e5f74d1b6838cb6f183487adcbbf9c1778859",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/transfer_resumes/01_framework_transfer.txt",
+      "category": "config_or_data",
+      "bytes": 542,
+      "sha256": "67bef1974d0c6eb4ca2bdd88a5c377178aa214e5068c3e552badaf56700615d9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/transfer_resumes/02_direct_tools.txt",
+      "category": "config_or_data",
+      "bytes": 366,
+      "sha256": "3dec5cbb4f2ad59fb50dc2a38fe42fa380a33149033eb374e7b0683ffef20def",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "sample_data/transfer_resumes/03_no_evidence.txt",
+      "category": "config_or_data",
+      "bytes": 270,
+      "sha256": "4c64089902b05bed08f0866be3af7afccfbb62f4473b63900d7f65c099dc3f00",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/__init__.py",
+      "category": "verification_or_utilities",
+      "bytes": 47,
+      "sha256": "1df649d2cd238821c11ed6742a37b6441d3b815ca585dc82cd6a54f726318fba",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 0
+    },
+    {
+      "path": "scripts/forensic_scope_demo.py",
+      "category": "verification_or_utilities",
+      "bytes": 2469,
+      "sha256": "01bec018c25c224c51a20a39abc8e725de6bf5ccaee31da66880720068cd7fa3",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 5
+    },
+    {
+      "path": "scripts/package_source_release.py",
+      "category": "verification_or_utilities",
+      "bytes": 2190,
+      "sha256": "e91ccb64e15fb596a9ce848b83badf88d88db68535ba7df5aabffb507fe96b4a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 6
+    },
+    {
+      "path": "scripts/phase7g_coverage_demo.py",
+      "category": "verification_or_utilities",
+      "bytes": 2149,
+      "sha256": "8e19280f0ded251a6afbcb74afe8294532ee5ce6186d06a0a2f2d118896aabfd",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 4
+    },
+    {
+      "path": "scripts/phase7g_decomposition_demo.py",
+      "category": "verification_or_utilities",
+      "bytes": 2192,
+      "sha256": "f27fecf2ad0b2900b665413c78c01e7a2c9e6fd8a86af916b544dce04b7e0ee2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 4
+    },
+    {
+      "path": "scripts/phase7g_embedding_preflight.py",
+      "category": "verification_or_utilities",
+      "bytes": 2630,
+      "sha256": "ea154928b254e5783a1c3e3333308f96c541757c3c99ccc52c367475a195bc18",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 6
+    },
+    {
+      "path": "scripts/phase7g_relationship_audit.py",
+      "category": "verification_or_utilities",
+      "bytes": 5627,
+      "sha256": "738185cea80877ce2d22adebb28c5de624814751bb877bebf78d4b2b69464a63",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 6
+    },
+    {
+      "path": "scripts/phase7g_shadow.py",
+      "category": "verification_or_utilities",
+      "bytes": 4474,
+      "sha256": "8919d92692d4276a3d94c17e9e44cf725b308cb8cca3b585ffb74ea09c976b96",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 9
+    },
+    {
+      "path": "scripts/phase7g_transferability.py",
+      "category": "verification_or_utilities",
+      "bytes": 4616,
+      "sha256": "780dd95c6b59c150e3aeb27f52be077bdfdf8ead23689dfc44cb9779b3680697",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 7
+    },
+    {
+      "path": "scripts/production_preflight.py",
+      "category": "verification_or_utilities",
+      "bytes": 6523,
+      "sha256": "edfb43aca4708ae85b28de5acb08a2b405449175c9d68356776cb2b7ed095ac4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 11
+    },
+    {
+      "path": "scripts/prompt_inventory.py",
+      "category": "verification_or_utilities",
+      "bytes": 3295,
+      "sha256": "625a5a0da57224af4d6035e108bb7aac320d167d5e9491dc71465548d501715c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 5
+    },
+    {
+      "path": "scripts/rebuild_manifest.py",
+      "category": "verification_or_utilities",
+      "bytes": 2027,
+      "sha256": "2000208dab201352505ee9429f2cedfb9ab305eab374ee929e0d5f2cef7220d8",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 5
+    },
+    {
+      "path": "scripts/run_backend_demo.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 342,
+      "sha256": "21bfac534c57220819a4d5a226159540ab7acbc3aa8936f6735a8b22d10bfc7e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_batch_probe.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 987,
+      "sha256": "d381238d23dfb0993d000dc4981f8d3b1e815747c90c3dfdb23bb77b14394158",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_benchmark.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 428,
+      "sha256": "1568e53e0b230c29b5a4cf010b5243559e024bbc9958b5bf58210778d51b75b7",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_benchmark_pipeline.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 424,
+      "sha256": "07fc90e48364f5d6cd3e0b9786efbc1da9898681c79b7beb991d043e9137b3e4",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_compare_benchmarks.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 426,
+      "sha256": "ac1a1baa7d7c2935a61d035005c9bbe5df97a7291d9bb08325f0d007490f66e5",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_hr_demo.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 327,
+      "sha256": "30161021fe3dd72cbf4339848ab2b721b067e3f2ac75d28ded803fed99a2ef72",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7d_demo.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 638,
+      "sha256": "5f4fc79168beeb4db26e88f5119074874e138b98e33b6065ccaeeba6ef4fea3f",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7e_fallback.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 453,
+      "sha256": "15e8777f77c96c6ca4a446a4045cc476f7cfe37e91526003638ed375317c1259",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7e_live.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 429,
+      "sha256": "6c4816097d4680a3fc4ea2a78b084ecbcc30cd2b858f9a76506a24e827cee246",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7f2_forensic.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 609,
+      "sha256": "f0e1eb2abbe98a92370dfa56169b9fd4ecd561903e3d8827187621b4b12ce34c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7f_compare.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 515,
+      "sha256": "84931f5b87fefde1392d6b1f36fe5ea6ed133ee721d6d5aa3a707e8b62be2b5b",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7f_fallback.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 453,
+      "sha256": "b517cb2264355a41b0e1802c5397a350db088eafd677cf1c7cb7e9209ac134b9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7f_initialism.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 499,
+      "sha256": "7e2340343b84d819e972eea16987909f285293c58f00380f02aad5b9b99d3cc6",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7f_live.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 429,
+      "sha256": "2320c3100523dfe2fb73357c5473fc30a7487ceb835f7f3c4c1dddb3ecce0b85",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7g_applied_ai.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 545,
+      "sha256": "e09e2f70ebb9b15a902fa2f3a8405daa275bff6d7d57910403e39f505059a038",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7g_backend.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 381,
+      "sha256": "3a8e9feeef7916d8ce974162154f779582aa3a4169a251d03cd31195e32b9b57",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7g_embedding_preflight.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 277,
+      "sha256": "cdf493a1ffbb9b5ea0776397d2ba35163ff6b6aa23384f662ab646c3512a274e",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7g_shadow.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 393,
+      "sha256": "20495d59ca910ead7fcbd7dc6cbc4c995d08525ada2fabbd422b140139821b56",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_phase7g_transferability.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 259,
+      "sha256": "81b0916fc5f9fb041fd70f35f4bde2936916b7464be40be8a2259fd7748a7cc9",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_repeatability_probe.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 559,
+      "sha256": "36e99d874285ca0b7b0876063cefceed6b1f5e4322a4e032dd75d3a3c4f7a300",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_trace_demo.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 280,
+      "sha256": "325ae53dc5374daadc217acec128541c61a39d27ee5593c57f78b177e613bf68",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/run_trace_demo_fallback.cmd",
+      "category": "verification_or_utilities",
+      "bytes": 289,
+      "sha256": "2b371ee6c00366a168032b3d8a6daf34a91bcddc5f1c692afafdcbb93d72ddcf",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "scripts/verify_differential_v4966.py",
+      "category": "verification_or_utilities",
+      "bytes": 2311,
+      "sha256": "79d212924626a941e0fd7432afb43fba2e7ad7c48e2169854bf89cf7077b2d22",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 3
+    },
+    {
+      "path": "tests/test_architecture_boundary.py",
+      "category": "tests",
+      "bytes": 7530,
+      "sha256": "da9753a2d5d409de21b9d12e112d6b5cf0216bc72635368b8d2b95f91535a9e9",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 19,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_audit_regressions.py",
+      "category": "tests",
+      "bytes": 7356,
+      "sha256": "8d8130b27291100f1470f1bc2cb418bb9e7bfe2e0d4d0249730eee8138db773f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 24,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_batch_probe_and_title_guard.py",
+      "category": "tests",
+      "bytes": 4381,
+      "sha256": "c9cb4a016c0cd38c98f65058c4294c1868d78bae1b01e219b3815d184070a92e",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_benchmark_comparison.py",
+      "category": "tests",
+      "bytes": 4714,
+      "sha256": "216568a2d3e8374e2b2d5080e65ac08a5b0301953a76c57e6e89f1dd5e7e8a62",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_benchmark_harness.py",
+      "category": "tests",
+      "bytes": 1817,
+      "sha256": "da1a852768c36e560aa1b1eedfe410a17a43ec05bdbc29d15762062343465206",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 3
+    },
+    {
+      "path": "tests/test_benchmark_trace.py",
+      "category": "tests",
+      "bytes": 5169,
+      "sha256": "6f512a7b3241dec6f6c31bf2e8a39b795a9865e9fe9f521150d50c698be32516",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_documents.py",
+      "category": "tests",
+      "bytes": 1696,
+      "sha256": "7ca9431ac0571db666de04c954d11f236d8b7291684f7a518f102c7b45c7ec23",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_fallback.py",
+      "category": "tests",
+      "bytes": 1138,
+      "sha256": "75001b3d42bce3fb1a10675b251e793228d0d028d0fd4a2388ad11cc52a291d4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 2
+    },
+    {
+      "path": "tests/test_jd_source_completeness.py",
+      "category": "tests",
+      "bytes": 10201,
+      "sha256": "a66304201f726029cffbc0796191ba67bbadb7b0f8b4a0596df5fb67dcf231da",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 19,
+      "imports": 15
+    },
+    {
+      "path": "tests/test_llm_contracts.py",
+      "category": "tests",
+      "bytes": 6509,
+      "sha256": "0a4b3e792fbca352f246c2646d56f54d9027671d0a5aa41652bb2f3d007b8240",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 3
+    },
+    {
+      "path": "tests/test_named_source_anchor.py",
+      "category": "tests",
+      "bytes": 5190,
+      "sha256": "73ce7441d152969c136ed28e38ca1ce65494d506e4935d43347b63c154e62b88",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_phase2_evidence.py",
+      "category": "tests",
+      "bytes": 7368,
+      "sha256": "84da579544bbab0d5e9ec611c91a3dcc23ad74173dde1ddf21c7976edffef453",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_phase3_live_diagnostics.py",
+      "category": "tests",
+      "bytes": 2311,
+      "sha256": "bc633e46760b299379b70e974c3f41d7d613cf599fe9d34553cdd253a7f04c7c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_phase6_integrity.py",
+      "category": "tests",
+      "bytes": 3643,
+      "sha256": "e18e27be7f32c98e20e460e43853278a4ec989269625c4f8c79e73ece479be17",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_phase6b_focused_abbreviations.py",
+      "category": "tests",
+      "bytes": 5597,
+      "sha256": "be670f8e66f902b82521793a650354ff6f7ac61a7f6c7c5830705239be70a85f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_phase6c_trace.py",
+      "category": "tests",
+      "bytes": 4557,
+      "sha256": "9f2ebdd37f13c9d0e3e09596c73849199396068fa0c643d948220386b0b6d49d",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_phase6d_literal_initialism.py",
+      "category": "tests",
+      "bytes": 4523,
+      "sha256": "a0d10ca1540b6b037c05aaf9f5379c0027b4fbd40628e05636e287ccd9b25270",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_phase6e_reviewer_approved_aliases.py",
+      "category": "tests",
+      "bytes": 6187,
+      "sha256": "25e7c7ae9b5cd8a542390e39d2c3d61287816daffab163c7d37e9d348287b16e",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 22,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_phase7a_typed_requirements.py",
+      "category": "tests",
+      "bytes": 7284,
+      "sha256": "1aa447f6be6968f5ef516310310eb1c5f9f7618a3fe93812af60fc45a36bd10f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_phase7b_experience_verification.py",
+      "category": "tests",
+      "bytes": 9030,
+      "sha256": "b1473363aab5dd033740b928a7928b8f925de10f05d3e5f44366ded47b33c723",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 23,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_phase7c_qualification_verification.py",
+      "category": "tests",
+      "bytes": 9404,
+      "sha256": "2adc5e3d21422c439367315f8a491e5979cbf84d2fef113564a99fc3c3b869f3",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_phase7d_compound_and_eligibility.py",
+      "category": "tests",
+      "bytes": 11521,
+      "sha256": "b506bae9cd58c1dc93716c3633ea74e9b2a73bb3dd3b029554dc269305761d71",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 25,
+      "imports": 11
+    },
+    {
+      "path": "tests/test_phase7e_industrial.py",
+      "category": "tests",
+      "bytes": 6482,
+      "sha256": "f97717ea53fbf097f5f81b40c61b713e8ed88f830cdb0b0e265aa928c1c83df4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 12,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_phase7f2_forensic_scope.py",
+      "category": "tests",
+      "bytes": 4757,
+      "sha256": "f47562f860881b974df77c1b5cf109d9c8c9d2fd8b6f2c28715b37bc32a32a7a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_phase7f_independent_adversarial.py",
+      "category": "tests",
+      "bytes": 6998,
+      "sha256": "2f1bb35333c0b4adbf8b3d270e46a5a85c9e8fb2f42c703b1ed5f19b729c425a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_phase7f_live_safety.py",
+      "category": "tests",
+      "bytes": 4280,
+      "sha256": "ca15c59f8e2fb52a025afc209fa927f5b8b61e6b108d38c9e08ca98913b97d22",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_phase7g_adaptive_batching.py",
+      "category": "tests",
+      "bytes": 11027,
+      "sha256": "fab4c4d73cc4095a0476a7f5502f6a568dce911fe061e821f66698732a2414ae",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_phase7g_demo_repair.py",
+      "category": "tests",
+      "bytes": 6305,
+      "sha256": "ab6eb15b16cc8e77ac4bc74567c2e4073b6cecdf4635558a49a2e5b484a46109",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_phase7g_dynamic_decomposition.py",
+      "category": "tests",
+      "bytes": 8371,
+      "sha256": "683d5076c664358c1112f15c7139634b69298e8d0251c338803bc55f31d643e8",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_phase7g_functional_secondlook_repair.py",
+      "category": "tests",
+      "bytes": 9928,
+      "sha256": "cdaafe9359566823d33cac1c950697ac13ceb5791201d9a35944ec2bddf2385f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_phase7g_installed_latest_config.py",
+      "category": "tests",
+      "bytes": 1226,
+      "sha256": "a218461a74fca37f8ff28c2409d2d96d2d4a91f2f99b719b394cd9db2cda7ff3",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_phase7g_live_parser_retrieval_regression.py",
+      "category": "tests",
+      "bytes": 11093,
+      "sha256": "07f54303e72ce9c8ea12561e4d29c2d7b5e9952df5d1b237a837bfa421f23b78",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 17
+    },
+    {
+      "path": "tests/test_phase7g_nonpositive_gap_audit.py",
+      "category": "tests",
+      "bytes": 4598,
+      "sha256": "edda77a8b549e62b8135ac03e399dcad29e978fee8a00ebd68f56120bcf29039",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_phase7g_openrouter_provider.py",
+      "category": "tests",
+      "bytes": 6574,
+      "sha256": "78adfdadffd1cfc824628e0819311345ee334d6aa88ddc77c0610a28a00420da",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 23,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_phase7g_relationship_audit_cli.py",
+      "category": "tests",
+      "bytes": 1640,
+      "sha256": "83bdf0fc00ea02137eb9e9b43fe5136a9ce3f9a84d6c10c1cc60042db76d2748",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 2
+    },
+    {
+      "path": "tests/test_phase7g_relationship_consistency.py",
+      "category": "tests",
+      "bytes": 2941,
+      "sha256": "ed64ae9b3285e1a65ccb485c1e7cdf074ee4480b7328176b804b00dc9723bd65",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 11,
+      "imports": 1
+    },
+    {
+      "path": "tests/test_phase7g_shadow_core.py",
+      "category": "tests",
+      "bytes": 7541,
+      "sha256": "82717c6cc2663c13b37d010ea4220a1554bd6bc9bb4876d9e7c1321174e14dd2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 24,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_phase7g_shadow_integration.py",
+      "category": "tests",
+      "bytes": 4609,
+      "sha256": "194c646a627a619b505a74e4416bfb5588e6176c47e5d40592c44dcfb02f6592",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_phase7g_transferability_shadow.py",
+      "category": "tests",
+      "bytes": 11106,
+      "sha256": "7486ad1fc31cdf697a99cabecebcb385e22674ee93eb813ac64e8aeb30b17ffa",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 24,
+      "imports": 10
+    },
+    {
+      "path": "tests/test_phase7g_v43_duration_and_cloud_reliability.py",
+      "category": "tests",
+      "bytes": 9105,
+      "sha256": "7bbd4e060957be632c72ef4c30eb0c9a68e9f1f45898a2ab8ab2abc471481b22",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 20
+    },
+    {
+      "path": "tests/test_phase7g_v44_education_and_jd_coverage.py",
+      "category": "tests",
+      "bytes": 8317,
+      "sha256": "b30de7a2e26bb0c8c56ee1ae6850bb7d8922c46b001a4beb801f788091056c93",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 12,
+      "imports": 12
+    },
+    {
+      "path": "tests/test_phase7g_v45_provider_switch.py",
+      "category": "tests",
+      "bytes": 4552,
+      "sha256": "5f7a3af8d5b9d3e7ba1e45b20bcb3ee896a917c984c1af3cf6aef640a9b5fe8d",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 11,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_phase7g_v46_release_regressions.py",
+      "category": "tests",
+      "bytes": 13962,
+      "sha256": "09416b8d61d42711c71400aff85a702d818841bba75bd2d5fa634e8483e91132",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 27,
+      "imports": 23
+    },
+    {
+      "path": "tests/test_phase7g_v47_supervisor_clarity.py",
+      "category": "tests",
+      "bytes": 8275,
+      "sha256": "f7f08c6546f8ff5c0bd0e73be93088a6d2c2b2e35994681575b298ecd0d5c915",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 11,
+      "imports": 3
+    },
+    {
+      "path": "tests/test_phase7g_v4_evidence_and_ui.py",
+      "category": "tests",
+      "bytes": 8260,
+      "sha256": "e04e938668e992da2ec671a6c98898c7476fd40a7e98b1f2389b25f361326e59",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 17,
+      "imports": 10
+    },
+    {
+      "path": "tests/test_phase7g_v4_favorable_source_regressions.py",
+      "category": "tests",
+      "bytes": 9128,
+      "sha256": "53146173a12ba512ff10e14c081bd1e86c3bf87c1cfe80d9252d9647b5e8dfb1",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_phase7g_v4_single_cv_accuracy.py",
+      "category": "tests",
+      "bytes": 7481,
+      "sha256": "69a9f5fc2729cc3217a10a96b41241ab5cdba86e4f29e1bffdbca5da69b5d714",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 10
+    },
+    {
+      "path": "tests/test_phase7g_v4_unified_final_decisions.py",
+      "category": "tests",
+      "bytes": 10546,
+      "sha256": "e6dbff2e42c28697b48b9d347b9ac50669e96cf3e7fd705fb28db4da74a576c0",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 12,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_phase7g_verified_coverage.py",
+      "category": "tests",
+      "bytes": 6763,
+      "sha256": "b0644b1f023480f9e0c2e0e2bdf85996571c080ea638637a08a90b2467f7ab6b",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 20,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_pipeline_fallback.py",
+      "category": "tests",
+      "bytes": 679,
+      "sha256": "d1f6fbc876724326aab57c7a59cb752e4369157cde89e83abda14e25024651f2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 1,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_repeatability_probe.py",
+      "category": "tests",
+      "bytes": 3849,
+      "sha256": "1303b57b85488ee06c22178f2060fcb5a4bc396593c9dcafb40ed416bb01f09b",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_runtime_identity.py",
+      "category": "tests",
+      "bytes": 804,
+      "sha256": "6aa386b0f4641d50c324e1f027f321e043ce7f84b83083c3a7cd4f977ff1cc84",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 3
+    },
+    {
+      "path": "tests/test_scoring.py",
+      "category": "tests",
+      "bytes": 2849,
+      "sha256": "87aa33082e39df0d27f4667e908b432df68d7ee1e3ff7b059728b27bce30c4d4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 6,
+      "imports": 2
+    },
+    {
+      "path": "tests/test_second_look_unmatched.py",
+      "category": "tests",
+      "bytes": 6915,
+      "sha256": "35a1f0d3ca229d2a63bd04d8a52459bd2576fddb13cccc06c783e9d101043ced",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_segment_evidence_fix.py",
+      "category": "tests",
+      "bytes": 4010,
+      "sha256": "1c71f125e669a2ebee6baa5d8eb13cb7ebf9da130a1062050175d707476de595",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 3
+    },
+    {
+      "path": "tests/test_supervisor_exports_and_semantic_import.py",
+      "category": "tests",
+      "bytes": 3220,
+      "sha256": "53acbf91eda4784a1f5ae5b987162127b051c1d146510c9512d70fb580bdccf4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 2
+    },
+    {
+      "path": "tests/test_supervisor_final_leaderboard.py",
+      "category": "tests",
+      "bytes": 3703,
+      "sha256": "8a2de9be56c818a91a1616e140f9ff2e0588a78f21498bfb262fdb8138469968",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 6,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_supervisor_layout.py",
+      "category": "tests",
+      "bytes": 784,
+      "sha256": "a8171388b7ea57bc0e58212e3e58a184365ddb14cf90af65eea41287f56fb0ab",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 2
+    },
+    {
+      "path": "tests/test_supervisor_one_click_semantic.py",
+      "category": "tests",
+      "bytes": 5366,
+      "sha256": "cd5c59bc3350826b59732f5a810297bbf50d72f8f8243937a9ae373b297517e3",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_surgical_fixes.py",
+      "category": "tests",
+      "bytes": 20670,
+      "sha256": "f4943d9c07c58637cd2f9ba99a93595742e545fc7ba6e0126f3d95204fbc7f34",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 45,
+      "imports": 12
+    },
+    {
+      "path": "tests/test_text_utils.py",
+      "category": "tests",
+      "bytes": 1125,
+      "sha256": "5f9ac719c0671932ab8ce9858f5ea6f6d27fbd57771891b98b72b6e5b809e92a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 1
+    },
+    {
+      "path": "tests/test_trace_demo.py",
+      "category": "tests",
+      "bytes": 1020,
+      "sha256": "2cf4b03d6ad81931c0403f63d637551af88abe612e65d731c17382b1e1eeb493",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 3,
+      "imports": 2
+    },
+    {
+      "path": "tests/test_ui_support.py",
+      "category": "tests",
+      "bytes": 2437,
+      "sha256": "0302bcbe3963739e898af61011582b25631e52b336667e387d086883858b7e2a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 6,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_v483_live_calibration.py",
+      "category": "tests",
+      "bytes": 8035,
+      "sha256": "0f928e1cfd5fa6c8fd0c259c24f4045311765c16fb3dca308f46213a32519990",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_v484_domain_neutral_prompts.py",
+      "category": "tests",
+      "bytes": 3268,
+      "sha256": "053d144c08ae187ae218929c0976880c3da361402c0884a174160ac76951a571",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_v485_source_consistency.py",
+      "category": "tests",
+      "bytes": 6286,
+      "sha256": "f57712f624edc72ecb03723154b5a745bbb68136c088c9c6315a019d2aa5dd73",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_v486_domain_neutral_validation_repair.py",
+      "category": "tests",
+      "bytes": 6113,
+      "sha256": "ddcbbe6ddc3702ffc1e00e6af615f1194a9d34e89c827a16477d5e17dc937bbd",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 11,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v487_system_contracts.py",
+      "category": "tests",
+      "bytes": 14326,
+      "sha256": "70c5a1eb316814969deb9807521097bf08024ce1d69efe8f5f067f26e6bee2e4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 23,
+      "imports": 10
+    },
+    {
+      "path": "tests/test_v488_required_id_response_contract.py",
+      "category": "tests",
+      "bytes": 6245,
+      "sha256": "35a8c873b13713da717514ddb50a661932745321c558ec5c8520f9aca603b8ba",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v489_negative_scope_source_integrity.py",
+      "category": "tests",
+      "bytes": 6218,
+      "sha256": "3cd369a82767ece0be8ee2ff322a2944c2554c1f65515b8ba6981fe1ea68ed0f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 12,
+      "imports": 10
+    },
+    {
+      "path": "tests/test_v48_unified.py",
+      "category": "tests",
+      "bytes": 14573,
+      "sha256": "52463b0d32a11d389257b8de997384505d123689f5f4cfc512badf32528d8107",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 28,
+      "imports": 15
+    },
+    {
+      "path": "tests/test_v490_tentative_evidence_contract.py",
+      "category": "tests",
+      "bytes": 5649,
+      "sha256": "0e8943e20709301768ad502319fbd66b11b09f2ded54ef7ea20377162023011b",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_v4910_singular_degree_family.py",
+      "category": "tests",
+      "bytes": 9249,
+      "sha256": "3da706d14f6d34246ee117e9fb863ac6bee28172a256c66658462dd05cc4a043",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 11
+    },
+    {
+      "path": "tests/test_v4911_resume_rate_limit.py",
+      "category": "tests",
+      "bytes": 15028,
+      "sha256": "790871b978ce8023ae6380ca30b242890a4ad40108461a03d7a5531e7b7ec109",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 27,
+      "imports": 13
+    },
+    {
+      "path": "tests/test_v4912_auto_resume.py",
+      "category": "tests",
+      "bytes": 9431,
+      "sha256": "03d8425193e23b6b8e9eab6d82e4fd7ddec2198b12924ba381a98b7bb1b923a8",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_v4913_higher_degree_semantic_review.py",
+      "category": "tests",
+      "bytes": 3639,
+      "sha256": "86e17bea77682925b5444b275005901dc1c87257b9e07f3768d18e639b454d44",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 6,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_v4914_batch_resume_and_skill_recall.py",
+      "category": "tests",
+      "bytes": 3504,
+      "sha256": "b576969949b288d4a71551898ba9b8945ebbc0c4605b3b2ebe5f98f88f7cf319",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_v4915_openrouter_unbounded_recovery.py",
+      "category": "tests",
+      "bytes": 3369,
+      "sha256": "bd0b26dc209990e3d643ab270ab770a2787a2bbb2bb2f45bea80783650e928fe",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_v4915_skill_scope_consistency.py",
+      "category": "tests",
+      "bytes": 7717,
+      "sha256": "017c7d6698e65eb18380a737136355b8c9d1e8a0cbf811870393149d6a22c834",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v4916_source_claim_recall.py",
+      "category": "tests",
+      "bytes": 6598,
+      "sha256": "a6a8f0fadc4a62be04708f1e33ef432053403c7a184b0239f365faa55d1bcb52",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 11,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v4917_frozen_skill_scope.py",
+      "category": "tests",
+      "bytes": 7621,
+      "sha256": "7019363e0536d5b32653f9c857c1e9c98a602990956aac0a76e4f37c861a8e7f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v4918_skill_claim_source_contract.py",
+      "category": "tests",
+      "bytes": 8649,
+      "sha256": "e1152b063f9ec81b9369a4240bb6f93d83ce19d42afa64544bee95baf6de50ab",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 11
+    },
+    {
+      "path": "tests/test_v4919_negative_review_checkpoints.py",
+      "category": "tests",
+      "bytes": 3328,
+      "sha256": "1562a987e05b2a68a053c71f44b917a252342da2dd3d0ab6584c21e81d5481d5",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 3
+    },
+    {
+      "path": "tests/test_v491_live_failure_roots.py",
+      "category": "tests",
+      "bytes": 8647,
+      "sha256": "09cd751c38f83bd2f653949b405724d6ced57799eccc49b0b02f58b14be819c1",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 14
+    },
+    {
+      "path": "tests/test_v4920_jd_review_gate.py",
+      "category": "tests",
+      "bytes": 6497,
+      "sha256": "39d7ad2839824bddacf6de8f69d6884e8816d0bbe2e6af23a37f8ad8d142864e",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 14
+    },
+    {
+      "path": "tests/test_v4921_cross_criterion_role_evidence.py",
+      "category": "tests",
+      "bytes": 9455,
+      "sha256": "c037febfc5924377a0df6d99170b04ac6ab2c7f2616bcf4825a4b7e98e1ccd91",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 11
+    },
+    {
+      "path": "tests/test_v4922_weighted_scoring_and_bundle.py",
+      "category": "tests",
+      "bytes": 17492,
+      "sha256": "4d4de92b8d4ed7ed02298917e108694f780ee2360e6e854485ba8641e834bc2e",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 25,
+      "imports": 18
+    },
+    {
+      "path": "tests/test_v4929_background_recovery.py",
+      "category": "tests",
+      "bytes": 5112,
+      "sha256": "601ac960e2fe713af96c043ac3117d52abe08c0ce62422cdf2383fd8f28989f9",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v492_consolidated_contract.py",
+      "category": "tests",
+      "bytes": 11596,
+      "sha256": "b484cf37400c75c34c6c319c156281f9f9751f0ca5c6831f9865f69643bffc74",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 21,
+      "imports": 15
+    },
+    {
+      "path": "tests/test_v4930_reliability_repairs.py",
+      "category": "tests",
+      "bytes": 14473,
+      "sha256": "39ab1cbd1394066d4669aae4f36d5bd6a2160ab118f2c42746a7783f6e0cb9c2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 25,
+      "imports": 20
+    },
+    {
+      "path": "tests/test_v4931_dynamic_allocation_and_reasoning.py",
+      "category": "tests",
+      "bytes": 19750,
+      "sha256": "775e651d31457b44d425fe23ead6f9d6ec2e1ea70c67d043a372865d9ba94b66",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 24,
+      "imports": 19
+    },
+    {
+      "path": "tests/test_v4933_partial_batch_survival.py",
+      "category": "tests",
+      "bytes": 9537,
+      "sha256": "c4869be3dd96b97fb77814078975dc8d39ccb4941b5bb9af33b1d22bab5e99cb",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 15
+    },
+    {
+      "path": "tests/test_v4934_r008_and_supervisor_presentation.py",
+      "category": "tests",
+      "bytes": 4381,
+      "sha256": "4f15cee788e6c5bcca67d33465735e07850cd3d327e96f0f141aca7faba8d0ab",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v4935_focused_verification_reliability.py",
+      "category": "tests",
+      "bytes": 8443,
+      "sha256": "4b84e839334c0b3675ebb33a114419a2e76892860d7326e3d433a1868a2a6941",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 18,
+      "imports": 10
+    },
+    {
+      "path": "tests/test_v4936_general_experience_and_skill_scope.py",
+      "category": "tests",
+      "bytes": 10940,
+      "sha256": "3af027490ea9ef89cdec80f460b4e5a428e25d9db68f71b569473c7d8111860e",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v4937_cited_evidence_without_model_requotation.py",
+      "category": "tests",
+      "bytes": 7766,
+      "sha256": "a0fc2f427fe0be55227d1719d7628c2d87eaee33e83a3b320e13f952fb666800",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v4938_experience_scope_separator.py",
+      "category": "tests",
+      "bytes": 4074,
+      "sha256": "e5a4115d7c6bc2aeb2759dd829ab7706a58c54ed8e107298f5bf96f53cc8eb4c",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_v4939_individual_decision_why.py",
+      "category": "tests",
+      "bytes": 4330,
+      "sha256": "9a4f54a23c439ad6c25b8055002e3787d2ba898815becb9572460e043858e2ac",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 13
+    },
+    {
+      "path": "tests/test_v493_broad_semantic_contract.py",
+      "category": "tests",
+      "bytes": 10541,
+      "sha256": "37f94dc372da65ccb7b690ccd08c6842c73ec4f47ffef651d968d409c02402bb",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 19,
+      "imports": 14
+    },
+    {
+      "path": "tests/test_v4940_visual_refresh.py",
+      "category": "tests",
+      "bytes": 2758,
+      "sha256": "3e796e9537b84f2ff5b97d157d821e9f7b8782d5aa78611db719fc67b5a4ec54",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_v4941_supervisor_readability.py",
+      "category": "tests",
+      "bytes": 8001,
+      "sha256": "d3da058aa292c286deab37dba9b55c0ebbd8cfb1a20cad7e2055e5a0db03aa06",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 20
+    },
+    {
+      "path": "tests/test_v4943_mixed_batch_recovery.py",
+      "category": "tests",
+      "bytes": 6358,
+      "sha256": "284c879afe89cce26abd9f608fe79c84016064c024f8c9c372921be2bf4c5068",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v4944_portable_recovery_and_e2e.py",
+      "category": "tests",
+      "bytes": 11777,
+      "sha256": "e75fecc8176202ac07c9cf58dc904ea1f5cdb13811732c935e5793335667c1fb",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 12,
+      "imports": 17
+    },
+    {
+      "path": "tests/test_v4945_security_and_concurrency.py",
+      "category": "tests",
+      "bytes": 7554,
+      "sha256": "ca7d2d23949409030aeb2b388276f7ed101c4095b30a156fd57ad8086115b24b",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 17
+    },
+    {
+      "path": "tests/test_v4946_bounded_independent_recovery.py",
+      "category": "tests",
+      "bytes": 7845,
+      "sha256": "5f2dd812d70364d72109b1488e17b3c4fa1650e7589a087c22a607b519ffbf23",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v4947_cross_domain_duty_and_compound_recovery.py",
+      "category": "tests",
+      "bytes": 18018,
+      "sha256": "7de3c6b2cbb65761feb88b37d54fde83b2e9a04d7a1f58e677c96e483228995a",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v4949_explicit_degree_and_unscored_transfer.py",
+      "category": "tests",
+      "bytes": 5890,
+      "sha256": "e94f5efeeda02c1643d12f692fce2726b9ad964a5619a425a6831d39a4ed94d4",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_v4949_reliance_safe_theme.py",
+      "category": "tests",
+      "bytes": 1946,
+      "sha256": "8522421e087259d3a19940b48e907d09f4152fe876a4d16e11729ea21c8fa783",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_v494_transferable_root_contract.py",
+      "category": "tests",
+      "bytes": 19177,
+      "sha256": "06639e6dd993b864b5993a8484a70705949d71b5039eebc34c16449108c1ad3f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 25,
+      "imports": 14
+    },
+    {
+      "path": "tests/test_v4950_generalization_and_review_recall.py",
+      "category": "tests",
+      "bytes": 7086,
+      "sha256": "f9f7a142f1bf99e316c6ae8e627c70b67aa981d5a75c961ff9c11b881a2fda8b",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_v4951_computing_roles.py",
+      "category": "tests",
+      "bytes": 4392,
+      "sha256": "ca3dcfca507b700c5136be9e2ba7a6fd34d96e58f823d30336ef2e5855988adf",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_v4951_contrast_and_prompt_budget.py",
+      "category": "tests",
+      "bytes": 3627,
+      "sha256": "c1e563d23365d2b71b8ab463bc161ae1dda9ab181a8a69117a43408862d91482",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 8,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_v4952_dated_roles_and_sections.py",
+      "category": "tests",
+      "bytes": 5240,
+      "sha256": "292d76531baabbaa2ca29e25de6808201ab5212af843f87f0d4f25f23c12f0a7",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_v4953_complete_jd_and_secondlook.py",
+      "category": "tests",
+      "bytes": 6381,
+      "sha256": "719c3feff9f8c6aacb746282bb061cdff24e20e4e3ee7681be67a49b739a4874",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v4954_unbulleted_qa_requirements.py",
+      "category": "tests",
+      "bytes": 5828,
+      "sha256": "31eebc822b90e5b6494e651a7f79224ee048e8202a488626345009fcdc5aa3f6",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 4
+    },
+    {
+      "path": "tests/test_v4955_uncertainty_and_editable_local.py",
+      "category": "tests",
+      "bytes": 6104,
+      "sha256": "c139964a2960f7135113c7a49148f877dde606b8a8cc0399a53d4ff27d8d0021",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 6
+    },
+    {
+      "path": "tests/test_v4956_phase1_to4_reliability.py",
+      "category": "tests",
+      "bytes": 7018,
+      "sha256": "cbf885a587316ebbbe976cfc5d24e9dae7e4fe4c9863095d95059a1b189f6822",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 9,
+      "imports": 8
+    },
+    {
+      "path": "tests/test_v4957_retrieval_cache_and_transparency.py",
+      "category": "tests",
+      "bytes": 12765,
+      "sha256": "f4570c5772303684a17c1f128953a0c39708396108bcce24c67d55647894491e",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 20
+    },
+    {
+      "path": "tests/test_v4958_decision_integrity.py",
+      "category": "tests",
+      "bytes": 9475,
+      "sha256": "5a7eeafc9fdc622656958e2f08a49933f5282002b4fae7ceeeb8ff9d60211a32",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 15,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v4959_evidence_access_and_provider_budget.py",
+      "category": "tests",
+      "bytes": 6165,
+      "sha256": "ed51bb8acc08b82c443aa1a84e0d8d5667119d7921326a560adf5009618483c1",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 12
+    },
+    {
+      "path": "tests/test_v4960_named_alternatives_and_recovery.py",
+      "category": "tests",
+      "bytes": 14886,
+      "sha256": "27c397a85cbb628ef9d094864084e12547029984ce630e6c130448dc55bb484f",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 26,
+      "imports": 17
+    },
+    {
+      "path": "tests/test_v4961_experience_education_hierarchy.py",
+      "category": "tests",
+      "bytes": 8835,
+      "sha256": "cff58b62cc4d4509c5e941f92cfd50902818548260f1db02645fa37834596ab7",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 13,
+      "imports": 7
+    },
+    {
+      "path": "tests/test_v4962_forensic_release.py",
+      "category": "tests",
+      "bytes": 12167,
+      "sha256": "d91f9b448a8e9e9de857f141099347a96392479b4da6f84356f5d93726b2a5f6",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 23,
+      "imports": 31
+    },
+    {
+      "path": "tests/test_v4963_execution_repairs.py",
+      "category": "tests",
+      "bytes": 8415,
+      "sha256": "31cefc2d0c7ba07ea0993ee132dd3aa78c9a7ba2f4399067a34a9cd6289d44b9",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 16,
+      "imports": 20
+    },
+    {
+      "path": "tests/test_v4964_coverage_semantics_diagnostics.py",
+      "category": "tests",
+      "bytes": 12235,
+      "sha256": "85082e8ed3cf0b8b475638f6f760d6c98912221ab05049a0c693feef4f3bf0bd",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 20,
+      "imports": 26
+    },
+    {
+      "path": "tests/test_v4965_compound_semantic_resolution.py",
+      "category": "tests",
+      "bytes": 6799,
+      "sha256": "5db634a650ea4e25b33d96a0042595f1a7caff349dc1e553df14ed9de7538f63",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 7,
+      "imports": 15
+    },
+    {
+      "path": "tests/test_v4965_independent_compound_review.py",
+      "category": "tests",
+      "bytes": 14119,
+      "sha256": "f38a57414d27d694bbe17c731eeb5f9f61d49f646e3edc55a05a13c8bb7c33da",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 18,
+      "imports": 31
+    },
+    {
+      "path": "tests/test_v4965_supervisor_end_to_end.py",
+      "category": "tests",
+      "bytes": 12359,
+      "sha256": "2460b827ceba5efc5fe1d52fe7b86a3a754cf281422a6853ea82b9cb477cc6cb",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 20
+    },
+    {
+      "path": "tests/test_v4966_current_defects.py",
+      "category": "tests",
+      "bytes": 13082,
+      "sha256": "9896aefc3ae1187acf816f90552e86f0fe15122e59f4d732e0ab2653d9a87990",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 21,
+      "imports": 26
+    },
+    {
+      "path": "tests/test_v4966_operation_ledger.py",
+      "category": "tests",
+      "bytes": 2381,
+      "sha256": "39af5bb8ab852b614b202e1857cc96459d27d2671bcbe8b4e17cb7d7dd9d17b5",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 4,
+      "imports": 5
+    },
+    {
+      "path": "tests/test_v496_provider_failure_diagnostics.py",
+      "category": "tests",
+      "bytes": 4889,
+      "sha256": "616deff7be30c247dcecd645273889962e46cdf3c09c4301fc65785bac4d59f2",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 9
+    },
+    {
+      "path": "tests/test_v497_role_tenure_and_qualification_recall.py",
+      "category": "tests",
+      "bytes": 18082,
+      "sha256": "f52e3a0e14b72444101c36c015d71cde1e701ab487c351e17034fa1ae075d986",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 23,
+      "imports": 12
+    },
+    {
+      "path": "tests/test_v498_semantic_prompt_contracts.py",
+      "category": "tests",
+      "bytes": 9702,
+      "sha256": "f7e7f6a134b49e79d7e53ae3ed3a35d0b9158b95dd7a9a33b937458568962d9d",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 14,
+      "imports": 11
+    },
+    {
+      "path": "tests/test_v499_final_validator_alignment.py",
+      "category": "tests",
+      "bytes": 9696,
+      "sha256": "aea374ebda7ae1c71635bccbd0672adf0e58774d7e68a3ec9201d0082343a576",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 10,
+      "imports": 11
+    },
+    {
+      "path": "tools/__init__.py",
+      "category": "assets_or_other",
+      "bytes": 48,
+      "sha256": "6d84ac1e9249a8c7462cf48171152a483cafe2ca51bbcb1185bf6bf16e6cd9c6",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 0,
+      "imports": 0
+    },
+    {
+      "path": "tools/trace_demo.py",
+      "category": "assets_or_other",
+      "bytes": 9777,
+      "sha256": "6ec291617fce83dae875941992ff2e81dcab791ce0f5a902fbb3f87c91f24eef",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 6,
+      "imports": 11
+    },
+    {
+      "path": "verification/BENCHMARK_PROTOCOL.md",
+      "category": "verification_or_utilities",
+      "bytes": 1555,
+      "sha256": "372f7d091578fc4117bf2e44d45df8252e98d7f51175832be1f278dc56772871",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/INDEPENDENT_LABELING_TEMPLATE.csv",
+      "category": "verification_or_utilities",
+      "bytes": 224,
+      "sha256": "cfa3d042272b6ba66308ca55a77eced59df2aef589bbd0367e6ff372fde10956",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/V4966_PROMPT_CONTRACT.md",
+      "category": "verification_or_utilities",
+      "bytes": 7433,
+      "sha256": "a90d940b420d3da8e591d69a8d1a0683441dbfbf8cd3c7afab95afcbb57a18b8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/V4966_PROMPT_DIFF.json",
+      "category": "verification_or_utilities",
+      "bytes": 8134,
+      "sha256": "7569331e50f29f0fc1ccedfa0d87d4db9c0bb29dd3443a56f461002ed15345b8",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/V4966_PROMPT_INVENTORY.json",
+      "category": "verification_or_utilities",
+      "bytes": 5033,
+      "sha256": "43331b2bbb30b9e91b45197ce683e381f6212bb362e8b2aa19582a8adbf15797",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/VERIFY_ON_WINDOWS.md",
+      "category": "verification_or_utilities",
+      "bytes": 1732,
+      "sha256": "262ec66048dc247f0da7d28ee9fd7a29cea7b4b8b25861e31a9811d32a2240bc",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/differential_probe_v4966.py",
+      "category": "verification_or_utilities",
+      "bytes": 7941,
+      "sha256": "fab52130ebde1c0f7c2b0165cab1e2738a8cfcf8af60d9872e022fff37f78433",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 5,
+      "imports": 17
+    },
+    {
+      "path": "verification/generate_prompt_diff.py",
+      "category": "verification_or_utilities",
+      "bytes": 2722,
+      "sha256": "0cc75bb1f38ccd763e72c750d262cb22816f6f6bdd9ce6ddb4cb391ee07e2474",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 3
+    },
+    {
+      "path": "verification/generate_source_inventory.py",
+      "category": "verification_or_utilities",
+      "bytes": 2703,
+      "sha256": "6356702ac168af5e63e1c71dc0105233d31f39d3585d103231d365b2ca394800",
+      "audit_depth": "syntax_and_module_structure; individual behavior not exhaustively executed",
+      "syntax": "passed",
+      "function_defs": 2,
+      "imports": 4
+    },
+    {
+      "path": "verification/logs/v4966_focused_summary.txt",
+      "category": "verification_or_utilities",
+      "bytes": 59,
+      "sha256": "98b7c650d870bb62c47c694c6f7f15dedfd0b6e3f29089ab9b2159efa73e918a",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/logs/v4966_full_suite_summary.txt",
+      "category": "verification_or_utilities",
+      "bytes": 4574,
+      "sha256": "844c111da8d21cd6cb3475c26d5ed6de26522cb01f26d6655a3759b424e35fa3",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/v4966_differential_results.json",
+      "category": "verification_or_utilities",
+      "bytes": 4573,
+      "sha256": "8328fba112f1f1227ddb3fe6f3f2e2a7e1dc4b221f4024d6a1505c11b5582bec",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/v4966_test_evidence.json",
+      "category": "verification_or_utilities",
+      "bytes": 5668,
+      "sha256": "92582f0e55ae448ea0c5e17ef5318d45614562c4ee4fa545abb809394a40485c",
+      "audit_depth": "inventory_only"
+    },
+    {
+      "path": "verification/v4966_traceability.json",
+      "category": "verification_or_utilities",
+      "bytes": 68426,
+      "sha256": "f5e68dd79da2c86e16d36f1e2f17f1af31659054f9d1ce26a8c7933187e4b9be",
+      "audit_depth": "inventory_only"
+    }
+  ]
+}

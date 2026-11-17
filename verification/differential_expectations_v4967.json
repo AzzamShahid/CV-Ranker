@@ -1,0 +1,50 @@
+{
+  "v51_to_v52": {
+    "baseline": {
+      "RECENT-001": {"consistent": false, "main_floor": 90.0, "reported_bounds_floor": 50.0},
+      "RECENT-002": {"crash": "KeyError"},
+      "RECENT-003": {"result": "TypeError"},
+      "RECENT-004": {"-0.001": "ACCEPTED", "100.001": "ACCEPTED"},
+      "RECENT-005": {"initial_status": "matched", "checked_status": "matched", "verified": true, "requires_condition_review": false},
+      "RECENT-006": {"verdict": "Unverified", "resolved": 0},
+      "RECENT-007": {"proof_component_count": 0},
+      "RECENT-008": {"fatal": "FileNotFoundError"},
+      "NEXT-001": {"legacy_without_operation_ledger": true}
+    },
+    "candidate": {
+      "RECENT-001": {"consistent": true, "main_floor": 90.0, "reported_bounds_floor": 90.0},
+      "RECENT-002": {"crash": false, "original_priority": "unknown", "score": 90.0},
+      "RECENT-003": {"result": "EmbeddingError"},
+      "RECENT-004": {"-0.001": "ValueError", "100.001": "ValueError"},
+      "RECENT-005": {"initial_status": "matched", "checked_status": "uncertain", "verified": false, "requires_condition_review": true},
+      "RECENT-006": {"verdict": "Found", "resolved": 1},
+      "RECENT-007": {"proof_component_count": 4},
+      "RECENT-008": {"fatal": false, "candidate_count": 2, "missing_is_failed": true},
+      "NEXT-001": {"A_marked_attempted": true, "B_marked_attempted": true, "B_state": null, "calls": 0, "outgoing": [], "reported_attempts": 0}
+    }
+  },
+  "v52_to_v53": {
+    "baseline": {
+      "RECENT-001": {"consistent": true, "main_floor": 90.0, "reported_bounds_floor": 90.0},
+      "RECENT-002": {"crash": false, "original_priority": "unknown", "score": 90.0},
+      "RECENT-003": {"result": "EmbeddingError"},
+      "RECENT-004": {"-0.001": "ValueError", "100.001": "ValueError"},
+      "RECENT-005": {"initial_status": "matched", "checked_status": "uncertain", "verified": false, "requires_condition_review": true},
+      "RECENT-006": {"verdict": "Found", "resolved": 1},
+      "RECENT-007": {"proof_component_count": 4},
+      "RECENT-008": {"fatal": false, "candidate_count": 2, "missing_is_failed": true},
+      "NEXT-001": {"A_marked_attempted": true, "B_marked_attempted": true, "B_state": null, "calls": 0, "outgoing": [], "reported_attempts": 0}
+    },
+    "candidate": {
+      "RECENT-001": {"consistent": true, "main_floor": 90.0, "reported_bounds_floor": 90.0},
+      "RECENT-002": {"crash": false, "original_priority": "unknown", "score": 90.0},
+      "RECENT-003": {"result": "EmbeddingError"},
+      "RECENT-004": {"-0.001": "ValueError", "100.001": "ValueError"},
+      "RECENT-005": {"initial_status": "matched", "checked_status": "uncertain", "verified": false, "requires_condition_review": true},
+      "RECENT-006": {"verdict": "Found", "resolved": 1},
+      "RECENT-007": {"proof_component_count": 4},
+      "RECENT-008": {"fatal": false, "candidate_count": 2, "missing_is_failed": true},
+      "NEXT-001": {"A_marked_attempted": false, "B_marked_attempted": true, "B_state": "invalid_response", "calls": 1, "outgoing": ["R002"], "reported_attempts": 1}
+    }
+  }
+}

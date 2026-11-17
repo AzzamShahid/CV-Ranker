@@ -45,7 +45,8 @@ def test_nlp_and_gcp_falsenegatives_are_reconsidered_together_without_python_ali
     assert [i.status for i in items] == ['matched', 'matched']
     assert [i.matched_term for i in items] == ['NLP', 'GCP']
     assert len(llm.calls) == 2 and mode == 'llm_assessed'
-    assert 'not automatic matches' in llm.calls[1][1]
+    from cv_ranker import prompt_fragments as pf
+    assert llm.calls[1][1].startswith(pf.LEGACY_UNMATCHED_SECOND_LOOK)
     assert any('Second look requested for 2' in w for w in warnings)
 
 

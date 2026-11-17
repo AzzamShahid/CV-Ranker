@@ -160,10 +160,15 @@ def test_single_bounded_final_verification_never_invents_credit(tmp_path, final_
     with UnifiedEvidenceEngine(provider.settings, provider, encoder=FlatEncoder(),
                                cache_path=tmp_path / "final.db") as engine:
         rows, metrics = engine.assess([req], [source], text, candidate_id="generic-worker")
-    assert provider.calls == 3
+    # The candidate has no new qualifying original source. Do not spend one
+    # identical evidence-only correction call before the bounded independent
+    # verifier; preserve the exact original-citation safety check.
+    assert provider.calls == 2
     assert metrics.final_verification_calls == 1
-    assert metrics.correction_calls == 1
-    assert rows[0].unified_status == ("Not Found" if final_valid else "Unverified")
+    assert metrics.correction_calls == 0
+    assert rows[0].unified_status == ("Not Found" if final_valid else None)
+    if not final_valid:
+        assert rows[0].current_decision.verdict is None
     assert rows[0].assessment_state == ("verified" if final_valid else "unverified")
     assert metrics.unresolved_criteria == (0 if final_valid else 1)
     result = score_candidate(candidate_name="Generic worker", requirements=[req],

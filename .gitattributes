@@ -1,0 +1,6 @@
+# Preserve byte-exact official brand vectors and generated verification evidence.
+*.svg binary
+docs/migration/PARITY_REGISTER.csv binary
+verification/web_migration/*.log binary
+docs/migration/reference-theme.html binary
+docs/migration/PARITY_REGISTER_BASELINE.csv binary

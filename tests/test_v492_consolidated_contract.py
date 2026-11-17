@@ -39,7 +39,7 @@ class IndependentProvider:
 
     def invoke_structured(self, *, system_prompt, user_prompt, schema):
         self.calls += 1
-        assert "second, independent" in system_prompt
+        assert "INDEPENDENT REVIEW:" in system_prompt
         assert "return an assessments array" not in system_prompt
         data = json.loads(user_prompt)
         evidence = data["sources"][0]

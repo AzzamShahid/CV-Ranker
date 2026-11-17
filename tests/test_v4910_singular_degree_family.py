@@ -147,9 +147,9 @@ def test_broad_degree_families_are_explicitly_disambiguated_in_model_input():
             {requirement.requirement_id: [segment.segment_id]}, 5))
         assert data["requirements"][0]["education_field_scope"] == expected
         assert data["requirements"][0]["jd_evidence"] == requirement.jd_evidence
-    assert "generic singular academic family" in JD_SYSTEM_PROMPT
-    assert "Indefinite singular" in UNIFIED_PROMPT
-    assert "indefinite singular family" in FINAL_ADJUDICATION_PROMPT
+    assert "approved category" in JD_SYSTEM_PROMPT
+    assert "approved field-family scope" in UNIFIED_PROMPT
+    assert "approved field-family scope" in FINAL_ADJUDICATION_PROMPT
 
 
 class ConstantEncoder:

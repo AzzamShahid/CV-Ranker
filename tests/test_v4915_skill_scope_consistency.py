@@ -116,9 +116,9 @@ class TwoPassProvider:
         self.calls += 1
         payload = json.loads(user_prompt)
         source = payload["sources"][0]
-        if "second, independent" in system_prompt:
+        if "INDEPENDENT REVIEW:" in system_prompt:
             self.independent_source = source
-            assert "frozen JD" in payload["task"]
+            assert "frozen requirement" in payload["task"]
             return schema.model_validate({"R001": {
                 "decision": self.final_decision,
                 "relation": "entailed" if self.final_decision == "found" else "overlap",

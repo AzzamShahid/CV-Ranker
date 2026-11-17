@@ -90,7 +90,7 @@ class ReviewProvider:
     def invoke_structured(self, *, system_prompt, user_prompt, schema):
         self.calls += 1
         payload = json.loads(user_prompt)
-        if "second, independent" in system_prompt:
+        if "INDEPENDENT REVIEW:" in system_prompt:
             source = payload["sources"][0]
             self.review_source = source
             return schema.model_validate({"R001": {

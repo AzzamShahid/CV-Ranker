@@ -32,7 +32,29 @@ def extract_text(path: str | Path) -> str:
             raise DocumentError("PyMuPDF is required for PDF files.") from exc
         try:
             with fitz.open(path) as doc:
-                text = "\n".join(page.get_text("text") for page in doc)
+                extracted_pages: list[str] = []
+                unreadable_pages: list[int] = []
+                for number, page in enumerate(doc, 1):
+                    page_text = page.get_text("text")
+                    extracted_pages.append(page_text)
+                    if len(page_text.strip()) >= 20:
+                        continue
+                    # A text-rich page must not hide an image-only CV page.
+                    # Large raster images imply *possible* unseen source data;
+                    # small logos on otherwise blank pages are not sufficient.
+                    extent = max(1.0, float(page.rect.get_area()))
+                    if any((fitz.Rect(item["bbox"]).get_area() / extent) >= 0.15
+                           for item in page.get_image_info()):
+                        unreadable_pages.append(number)
+                if unreadable_pages:
+                    pages = ", ".join(str(p) for p in unreadable_pages)
+                    raise DocumentError(
+                        f"PDF {path.name} has potentially unreadable image-only "
+                        f"page(s): {pages}. Review or transcribe those pages "
+                        "before assessing qualifications; partial text is unsafe.")
+                text = "\n".join(extracted_pages)
+        except DocumentError:
+            raise
         except Exception as exc:
             raise DocumentError(f"Could not read PDF {path.name}: {exc}") from exc
 
@@ -47,6 +69,34 @@ def extract_text(path: str | Path) -> str:
 
             doc = Document(path)
             parts: list[str] = []
+            # Headers/footers frequently contain the only degree/qualification
+            # or employer data in legitimate CVs. Deduplicate linked headers
+            # shared by multiple sections, but preserve original exact words.
+            def iter_container(container):
+                for child in container._element.iterchildren():
+                    tag = child.tag.rsplit("}", 1)[-1]
+                    if tag == "p":
+                        value = Paragraph(child, container).text
+                        if value.strip():
+                            yield value
+                    elif tag == "tbl":
+                        table = Table(child, container)
+                        for row in table.rows:
+                            value = " | ".join(cell.text for cell in row.cells)
+                            if value.strip():
+                                yield value
+            headers: list[str] = []
+            footers: list[str] = []
+            seen_parts: set[str] = set()
+            for section in doc.sections:
+                for name, destination in (("header", headers), ("footer", footers)):
+                    container = getattr(section, name)
+                    identity = str(container.part.partname)
+                    if identity in seen_parts:
+                        continue
+                    seen_parts.add(identity)
+                    destination.extend(iter_container(container))
+            parts.extend(headers)
             # Preserve the actual DOCX body order. ``doc.paragraphs`` followed by
             # ``doc.tables`` destroys interleaving and can move Skills/Experience
             # evidence into the wrong context.
@@ -62,6 +112,7 @@ def extract_text(path: str | Path) -> str:
                         value = " | ".join(cell.text for cell in row.cells)
                         if value.strip():
                             parts.append(value)
+            parts.extend(footers)
             text = "\n".join(parts)
         except Exception as exc:
             raise DocumentError(f"Could not read DOCX {path.name}: {exc}") from exc

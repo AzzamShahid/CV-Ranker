@@ -143,11 +143,11 @@ def test_legacy_nonnumeric_uncertainty_citations_preserved_for_review():
 
 
 def test_prompt_contract_prevents_relation_inflation_without_more_calls():
-    assert "related inputs" in UNIFIED_PROMPT.casefold()
+    assert "related words" in UNIFIED_PROMPT.casefold()
     assert "TRANSFERABLE" not in UNIFIED_PROMPT  # canonical JSON is lower-case
     assert "transferable" in UNIFIED_PROMPT
-    assert "different item" in UNIFIED_PROMPT.casefold()
-    assert "including/such as" in UNIFIED_PROMPT
-    assert "ENTAILMENT CHECK" in UNIFIED_PROMPT
-    assert "keep the\nreason consistent with status" in UNIFIED_PROMPT
-    assert "including" in JD_PROMPT and '"A or B"' in JD_PROMPT
+    assert "another tool is not the named tool" in UNIFIED_PROMPT.casefold()
+    assert "Examples are not automatically extra mandatory criteria" in UNIFIED_PROMPT
+    assert "Accept equivalent wording" in UNIFIED_PROMPT
+    assert "Keep the explanation consistent with the cited text and verdict" in UNIFIED_PROMPT
+    assert "including" in JD_PROMPT and 'OR alternatives' in JD_PROMPT

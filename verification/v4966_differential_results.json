@@ -1,0 +1,181 @@
+{
+  "type": "separate_process_source_differential",
+  "baseline": {
+    "exit": 0,
+    "data": {
+      "build": "phase7g-v4-9-65-source-grounded-compound-review-2026-11-13",
+      "loaded_module": "/mnt/data/textilehr_exec_v4966/baseline/CV_Ranker_Supervisor_Edition/cv_ranker/weighted_scoring.py",
+      "module_sha256": "1c43374148f0fb23cd3f69a2025fbb8d741862b3e4d3b62951dbce21beb62a0d",
+      "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+      "probes": {
+        "RECENT-001": {
+          "consistent": false,
+          "main_floor": 90.0,
+          "reported_bounds_floor": 50.0
+        },
+        "RECENT-002": {
+          "crash": "KeyError"
+        },
+        "RECENT-003": {
+          "result": "TypeError"
+        },
+        "RECENT-004": {
+          "-0.001": "ACCEPTED",
+          "100.001": "ACCEPTED"
+        },
+        "RECENT-005": {
+          "checked_status": "matched",
+          "initial_status": "matched",
+          "requires_condition_review": false,
+          "verified": true
+        },
+        "RECENT-006": {
+          "resolved": 0,
+          "verdict": "Unverified"
+        },
+        "RECENT-007": {
+          "proof_component_count": 0
+        },
+        "RECENT-008": {
+          "fatal": "FileNotFoundError"
+        }
+      },
+      "protocol": 51,
+      "python": "3.13.5"
+    }
+  },
+  "candidate": {
+    "exit": 0,
+    "data": {
+      "build": "phase7g-v4-9-65-source-grounded-compound-review-2026-11-13",
+      "loaded_module": "/mnt/data/textilehr_exec_v4966/candidate/CV_Ranker_Supervisor_Edition/cv_ranker/weighted_scoring.py",
+      "module_sha256": "8cee086c73837fc2df125f43fad1aa103fd390829fa2ce746b2283d5abf17062",
+      "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+      "probes": {
+        "RECENT-001": {
+          "consistent": true,
+          "main_floor": 90.0,
+          "reported_bounds_floor": 90.0
+        },
+        "RECENT-002": {
+          "crash": false,
+          "original_priority": "unknown",
+          "score": 90.0
+        },
+        "RECENT-003": {
+          "result": "EmbeddingError"
+        },
+        "RECENT-004": {
+          "-0.001": "ValueError",
+          "100.001": "ValueError"
+        },
+        "RECENT-005": {
+          "checked_status": "uncertain",
+          "initial_status": "matched",
+          "requires_condition_review": true,
+          "verified": false
+        },
+        "RECENT-006": {
+          "resolved": 1,
+          "verdict": "Found"
+        },
+        "RECENT-007": {
+          "proof_component_count": 4
+        },
+        "RECENT-008": {
+          "candidate_count": 2,
+          "fatal": false,
+          "missing_is_failed": true
+        }
+      },
+      "protocol": 51,
+      "python": "3.13.5"
+    }
+  },
+  "comparison": {
+    "RECENT-001": {
+      "baseline": {
+        "consistent": false,
+        "main_floor": 90.0,
+        "reported_bounds_floor": 50.0
+      },
+      "candidate": {
+        "consistent": true,
+        "main_floor": 90.0,
+        "reported_bounds_floor": 90.0
+      }
+    },
+    "RECENT-002": {
+      "baseline": {
+        "crash": "KeyError"
+      },
+      "candidate": {
+        "crash": false,
+        "original_priority": "unknown",
+        "score": 90.0
+      }
+    },
+    "RECENT-003": {
+      "baseline": {
+        "result": "TypeError"
+      },
+      "candidate": {
+        "result": "EmbeddingError"
+      }
+    },
+    "RECENT-004": {
+      "baseline": {
+        "-0.001": "ACCEPTED",
+        "100.001": "ACCEPTED"
+      },
+      "candidate": {
+        "-0.001": "ValueError",
+        "100.001": "ValueError"
+      }
+    },
+    "RECENT-005": {
+      "baseline": {
+        "checked_status": "matched",
+        "initial_status": "matched",
+        "requires_condition_review": false,
+        "verified": true
+      },
+      "candidate": {
+        "checked_status": "uncertain",
+        "initial_status": "matched",
+        "requires_condition_review": true,
+        "verified": false
+      }
+    },
+    "RECENT-006": {
+      "baseline": {
+        "resolved": 0,
+        "verdict": "Unverified"
+      },
+      "candidate": {
+        "resolved": 1,
+        "verdict": "Found"
+      }
+    },
+    "RECENT-007": {
+      "baseline": {
+        "proof_component_count": 0
+      },
+      "candidate": {
+        "proof_component_count": 4
+      }
+    },
+    "RECENT-008": {
+      "baseline": {
+        "fatal": "FileNotFoundError"
+      },
+      "candidate": {
+        "candidate_count": 2,
+        "fatal": false,
+        "missing_is_failed": true
+      }
+    }
+  },
+  "providers": "none; all sources synthetic",
+  "human_accuracy": "not measured"
+}

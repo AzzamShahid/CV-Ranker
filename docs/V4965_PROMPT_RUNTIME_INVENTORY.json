@@ -1,0 +1,174 @@
+{
+  "build": "4.9.65-v51",
+  "runtime_system_prompts": [
+    {
+      "file": "cv_ranker/jd.py",
+      "symbol": "SYSTEM_PROMPT",
+      "line": 23,
+      "source_expression_sha256": "81af16c9fbcdda99bbf9b2f78e5ce950af390cfad2858e5aebfa8c1b8bc49626",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/jd.py",
+      "symbol": "CORRECTION_PROMPT",
+      "line": 74,
+      "source_expression_sha256": "9756b434e2a71212d4ba231809860047186f5e6d5537d05b122d1cccc0e31250",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/requirement_typing.py",
+      "symbol": "TYPE_SYSTEM_PROMPT",
+      "line": 291,
+      "source_expression_sha256": "670771ada02c9f337f1244e7fda715302dfecb6a92551920911cd8ca676f7ece",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/unified.py",
+      "symbol": "FINAL_ADJUDICATION_PROMPT",
+      "line": 108,
+      "source_expression_sha256": "bcd873b66ffa8584ae559d6402292e5cd0eb99d5e33027a1198b9f521dd52272",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/unified.py",
+      "symbol": "UNIFIED_PROMPT",
+      "line": 292,
+      "source_expression_sha256": "ebb9b930e3fbb8746cebdb004151e88708a71f57d0bb90ef5adb48c4ce42c2fb",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/assessor.py",
+      "symbol": "SYSTEM_PROMPT",
+      "line": 31,
+      "source_expression_sha256": "6566211533c8483830f4b83741b84fc00a9ab30e802264e85c97cc31c6f7b565",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/assessor.py",
+      "symbol": "CORRECTION_PROMPT",
+      "line": 72,
+      "source_expression_sha256": "e0171fd3e2e46dc110b7100993afeee201d64c1178f30aa9f73167749a34dbbb",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/semantic/decomposition.py",
+      "symbol": "SYSTEM_PROMPT",
+      "line": 19,
+      "source_expression_sha256": "a1d656829d5fe7ee2e8bbd13ab40694ee1aaa6278f6a592524ff1bb5641caa18",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/semantic/transferability.py",
+      "symbol": "COMPACT_SYSTEM_PROMPT",
+      "line": 140,
+      "source_expression_sha256": "7bdcca2e4f49f979faac35f6c2b3e75a0395eb18452aaa2f7f5558b0e42bc81b",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/semantic/transferability.py",
+      "symbol": "BATCH_SYSTEM_PROMPT",
+      "line": 158,
+      "source_expression_sha256": "256c8d0805976834fe7741a31c4707c7dfb9a1899675aad0fa17d425cfaef5a2",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/semantic/transferability.py",
+      "symbol": "SYSTEM_PROMPT",
+      "line": 386,
+      "source_expression_sha256": "6b43f92ef4561fc951ba0a5c266932ef0a3da0d79f45d63609629c7f02cf4765",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/ui/final_decisions.py",
+      "symbol": "_JUDGE_PROMPT",
+      "line": 42,
+      "source_expression_sha256": "591cfa0d086c0b7d53473dd4c9a218bb51360a74f388cf3ef8216e5b6027cf70",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    },
+    {
+      "file": "cv_ranker/condition_review.py",
+      "symbol": "REVIEW_PROMPT",
+      "line": 47,
+      "source_expression_sha256": "38d5ba3514964d5b963884303e04409cc7730efb74e429efe528620a4d639faf",
+      "note": "Definition inventory only: full behavior depends on runtime caller and provider."
+    }
+  ],
+  "dynamic_builder_and_caller_references": [
+    {
+      "file": "cv_ranker/jd.py",
+      "symbol": "_user_prompt",
+      "line": 399
+    },
+    {
+      "file": "cv_ranker/jd.py",
+      "symbol": "validate_jd_requirements",
+      "line": 423
+    },
+    {
+      "file": "cv_ranker/requirement_typing.py",
+      "symbol": "enrich_ambiguous_types",
+      "line": 301
+    },
+    {
+      "file": "cv_ranker/unified.py",
+      "symbol": "_payload",
+      "line": 663
+    },
+    {
+      "file": "cv_ranker/unified.py",
+      "symbol": "plan_evidence_batches",
+      "line": 709
+    },
+    {
+      "file": "cv_ranker/unified.py",
+      "symbol": "_correction_payload",
+      "line": 853
+    },
+    {
+      "file": "cv_ranker/unified.py",
+      "symbol": "_independently_adjudicate",
+      "line": 1417
+    },
+    {
+      "file": "cv_ranker/assessor.py",
+      "symbol": "_build_user_prompt",
+      "line": 114
+    },
+    {
+      "file": "cv_ranker/assessor.py",
+      "symbol": "_correct_invalid_rows",
+      "line": 974
+    },
+    {
+      "file": "cv_ranker/assessor.py",
+      "symbol": "_focused_abbreviation_recheck",
+      "line": 1103
+    },
+    {
+      "file": "cv_ranker/semantic/decomposition.py",
+      "symbol": "create_shadow_search_plan",
+      "line": 146
+    },
+    {
+      "file": "cv_ranker/semantic/transferability.py",
+      "symbol": "_assess_single_compact",
+      "line": 531
+    },
+    {
+      "file": "cv_ranker/semantic/transferability.py",
+      "symbol": "_assess_compact_jobs",
+      "line": 556
+    },
+    {
+      "file": "cv_ranker/semantic/transferability.py",
+      "symbol": "assess_transferability_shadow",
+      "line": 636
+    },
+    {
+      "file": "cv_ranker/ui/final_decisions.py",
+      "symbol": "_judge_requirement",
+      "line": 277
+    }
+  ],
+  "model_qa_status": "Old 12 prompt definitions remain; additional independent condition-review prompt added; not A/B-quality-qualified."
+}

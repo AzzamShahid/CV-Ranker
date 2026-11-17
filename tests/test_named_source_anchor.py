@@ -40,7 +40,7 @@ def test_unanchored_unrelated_named_tool_requires_correction_and_no_credit():
     assert decision.status == "not_matched"
     assert len(llm.calls) == 2
     assert any("named requirement semantic claim lacked" in w for w in warnings)
-    assert "actual named source phrase" in llm.calls[1][0]
+    assert "exact source wording" in llm.calls[1][0]
 
 
 def test_uncertain_about_different_named_item_also_requires_correction():

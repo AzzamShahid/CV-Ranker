@@ -31,7 +31,7 @@ def requirement(name, *, rid="R001", kind="skill", **attrs):
 
 
 def test_prompt_contracts_ask_for_complete_jd_and_semantically_aligned_decisions():
-    for wording in ("A or B", "numeric minimums", "EXACT CONTIGUOUS", "priority"):
+    for wording in ("OR alternatives", "numbers, units", "EXACT CONTIGUOUS", "priority"):
         assert wording.casefold() in JD_PROMPT.casefold()
     for prompt in (UNIFIED_PROMPT, FINAL_ADJUDICATION_PROMPT):
         lowered = prompt.casefold()
@@ -40,7 +40,7 @@ def test_prompt_contracts_ask_for_complete_jd_and_semantically_aligned_decisions
         assert "completed" in lowered
         assert "not_found" in lowered
         assert "experience" in lowered
-        assert "degree" in lowered
+        assert "education" in lowered
         assert "reason" in lowered
 
 

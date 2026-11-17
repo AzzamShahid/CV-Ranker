@@ -221,7 +221,7 @@ class SourceCapture:
     def invoke_structured(self, *, system_prompt, user_prompt, schema):
         payload = json.loads(user_prompt)
         self.prompts.append(payload)
-        if "second, independent" in system_prompt:
+        if "INDEPENDENT REVIEW:" in system_prompt:
             return schema.model_validate({"R001": {
                 "decision": "not_found", "relation": "absent", "evidence_ids": [],
                 "proof_excerpt": None, "reason": "No independently confirmed overlap.",
@@ -282,7 +282,7 @@ def test_degree_qualification_is_recalled_for_independent_transfer_review(
             self.prompts.append(payload)
             degree = next(source for source in payload["sources"]
                           if claimed_degree in source["text"])
-            if "second, independent" in system_prompt:
+            if "INDEPENDENT REVIEW:" in system_prompt:
                 return schema.model_validate({"R002": {
                     "decision": "transferable", "relation": "overlap",
                     "evidence_ids": [degree["id"]],
@@ -343,7 +343,7 @@ def test_real_pdf_recall_does_not_discard_core_relation_sources(
     class SourceOnlyProvider(SourceCapture):
         def invoke_structured(self, *, system_prompt, user_prompt, schema):
             self.prompts.append(json.loads(user_prompt))
-            if "second, independent" in system_prompt:
+            if "INDEPENDENT REVIEW:" in system_prompt:
                 return schema.model_validate({rid: {
                     "decision": "not_found", "relation": "absent",
                     "evidence_ids": [], "proof_excerpt": None,

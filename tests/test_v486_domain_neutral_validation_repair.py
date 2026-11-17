@@ -70,7 +70,9 @@ def test_missing_row_and_invented_quote_cannot_create_a_fabricated_score(tmp_pat
         engine.close()
     assert llm.calls == 3 and metrics.correction_calls == 1
     assert metrics.final_verification_calls == 1
-    assert assessed[0].unified_status == "Unverified"
+    assert assessed[0].unified_status is None
+    assert assessed[0].assessment_state == "unverified"
+    assert assessed[0].current_decision.verdict is None
     assert assessed[1].unified_status == "Found"
     assert metrics.unresolved_ids == ["R1"]
     result = score_candidate(candidate_name="Neutral", requirements=reqs,

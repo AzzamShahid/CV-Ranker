@@ -160,8 +160,15 @@ def test_unified_resume_assesses_only_incomplete_candidate(monkeypatch, tmp_path
 
         def assess(self, requirements, segments, resume_text, candidate_id):
             self.names.append(resume_text)
+            # A modern unified provider must return an ORIGINAL source-linked
+            # positive, not a bare, uncited Found. Keep the original 100-point
+            # and resume/no-duplicate-call assertions unchanged.
+            from cv_ranker.schemas import EvidenceCitation
+            source = next(s for s in segments if "Python" in s.text)
             return [RequirementAssessment(requirement_id="R001", status="matched",
-                                          unified_status="Found")], FakeMetrics()
+                       unified_status="Found", evidence_ids=[source.segment_id],
+                       evidence_segments=[EvidenceCitation(segment_id=source.segment_id,
+                           section=source.section, text=source.text)])], FakeMetrics()
 
         def close(self):
             pass

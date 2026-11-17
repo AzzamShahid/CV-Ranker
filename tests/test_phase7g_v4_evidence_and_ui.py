@@ -122,9 +122,9 @@ def test_citation_over_limit_has_specific_error_and_row_retry():
 
 
 def test_main_prompts_explicitly_reject_copied_jd_and_shared_negation():
-    assert 'JD excerpts' in SYSTEM_PROMPT
-    assert 'has not used A or B' in SYSTEM_PROMPT
-    assert 'no more than THREE' in CORRECTION_PROMPT
+    assert 'copied job requirements' in SYSTEM_PROMPT
+    assert 'Scope negation to the denied subject' in SYSTEM_PROMPT
+    assert 'at most three distinct original evidence_ids' in CORRECTION_PROMPT
 
 
 def test_ui_has_distinct_dynamic_frozen_and_filtered_counts():

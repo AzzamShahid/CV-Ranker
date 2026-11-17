@@ -1,0 +1,4 @@
+# Optional remote OIDC installation. Local supervisors use requirements.txt.
+-r requirements.txt
+# Exact same Streamlit release with the officially declared auth extra.
+streamlit[auth]==1.65.0

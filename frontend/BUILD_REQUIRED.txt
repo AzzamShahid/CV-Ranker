@@ -1,0 +1,16 @@
+TEXTILEHR WEB SOURCE CHECKPOINT — MODERN FRONTEND BUILD REQUIRED
+
+This archive deliberately contains no legacy React 16 static runtime or fallback build.
+The npm registry was unreachable in the engineering environment (`ENOTCACHED`),
+so a verifiable lockfile, node_modules, and compiled Vite assets could not be made.
+
+From this frontend/ directory on a network-enabled machine with Node >=22.12:
+  npm install --package-lock
+  npm ci
+  npm run typecheck
+  npm run lint
+  npm run test
+  npm run build
+
+Then run native Windows/backend/browser acceptance. Do not use the application's
+web UI until the `dist/` production build and all acceptance tests pass.

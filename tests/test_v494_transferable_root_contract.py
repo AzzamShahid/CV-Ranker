@@ -226,7 +226,7 @@ class TwoStageProvider:
         self.calls += 1
         payload = json.loads(user_prompt)
         rid = payload["requirements"][0]["id"]
-        if "second, independent" not in system_prompt:
+        if "INDEPENDENT REVIEW:" not in system_prompt:
             return schema.model_validate({rid: {
                 "decision": "not_found", "evidence_ids": [],
                 "reason": "The exact major is not established by the cited source.",
@@ -300,13 +300,13 @@ def test_batch_prompt_retains_late_independent_work_beyond_dense_top_k(tmp_path)
             self.first_source_ids = []
 
         def invoke_structured(self, *, system_prompt, user_prompt, schema):
-            if "second, independent" in system_prompt:
+            if "INDEPENDENT REVIEW:" in system_prompt:
                 return schema.model_validate({"R001": {
                     "decision": "not_found", "relation": "absent",
                     "evidence_ids": [], "proof_excerpt": None,
                     "reason": "No independently verified overlap was established.",
                 }})
-            if "second, independent" not in system_prompt and not self.first_source_ids:
+            if "INDEPENDENT REVIEW:" not in system_prompt and not self.first_source_ids:
                 self.first_source_ids = [s["id"] for s in json.loads(user_prompt)["sources"]]
             return super().invoke_structured(system_prompt=system_prompt,
                                              user_prompt=user_prompt, schema=schema)
@@ -341,11 +341,12 @@ def test_complete_pipeline_and_display_keep_related_degree_as_unscored_transfer(
     cv = tmp_path / "candidate.txt"
     jd.write_text(req.name)
     cv.write_text("Education\nBS in Ecology, completed 2024.")
+    provider = TwoStageProvider("transferable")
+    monkeypatch.setattr("cv_ranker.pipeline.StructuredLLM", lambda settings: provider)
     ranker = CVRanker(
         settings=Settings(llm_provider="ollama"), use_llm=True, unified=True,
         embedding_encoder=FlatEncoder(), embedding_cache_path=tmp_path / "db.sqlite",
     )
-    ranker.llm = TwoStageProvider("transferable")
     report = ranker.run(jd, [cv])
     candidate = report.candidates[0]
     assert candidate.primary_score == 0
@@ -370,10 +371,11 @@ def test_full_pipeline_higher_level_degree_is_unscored_transfer(tmp_path, monkey
     jd, cv = tmp_path / "job.txt", tmp_path / "candidate.txt"
     jd.write_text(req.name)
     cv.write_text("Education\nMSc Ecology, completed 2024.")
+    provider = TwoStageProvider("transferable")
+    monkeypatch.setattr("cv_ranker.pipeline.StructuredLLM", lambda settings: provider)
     ranker = CVRanker(settings=Settings(llm_provider="ollama"), use_llm=True,
                       unified=True, embedding_encoder=FlatEncoder(),
                       embedding_cache_path=tmp_path / "db.sqlite")
-    ranker.llm = TwoStageProvider("transferable")
     report = ranker.run(jd, [cv])
     candidate = report.candidates[0]
     assert candidate.primary_score == 0

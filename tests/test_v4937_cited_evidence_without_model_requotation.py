@@ -163,6 +163,7 @@ def test_failed_independent_source_validation_still_withholds_credit():
     rows, metrics = engine.assess([req], segments, text, candidate_id="bilal")
     assert engine.llm.calls == 2
     assert rows[0].assessment_state == "unverified"
-    assert rows[0].unified_status == "Unverified"
+    assert rows[0].unified_status is None
+    assert rows[0].current_decision.verdict is None
     assert metrics.unresolved_ids == ["R008"]
     assert any("cited source was not among" in warning for warning in metrics.warnings)

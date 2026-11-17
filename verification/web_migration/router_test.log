@@ -1,0 +1,44 @@
+
+> textilehr-ai-frontend@0.2.0 test:route
+> tsc --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir .route-test src/router.ts && node --test tests/router.test.mjs
+
+TAP version 13
+# Subtest: candidate deep link survives parsed route and reserialization
+ok 1 - candidate deep link survives parsed route and reserialization
+  ---
+  duration_ms: 1.422991
+  type: 'test'
+  ...
+# Subtest: job progress and ranking are distinct, refreshable routes
+ok 2 - job progress and ranking are distinct, refreshable routes
+  ---
+  duration_ms: 0.928697
+  type: 'test'
+  ...
+# Subtest: unknown, malformed or incomplete resource route never resolves overview
+ok 3 - unknown, malformed or incomplete resource route never resolves overview
+  ---
+  duration_ms: 0.286877
+  type: 'test'
+  ...
+# Subtest: standard navigation routes have stable human-accessible URLs
+ok 4 - standard navigation routes have stable human-accessible URLs
+  ---
+  duration_ms: 0.176069
+  type: 'test'
+  ...
+# Subtest: legacy direct overview URL remains supported
+ok 5 - legacy direct overview URL remains supported
+  ---
+  duration_ms: 0.158672
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 80.241592

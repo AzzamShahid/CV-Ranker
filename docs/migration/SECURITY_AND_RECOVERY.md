@@ -1,0 +1,15 @@
+# TextileHR web checkpoint — security, recovery and retention
+
+**Security boundary:** loopback-only, one local operator, trusted Host and Origin, signed HttpOnly session, browser CSRF header and workspace-scoped records. Reopening a valid session (including another tab) does not silently rotate its cookie. Do not publish this API, expose it to LAN, or claim enterprise multi-user authentication.
+
+**Credentials/data:** model credentials are server-side environment configuration, never browser payloads or source ZIP. Private JD/CV material is stored outside source under `TEXTILEHR_DATA_DIR`, not served by static asset routes. Uploaded PDF/DOCX undergo extension/signature/size and safety checks. Original document downloads require the session and workspace scope. The UI renders evidence as plain React text, not unsanitized HTML. CSV export prefixes formula-looking spreadsheet cells to prevent accidental execution.
+
+**Recovery:** job claims and candidate commits are fenced and transactional. A dead worker pauses its job with `worker_unknown_delivery`. Normal Resume is not allowed in that state. A separate operator action can inspect checkpoints and, only with an explicit duplicate-charge acknowledgement, queue unresolved work. This never proves the upstream paid call did not execute. Document the decision, preserved committed siblings and original operation history before retrying. Known provider HTTP 429 records `eligible_at` and fails closed until eligibility; expired cooldown alone is not a guarantee of available provider capacity. An in-flight call may still bill after Cancel.
+
+**Progress:** SSE delivers monotonic persisted sequence IDs, snapshots and replay; progress events omit raw applicant text. A browser reconnect, reload, sort, theme switch or evidence GET does not create new work. If the browser misses an event, a newer stored snapshot remains authoritative.
+
+**Historical imports:** validated JSON reports and supported TextileHR ZIP formats with `complete_assessment.json` are accepted read-only, with archive name/path, symlink, duplicate-entry and decompression bounds. Historical protocol and verdicts are never silently mapped to current ones. Unsupported formats are rejected.
+
+**Deletion:** confirmed DELETE endpoints permit terminal job, generated export, unreferenced document and complete inactive workspace deletion. Active/unknown-delivery jobs block destructive removal. Source files have generated safe paths. Deletion does **not** erase copies in external backups, provider systems or prior exports distributed outside the app. Configure organization retention and secure backups separately. Backups made with `scripts/data_backup.py` are plaintext, not encrypted.
+
+**Acceptance gaps:** native Windows permissions/process lifecycle, comprehensive hostile-client security assessment, provider-specific true unknown-delivery reconciliation, enterprise deployment and production retention automation are unqualified; see parity register. React/Vite build was blocked; do not use this checkpoint for real confidential recruitment until separately qualified.

@@ -222,7 +222,7 @@ def test_reasoning_rechecks_exact_original_cv_ledger_not_just_claimed_validity()
     assert repaired["weighted_score"] == 100
 
 
-def test_incomplete_candidates_remain_unranked_and_why_is_provisional():
+def test_incomplete_candidates_get_provisional_floor_and_why():
     r = [req("R1")]
     report = snapshot(r, [cv("A", {"R1": "Found"}),
                           cv("Failed", {"R1": "Not Found"}, incomplete=True)])
@@ -230,7 +230,8 @@ def test_incomplete_candidates_remain_unranked_and_why_is_provisional():
     assert rows["top_candidate_indices"] == [0]
     failed = next(x for x in rows["candidates"] if x["candidate"] == "Failed")
     assert failed["weighted_score"] is None and failed["rank"] is None
-    assert failed["audit"]["status"] == "incomplete"
+    assert failed["provisional"] is True
+    assert failed["audit"]["status"] == "provisional"
 
 
 def test_legacy_review_metadata_tracks_original_index_even_after_backend_sort():
@@ -350,13 +351,13 @@ def test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates(
     app = app.run(timeout=20)
     assert not app.exception
     text = " ".join(item.value for item in app.markdown)
-    assert ("Why no ranking is available" if review_case == "all_withheld"
-            else "Why this candidate ranks first") in text
+    assert "Why this candidate ranks first" in text
     assert "Why this CV received its ranking" in text
     assert "Candidate leaderboard" in text
     if review_case != "complete":
         content = " ".join(str(item.value) for item in app.get("info"))
-        assert "Assessment incomplete" in content or "points withheld" in text
+        assert ("Provisional" in text or "provisional" in content
+                or "points withheld" in text)
 
 
 def test_step_labels_are_sequential_and_extraction_is_step_two():

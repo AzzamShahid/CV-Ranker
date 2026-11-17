@@ -5,6 +5,7 @@ UI is presentation-only: no additional candidate eligibility or ranking rules.
 from __future__ import annotations
 
 import json
+import os
 import hashlib
 import tempfile
 import csv
@@ -306,10 +307,11 @@ def _rank_explanation_row(explanation: dict) -> None:
     """One easily scanned candidate placement, without duplicating audit blocks."""
     rank = explanation.get("rank")
     score = explanation.get("weighted_score")
-    marker = f"#{rank}" if rank is not None else "—"
-    score_label = f"{score:.2f}%" if score is not None else "Not ranked"
+    provisional = bool(explanation.get("provisional"))
+    marker = (f"P#{rank}" if provisional else f"#{rank}") if rank is not None else "—"
+    score_label = (f"{score:.2f}% · provisional floor" if provisional else f"{score:.2f}%") if score is not None else "Not ranked"
     reason = explanation.get("placement_reason") or explanation.get("summary") or ""
-    style = " is-top" if rank == 1 else " is-pending" if rank is None else ""
+    style = " is-pending" if provisional or rank is None else " is-top" if rank == 1 else ""
     st.markdown(
         f'<div class="cv-rank-row{style}">'
         f'<div class="cv-rank-position">{escape(marker)}</div>'
@@ -394,6 +396,7 @@ def _current_weights(report: RankingReport | None = None) -> ScoreWeights:
         split_jd=bool(st.session_state.get("cv_weight_split", False)),
         required_share=int(st.session_state.get("cv_weight_slider_required", 80)),
         requirement_shares=tuple(sorted(shares.items())),
+        jd_allocation_mode=st.session_state.get("cv_jd_allocation_mode", "pooled"),
     )
 
 
@@ -457,6 +460,18 @@ def _weightage_panel(requirements) -> bool:
                       key="cv_weight_fill_remainder")
         st.caption("Category weights apply only when that category exists in the approved JD. "
                    "Empty categories are excluded and the remaining weights are renormalized.")
+    st.selectbox(
+        "Required / Preferred scoring policy",
+        options=["pooled", "weighted_split"],
+        format_func=lambda mode: ("One combined JD pool (existing behavior)" if mode == "pooled"
+                                  else "Separately weighted Required and Preferred groups"),
+        key="cv_jd_allocation_mode",
+        help="Legacy split-display toggle only separates columns. This scoring mode explicitly reallocates JD points.",
+    )
+    if st.session_state.get("cv_jd_allocation_mode") == "weighted_split":
+        st.slider("Required group's share of JD points (%)", min_value=0, max_value=100,
+                  value=80, key="cv_weight_slider_required",
+                  help="Preferred group receives the remainder; only affects weights, never LLM decisions.")
     fingerprint = _allocation_key(requirements)
     shares = _allocation_for(requirements)
     by_category = {category: [] for category in ("experience", "education", "jd")}
@@ -468,9 +483,10 @@ def _weightage_panel(requirements) -> bool:
                    "Give individual requirements more or less influence within their category.",
                    eyebrow="Review & prioritize")
     with st.expander("Individual requirement allocations (within each category)", expanded=True):
-        st.caption("All percentages below are shares of their own category, not additional overall points. "
-                   "Changing one share automatically rebalances only the other items in that same category. "
-                   "Required and Preferred remain together in ONE JD allocation pool.")
+        st.caption("Changing one share automatically rebalances the other items in its category. "
+                   "Items keep their reviewed shares of their category. In pooled mode, Required "
+                   "and Preferred share one Requirements pool; in weighted-split mode, their "
+                   "groups receive the selected allocation before item shares are normalized.")
         for category, entries in by_category.items():
             if not entries:
                 continue
@@ -484,6 +500,19 @@ def _weightage_panel(requirements) -> bool:
                     st.caption(label)
                     if active_weight:
                         potential = 100.0 * category_weights[category] / active_weight * shares[req.requirement_id] / 100
+                        if category == "jd" and st.session_state.get("cv_jd_allocation_mode") == "weighted_split":
+                            same_group = sum(shares[r.requirement_id] for r in entries if r.priority == req.priority)
+                            selected = int(st.session_state.get("cv_weight_slider_required", 80))
+                            group_allocation = selected if req.priority == "required" else 100 - selected
+                            active_groups = {r.priority for r in entries}
+                            active_allocation = sum((selected if k == "required" else 100 - selected)
+                                                    for k in active_groups)
+                            if active_allocation == 0:
+                                group_allocation = 1
+                                active_allocation = len(active_groups)
+                            potential = (100.0 * category_weights[category] / active_weight
+                                         * group_allocation / active_allocation
+                                         * shares[req.requirement_id] / same_group) if same_group else 0.0
                         st.caption(f"Possible overall score: {potential:.2f} / 100 points")
                 with right:
                     identifier = f"cv_item_share_{fingerprint[:12]}_{req.requirement_id}"
@@ -716,9 +745,11 @@ def _rank_core(
     report = ranker.run(jd, cv_paths, **run_kwargs)
     # Match assessed rows by the actual temporary source path, not their
     # leaderboard order (which changes when scores are assigned).
-    names_to_keys = dict(zip(
-        (str(path) for path in cv_paths),
-        candidate_resume_keys([(path.name, path.read_bytes()) for path in cv_paths])))
+    # Use exact identities from the same immutable candidate bytes that
+    # were parsed in CVRanker; never re-read a vanished/modified source after
+    # analysis merely to build a resume checkpoint. An unreadable input slot
+    # has no saved reusable judgment, but healthy siblings remain exportable.
+    names_to_keys = dict(ranker.source_keys)
     resume_entries = {}
     for candidate in report.candidates:
         key = names_to_keys.get(candidate.candidate_source)
@@ -746,12 +777,10 @@ def _rank_core(
     # never show a persuasive but internally contradictory supervisor report.
     final_results = {}
     for index in range(len(report.candidates)):
-        if use_llm:
-            final_results[str(index)] = reconcile_unified_candidate(
-                report, index, ledgers.get(str(index), []))
-        else:
-            final_results[str(index)] = reconcile_candidate(
-                report, index, ledgers.get(str(index), []), llm=None)
+        # All CURRENT modes share one canonical assessment projection. Legacy
+        # focused review is available only for historical saved artifacts.
+        final_results[str(index)] = reconcile_unified_candidate(
+            report, index, ledgers.get(str(index), []))
         candidate = report.candidates[index]
         final = final_results[str(index)]
         if use_llm and candidate.primary_score is not None and (
@@ -1087,6 +1116,19 @@ def _review_jd_panel(settings: Settings, pending: dict) -> JDReviewDraft | None:
     if draft.jd_validation_mode != "llm_validated":
         st.warning("This extraction used a structural fallback. Review all rows carefully; "
                    "the assessment will keep that extraction mode visible.")
+    source_coverage = [item for item in draft.diagnostics
+                       if item.get("stage") == "explicit_jd_clause_coverage"]
+    if source_coverage:
+        unmapped = sum(item.get("disposition") != "covered" for item in source_coverage)
+        with st.expander(f"Original JD clause coverage · {len(source_coverage) - unmapped}/{len(source_coverage)} uniquely mapped", expanded=bool(unmapped)):
+            st.caption("Source-grounded structural clauses, not additional scored criteria. "
+                       "Review unmapped or multiply mapped clauses before freezing.")
+            st.dataframe([{"Original JD wording": item["source_quote"],
+                           "JD lines": ", ".join(str(x) for x in item["source_line_numbers"]),
+                           "Priority": item["heading_priority"],
+                           "Frozen R IDs": ", ".join(item["mapped_requirement_ids"]),
+                           "Coverage": item["disposition"]}
+                          for item in source_coverage], width="stretch", hide_index=True)
     for warning in draft.warnings:
         if "JD requirement cap:" in warning or "configured maximum retained" in warning:
             st.error(warning + " Increase the requirement limit in the sidebar, "
@@ -1111,11 +1153,27 @@ def _review_jd_panel(settings: Settings, pending: dict) -> JDReviewDraft | None:
             st.session_state.pop("cv_auto_resume_state", None)
             st.rerun()
         return approved
+    st.caption(
+        "Advanced JD meaning review: when AND, OR, or 'including' scope is ambiguous, "
+        "you may enter exact mandatory JD fragments separated by | and optional "
+        "alternative groups as JSON. Every fragment must exist in the original JD; "
+        "this does not add scoring criteria. Leave blank when the meaning is clear."
+    )
     reviewed_rows = st.data_editor(
         editable_jd_rows(draft), num_rows="dynamic", hide_index=True,
         width="stretch", key=f"cv_jd_review_grid_{pending.get('revision', 0)}",
-        disabled=["ID", "Minimum years", "Degree level", "Field of study"],
+        disabled=["ID", "Minimum years", "Degree level", "Field of study",
+                  "Evidence standard", "Duration subject"],
         column_config={
+            "Mandatory JD parts": st.column_config.TextColumn(
+                "Mandatory exact fragments (separate with |)", width="large",
+                help="Optional HR review: original JD phrases that must ALL be shown. No extra score items are created."),
+            "Complete JD expression JSON": st.column_config.TextColumn(
+                "Optional fully reviewed JD expression (JSON)", width="large",
+                help="Advanced: nested leaf/all_of/any_of tree with exact JD substring offsets. Must cover every JD obligation."),
+            "Alternative groups JSON": st.column_config.TextColumn(
+                "Allowed alternatives (JSON)", width="large",
+                help='Optional HR review, e.g. [["ERP", "MES", "SAP"]]. One option per group is sufficient.'),
             "Priority": st.column_config.SelectboxColumn(
                 "Priority", options=["required", "preferred", "unknown"], required=True),
             "Type": st.column_config.SelectboxColumn(
@@ -1690,7 +1748,7 @@ def _summary(report: RankingReport):
             if not cause and candidate.errors:
                 cause = candidate.errors[-1]
             st.warning(
-                f"{candidate.candidate_name} · not ranked yet. "
+                f"{candidate.candidate_name} · provisional position is available below. "
                 + (f"{len(pending_ids)} requirement(s) still need a verified decision. "
                    if pending_ids else "The assessment did not finish. ")
                 + "Completed results are saved. Open the details below to review what is missing.")
@@ -1713,8 +1771,16 @@ def _summary(report: RankingReport):
                         label = requirement.name if requirement is not None else assessment.requirement_id
                         st.markdown(f"**{label}**")
                         st.caption(f"JD reference: {assessment.requirement_id}")
+                        rejected = (detail.get("rejected_model_citations", {})
+                                    if isinstance(detail, dict) else {})
+                        cited_ids = rejected.get(assessment.requirement_id, [])
+                        if cited_ids:
+                            st.caption(
+                                "Model-cited passages rejected by validation "
+                                "(not accepted as proof): " + ", ".join(cited_ids[:8]))
                         for passage in assessment.evidence_segments[:2]:
-                            st.caption("Evidence examined: " + passage.text[:500])
+                            st.caption(f"Retrieved review lead {passage.segment_id} "
+                                       "(not accepted as proof): " + passage.text[:500])
     separate = [f"Experience: {bucket_totals['experience']['total']}"
                 if bucket_totals["experience"]["total"] else "",
                 f"Education: {bucket_totals['education']['total']}"
@@ -1779,12 +1845,14 @@ def _ranking(report: RankingReport):
         candidate = report.candidates[int(item["candidate_index"])]
         bounds = provisional_score_bounds(report, candidate, weights)
         row = {
-            "Rank": str(item["rank"]) if item["rank"] is not None else "Withheld",
+            "Rank": (f"P#{item['rank']}" if item.get("provisional") else str(item["rank"]))
+                    if item["rank"] is not None else "Unavailable",
             "Candidate": item["candidate"],
             "Score": item["weighted_score"],
-            "Evidence range": (
-                f"{bounds['verified_floor']:.2f}–{bounds['possible_ceiling']:.2f}% "
-                "(provisional)" if bounds["provisional"] else "—"),
+            "Evidence range": (f"{bounds['verified_floor']:.2f}–{bounds['possible_ceiling']:.2f}% (provisional)"
+                  if bounds["provisional"] and bounds["verified_floor"] is not None
+                  and bounds["possible_ceiling"] is not None
+                  else "Unavailable · incomplete evidence" if bounds["provisional"] else "—"),
         }
         if has_experience:
             row["Experience"] = item["experience"]
@@ -1797,10 +1865,15 @@ def _ranking(report: RankingReport):
             row.update({"Required JD": item["required"],
                         "Preferred JD": item["preferred"]})
         row.update({"Transferable": earlier["Transferable"],
-                    "Review": earlier["Review"], "Mode": earlier["Mode"],
+                    "Review": item["review"] if item.get("provisional") else earlier["Review"],
+                    "Mode": earlier["Mode"],
                     "Why this rank": reasons[int(item["candidate_index"])].get(
                         "placement_reason", reasons[int(item["candidate_index"])]["summary"])})
         present.append(row)
+    if any(row.get("provisional") for row in calculated):
+        st.warning("Candidates with incomplete requirements have no official "
+                   "score or rank. Their already verified credit and possible "
+                   "ceiling appear only as a separately labeled evidence range.")
     if calculated and not any(r["weighted_score"] is not None for r in calculated):
         st.warning("No final rank is available yet. Provisional evidence ranges below "
                    "show credit already verified and the maximum additional "
@@ -1820,10 +1893,9 @@ def _ranking(report: RankingReport):
         "Score": st.column_config.ProgressColumn("Weighted score", min_value=0, max_value=100, format="%.1f%%"),
         "Why this rank": st.column_config.TextColumn("Why this rank", width="large"),
     })
-    # A technical failure must not prevent the reviewer from inspecting or
-    # comparing the *validated* portion of otherwise incomplete CVs. Keep this
-    # separate from the official rank, and never treat an unverified result as
-    # Not Found (or give it guessed positive credit).
+    # A technical failure must not hide the candidate from the main table.
+    # The table now includes provisional floor-ranked rows and their ranges;
+    # unresolved outcomes never receive invented points.
     provisional = []
     for row in calculated:
         candidate = report.candidates[int(row["candidate_index"])]
@@ -1834,7 +1906,7 @@ def _ranking(report: RankingReport):
             "Candidate": row["candidate"],
             "Verified Found credit": bounds["verified_floor"],
             "Possible upper bound": bounds["possible_ceiling"],
-            "Unverified criteria": bounds["unverified_requirements"],
+            "Unfinished criteria": bounds["unverified_requirements"],
             "Transferable": baseline[int(row["candidate_index"])]["Transferable"],
         })
     if provisional:
@@ -1842,7 +1914,7 @@ def _ranking(report: RankingReport):
                                           row["Candidate"].casefold()))
         st.markdown("**Provisional comparison of incomplete assessments**")
         st.caption("Ordered by already verified Found credit only. This is a "
-                   "review aid, not a final candidate ranking. Unverified "
+                   "review aid, not a final candidate ranking. Unfinished "
                    "requirements are not treated as Not Found and earn no "
                    "points until verified.")
         st.dataframe(provisional, hide_index=True, width="stretch")
@@ -1959,9 +2031,9 @@ def _candidate_evidence(report: RankingReport):
     candidate = report.candidates[index]
     if candidate.primary_score is None:
         if candidate.assessments:
-            st.warning("Some requirements remain technically unverified. Verified "
-                       "decisions and a provisional evidence range remain visible; "
-                       "a final percentage and rank require complete assessment.")
+            st.warning("Some requirement assessments remain unfinished. Verified "
+                       "decisions and a provisional weighted-credit range remain visible; "
+                       "no official candidate score or rank is available until completion.")
         else:
             st.error("Candidate assessment failed before individual requirements could "
                      "be validated. No final score or rank is available.")
@@ -1977,9 +2049,13 @@ def _candidate_evidence(report: RankingReport):
     source_ledger = st.session_state.get("cv_source_ledgers", {}).get(str(index), [])
     final = st.session_state.get("cv_final_results", {}).get(str(index))
     if final is None:
-        final = reconcile_candidate(report, index, source_ledger,
-                                    st.session_state.get("cv_semantic_report"))
-        st.warning("This older session has no persisted focused checks. Rerun the analysis for the full consolidated result.")
+        if report.build_id == BUILD_ID:
+            final = reconcile_unified_candidate(report, index, source_ledger)
+            st.info("Restored this session's requirement details directly from the saved assessments; no model calls were made.")
+        else:
+            final = reconcile_candidate(report, index, source_ledger,
+                                        st.session_state.get("cv_semantic_report"))
+            st.warning("This historical session has no persisted focused checks. Rerun the analysis under the current protocol for new decisions.")
     buckets = criterion_bucket_counts(report, candidate)
     jd_found = buckets["jd_required"]["found"] + buckets["jd_preferred"]["found"]
     jd_total = buckets["jd_required"]["total"] + buckets["jd_preferred"]["total"]
@@ -1988,14 +2064,17 @@ def _candidate_evidence(report: RankingReport):
     b.metric("Transferable (not counted as matched)", final["Transferable"])
     try:
         weighted = weighted_candidate(report, candidate, _current_weights(report))
-        c.metric("Weighted score", f"{weighted['score']:.1f}%" if weighted["score"] is not None else "—")
-        if weighted["score"] is None and candidate.assessments:
+        c.metric("Weighted score" + (" (provisional floor)" if weighted.get("provisional") else ""),
+                 f"{weighted['score']:.1f}%" if weighted["score"] is not None else "—")
+        if weighted.get("provisional") and candidate.assessments:
             bounds = provisional_score_bounds(report, candidate, _current_weights(report))
-            st.info(f"Provisional evidence range: {bounds['verified_floor']:.2f}% "
-                    f"verified Found credit to {bounds['possible_ceiling']:.2f}% "
-                    f"possible if the remaining {bounds['unverified_requirements']} "
-                    "unverified requirement(s) later qualify. This is not a "
-                    "final score or rank, and no unverified criterion earns points.")
+            interval = (f"{bounds['verified_floor']:.2f}% verified credit to "
+                        f"{bounds['possible_ceiling']:.2f}% possible" if
+                        bounds["verified_floor"] is not None and bounds["possible_ceiling"] is not None
+                        else "Unavailable · assessment incomplete")
+            st.info(f"Provisional evidence range: {interval}. "
+                    f"Remaining unfinished requirements: {bounds['unverified_requirements']}. "
+                    "No unfinished criterion earns points or establishes a final rank.")
     except ValueError:
         c.metric("Weighted score", "—")
     try:
@@ -2012,10 +2091,10 @@ def _candidate_evidence(report: RankingReport):
         _insight_card(
             f"{candidate.candidate_name} · ranking rationale", explanation["summary"],
             label="Assessment summary",
-            tag=(f"Rank #{explanation['rank']} · {explanation['weighted_score']:.2f}%"
+            tag=(f"{'Provisional ' if explanation.get('provisional') else ''}Rank #{explanation['rank']} · {explanation['weighted_score']:.2f}%"
                  if explanation["weighted_score"] is not None and explanation["rank"] is not None
                  else "Assessment incomplete · no score"),
-            tone="teal" if explanation["weighted_score"] is not None else "amber",
+            tone="amber" if explanation.get("provisional") else "teal" if explanation["weighted_score"] is not None else "amber",
         )
         strengths_column, gaps_column = st.columns(2, gap="medium")
         with strengths_column:
@@ -2051,9 +2130,9 @@ def _candidate_evidence(report: RankingReport):
     if any(separate):
         st.caption("Separately scored · " + " · ".join(x for x in separate if x))
     if candidate.primary_score is None:
-        st.caption(f"Partial evidence review only: {final.get('Unverified', 0)} "
-                   "unverified criterion/criteria. Do not compare these counts "
-                   "as a completed score or rank.")
+        st.caption(f"Partial evidence review only: {final.get('Processing incomplete', 0)} "
+                   f"unfinished criterion/criteria ({final.get('Unverified', 0)} historical). "
+                   "Do not compare these counts as a completed score or rank.")
     if not any(r.constraint.kind == "experience" and r.constraint.minimum_years is not None
                for r in report.requirements):
         st.caption("Experience note: the approved JD has no numeric minimum-years criterion, "
@@ -2070,8 +2149,8 @@ def _candidate_evidence(report: RankingReport):
     # Do not show a blanket provisional warning for a completed assessment.
     # Transferable/uncertain criteria are marked for review at the specific
     # requirement below. Genuine incompleteness was already shown above.
-    if candidate.primary_score is not None and final.get("Unverified"):
-        st.error("One or more requirements remain unverified despite a saved overall score. "
+    if candidate.primary_score is not None and (final.get("Unverified") or final.get("Processing incomplete")):
+        st.error("One or more requirements are incomplete despite a saved overall score. "
                  "Do not use this rank until the assessment inconsistency is reviewed.")
     for notice in final.get("Notices", []):
         if notice not in candidate.errors:
@@ -2081,7 +2160,7 @@ def _candidate_evidence(report: RankingReport):
         st.info(raw_error)
     filter_left, filter_right = st.columns([2, 1])
     with filter_left:
-        status_filter = st.segmented_control("Show", ["All", "Found", "Transferable", "Not Found", "Unverified"], default="All", key="cv_candidate_status")
+        status_filter = st.segmented_control("Show", ["All", "Found", "Transferable", "Not Found", "Assessment incomplete", "Unverified"], default="All", key="cv_candidate_status")
     group_names = {
         requirement.requirement_id: {
             "experience": "Experience", "education": "Education",
@@ -2138,23 +2217,24 @@ def _candidate_evidence(report: RankingReport):
                    eyebrow="JD-to-CV decisions")
     st.caption("Original source passages are shown beneath each explanation; the complete citation ledger is available in the JSON export.")
     for item in filtered:
-        icon = {"Found": "✅", "Transferable": "↔️", "Not Found": "○", "Unverified": "⚠️"}[item["Result"]]
+        icon = {"Found": "✅", "Transferable": "↔️", "Not Found": "○",
+                "Assessment incomplete": "⚠️", "Unverified": "⚠️"}[item["Result"]]
         visible_checkpoints = item.get("Display checkpoints", item["Checkpoints"])
         with st.expander(f"{icon} {item['Requirement']} · {item['Result']}"):
             st.caption(f"Requirement {item['ID']} · {group_names.get(item['ID'], item['Priority'])} "
                        f"· {len(visible_checkpoints)} cited CV passage(s)")
             st.caption("CV evidence: " + item["Evidence level"])
-            if item["Review recommended"] and item["Result"] != "Unverified":
+            if item["Review recommended"] and item["Result"] not in {"Unverified", "Assessment incomplete"}:
                 st.caption("Human review suggested for this requirement; this note does not change its score.")
             _insight_card("Why this decision", item["Why"],
                           label="Individual criterion explanation", tag=item["Result"],
                           tone={"Found": "teal", "Transferable": "blue",
-                                "Not Found": "slate", "Unverified": "amber"}.get(item["Result"], "slate"))
+                                "Not Found": "slate", "Assessment incomplete": "amber", "Unverified": "amber"}.get(item["Result"], "slate"))
             st.caption("Original employer requirement: " + item["JD source"])
             if len(visible_checkpoints) < len(item["Checkpoints"]):
                 st.caption(f"Showing {len(visible_checkpoints)} of {len(item['Checkpoints'])} checkpoints; see JSON for all.")
             if not item["Checkpoints"]:
-                if item["Result"] == "Unverified":
+                if item["Result"] in {"Unverified", "Assessment incomplete"}:
                     st.info("Assessment incomplete: no source judgment was accepted. "
                             "This is neither evidence of absence nor a hiring decision.")
                 else:
@@ -2192,6 +2272,9 @@ def _jd_details(report: RankingReport):
         "Degree level": r.constraint.degree_level or "",
         "Field of study": r.constraint.field_of_study or "",
         "JD source": r.jd_evidence,
+        "Approved mandatory JD parts": " | ".join(r.constraint.approved_mandatory_parts),
+        "Approved alternative groups": json.dumps(r.constraint.approved_alternative_groups, ensure_ascii=False)
+            if r.constraint.approved_alternative_groups else "",
     } for r in report.requirements], width="stretch", hide_index=True)
     with st.expander("Download optional HR policy templates"):
         st.download_button("Blank equivalence approvals", json.dumps({"schema_version": 1, "approvals": []}, indent=2), "approved_equivalences_template.json", "application/json")
@@ -2559,13 +2642,17 @@ def render_app():
         st.stop()
     _styles()
     settings, use_llm, semantic_enabled = _sidebar()
+    # Display identity must not leak into candidate matching or scoring.
+    organization = (os.environ.get("CVR_ORGANIZATION_NAME", "TextileHR AI").strip()
+                    or "TextileHR AI")[:80]
+    org_initials = "".join(part[0] for part in organization.split()[:2]).upper() or "TH"
     st.markdown(
         '<div class="cv-hero" role="banner"><div>'
-        '<div class="cv-hero-badge">Reliance Weaving Mills Limited · HR supervisor workspace</div>'
+        f'<div class="cv-hero-badge">{escape(organization)} · HR supervisor workspace</div>'
         '<h1 class="cv-hero-title">CV Ranker</h1>'
         '<p class="cv-hero-description">Review approved job requirements, compare candidates '
         'with transparent scores, and understand every decision through original CV evidence.</p>'
-        '</div><div class="cv-hero-mark" aria-hidden="true">RW</div></div>',
+        f'</div><div class="cv-hero-mark" aria-hidden="true">{escape(org_initials)}</div></div>',
         unsafe_allow_html=True,
     )
     if settings is None:

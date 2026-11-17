@@ -31,7 +31,7 @@ def outcome(jd, cv):
     ('Education:\nBS Computer Science.\nExperience:\n4 years in analytics.', 'satisfied'),
     ('Education:\nBSc Chemistry.', 'mismatch'),
     ('Education:\nBachelor in Chemistry.', 'mismatch'),
-    ('Education:\nMaster of Science in Computer Science.', 'ambiguous'),
+    ('Education:\nMaster of Science in Computer Science.', 'satisfied'),
     ('Education:\nPursuing BSc Computer Science.', 'ambiguous'),
     ('Education:\nBachelor in Computer Science, expected to graduate in 2027.', 'ambiguous'),
     ('Education:\nDid not complete BSc Computer Science.', 'mismatch'),

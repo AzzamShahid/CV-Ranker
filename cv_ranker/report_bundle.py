@@ -9,6 +9,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 from .schemas import RankingReport
 from .ranking_reasoning import candidate_reasoning, comparative_reasoning
 from .ui_support import review_label_for_candidate
+from .ui.unified_decisions import reconcile_unified_candidate
 from .weighted_scoring import ScoreWeights, weighted_leaderboard
 
 
@@ -24,8 +25,29 @@ def complete_results_zip(
     sensitive reviewer export. The archive contains no API configuration,
     environment variables, uploaded file paths, or credentials.
     """
-    finals = final_results or {}
     ledgers = source_ledgers or {}
+    # Derive the per-requirement Why and verdict from the canonical assessed
+    # source when no independent UI projection was supplied. A caller's UI
+    # projection may add highlights but cannot contradict the persisted record.
+    finals = {}
+    for index, candidate in enumerate(report.candidates):
+        key = str(index)
+        proposed = (final_results or {}).get(key)
+        if proposed is None:
+            proposed = reconcile_unified_candidate(report, index, ledgers.get(key, []))
+        original_rows = {row.get("ID"): row for row in proposed.get("Criteria", [])
+                         if isinstance(row, dict)}
+        for assessment in candidate.assessments:
+            record = assessment.current_decision
+            if record is None:
+                continue  # Historical material retains its own interpretation.
+            expected = (record.verdict if record.processing_state == "completed"
+                        else "Assessment incomplete")
+            current = original_rows.get(assessment.requirement_id)
+            if current is not None and current.get("Result") != expected:
+                raise ValueError("UI/export decision disagrees with the canonical assessment record: "
+                                 + assessment.requirement_id)
+        finals[key] = proposed
     leaderboard = weighted_leaderboard(report, weights)
     # Match the UI's separate completion and human-review states in all
     # supervisor-facing exports; weighted scoring remains authoritative.
@@ -55,18 +77,29 @@ def complete_results_zip(
         add_json("technical_diagnostics.json", technical or {})
 
         table = io.StringIO()
-        fields = ["Rank", "Candidate", "Weighted score (%)", "Experience matched",
+        fields = ["Rank", "Candidate", "Weighted score (%)", "Score status", "Possible ceiling (%)", "Experience matched",
                   "Education matched", "JD matched", "Required JD matched", "Preferred JD matched",
                   "Transferable", "Review"]
         writer = csv.DictWriter(table, fieldnames=fields)
         writer.writeheader()
+
+        def csv_cell(value):
+            # Spreadsheet viewers may execute formulas even inside quoted CSV
+            # fields. Untrusted candidate names and reviewer text are data.
+            if isinstance(value, str) and value.lstrip().startswith(("=", "+", "-", "@", "\t", "\r")):
+                return "'" + value
+            return value
+
         for row in leaderboard:
             idx = str(row["candidate_index"])
             final = finals.get(idx, {})
-            writer.writerow({
-                "Rank": row["rank"] if row["rank"] is not None else "Withheld",
+            writer.writerow({key: csv_cell(value) for key, value in {
+                "Rank": (f"Provisional {row['rank']}" if row.get("provisional") else row["rank"])
+                        if row["rank"] is not None else "Unavailable",
                 "Candidate": row["candidate"],
                 "Weighted score (%)": row["weighted_score"],
+                "Score status": row["score_status"],
+                "Possible ceiling (%)": row["breakdown"].get("possible_ceiling"),
                 "Experience matched": row["experience"],
                 "Education matched": row["education"],
                 "JD matched": row["jd_overall"],
@@ -74,7 +107,7 @@ def complete_results_zip(
                 "Preferred JD matched": row["preferred"],
                 "Transferable": final.get("Transferable", "Not checked"),
                 "Review": review_labels.get(idx, row["review"]),
-            })
+            }.items()})
         archive.writestr("weighted_leaderboard.csv", table.getvalue().encode("utf-8-sig"))
 
         for row in leaderboard:
@@ -101,7 +134,7 @@ def complete_results_zip(
             "build_id": report.build_id, "candidate_count": len(report.candidates),
             "includes_original_jd": report.original_jd_text is not None,
             "original_jd_source": report.job_description_source,
-            "weighted_rank_basis": "Verified Found with editable per-requirement shares; one pooled Required + Preferred JD group; Experience and Education separately allocated",
+            "weighted_rank_basis": "Verified Found credit only with editable requirement shares; incomplete candidates have no official score or rank; separately labeled provisional bounds may be shown",
             "important": "CV claims are self-reported; Transferable never earns direct credit."
         })
     return result.getvalue()

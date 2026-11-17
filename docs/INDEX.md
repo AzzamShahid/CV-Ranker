@@ -7,7 +7,7 @@ This index separates **current instructions** from **retained historical records
 | Installation, launch and commands | [README](../README.md) |
 | Data flow, source verification, scoring, recovery, API and `.env` variables | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Archived duplicates, cleanup disposition, migration safeguards | [REPOSITORY_AUDIT.md](REPOSITORY_AUDIT.md) |
-| Latest release, local/OIDC access policy and concurrency hardening | [RELEASE_NOTES_V4_9_45.md](RELEASE_NOTES_V4_9_45.md) |
+| Latest assessment and reliability changes | [RELEASE_NOTES_V4_9_59.md](RELEASE_NOTES_V4_9_57.md) |
 | Security setup, runbook and production blockers | [PRODUCTION_SECURITY.md](PRODUCTION_SECURITY.md) |
 | Running the supervisor workflow | [SUPERVISOR_WALKTHROUGH.md](SUPERVISOR_WALKTHROUGH.md) |
 | Running a local demo | [DEMO_GUIDE.md](DEMO_GUIDE.md) |

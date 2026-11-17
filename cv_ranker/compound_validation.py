@@ -8,7 +8,8 @@ from __future__ import annotations
 
 import re
 
-from .schemas import (CompoundCheck, CompoundComponent, EvidenceCitation,
+from .decision_contract import DecisionRecord
+from .schemas import (CompoundCheck, CompoundComponent, DecisionTransition, EvidenceCitation,
                       RequirementAssessment, ValidatedRequirement)
 from .segments import segment_resume
 from .text_utils import (classify_requirement_tone, instruction_like_evidence,
@@ -93,6 +94,14 @@ def _descriptive_work_options(req: ValidatedRequirement) -> bool:
     c = req.constraint
     if c.operator == "complex":
         return True  # Additional conjunction and performed-work gates apply.
+    # A real, multi-part performed-work sentence can be expressed as two
+    # independent verbal actions ("investigate flaky tests AND document root
+    # causes"). Its exact English inflections need not be verbatim in a CV.
+    # Standalone A-and-B named skills still take strict option validation.
+    if (c.operator == "all_of" and
+            c.kind in {"responsibility", "experience", "other"} and
+            all(len(option.split()) >= 3 for option in c.options)):
+        return True
     if c.operator not in {"all_of", "any_of"}:
         return False
     return any(re.search(r"\b(?:of|for|with|during|within|through|while|"
@@ -270,6 +279,28 @@ def apply_compound_checks(*, requirements: list[ValidatedRequirement],
             result.append(item)
             continue
         requirement = by_id[item.requirement_id]
+        # A reviewed nested expression outranks both the descriptive gerund
+        # shortcut and the short standalone Boolean parser. Every positive
+        # needs source-bound facet adjudication against this approved tree.
+        if (requirement.constraint.approved_expression is not None
+                or requirement.constraint.approved_mandatory_parts
+                or requirement.constraint.approved_alternative_groups) and item.status == "matched":
+            check = CompoundCheck(operator=requirement.constraint.operator,
+                                  outcome="needs_review",
+                                  explanation="Approved JD condition tree requires full source-bound leaf verification")
+            result.append(item.model_copy(update={
+                "status": "uncertain", "assessment_state": "unverified",
+                "unified_status": None, "compound_check": check,
+                "current_decision": DecisionRecord(processing_state="pending",
+                    explanation="Source-bound assessment of approved JD conditions is scheduled"),
+                "review_recommended": True,
+                "decision_trace": [*item.decision_trace, DecisionTransition(
+                    stage="compound_review", from_status=item.unified_status or item.status,
+                    to_status="Unverified", reason_code="jd_syntax_needs_review",
+                    evidence_ids=list(item.evidence_ids))],
+            }))
+            changed = True
+            continue
         illustrated = _illustrative_experience(requirement, item)
         if illustrated is not None:
             result.append(illustrated)
@@ -297,6 +328,68 @@ def apply_compound_checks(*, requirements: list[ValidatedRequirement],
         if check is None:
             result.append(item)
             continue
+        # The syntax review must not erase a PREVIOUSLY source-validated
+        # relationship. Preserve only narrow, independently checkable cases:
+        # (1) an ordinary knowledge skill explicitly claimed in an affirmative
+        #     candidate source; the full frozen claim must appear there;
+        # (2) completed, positively stated adjacent work, which can support
+        #     an existing Transferable proposal but never direct Found credit.
+        # Other complex clauses stay review-only until their JD conditions
+        # have been approved; this is important for "both A and B" cases.
+        if check.outcome == "needs_review":
+            original_by_id = {s.segment_id: s for s in segment_resume(resume_text)}
+            prior_source = bool(
+                item.evidence_ids and item.evidence_segments and
+                {s.segment_id for s in item.evidence_segments}.issuperset(item.evidence_ids)
+                and all(sid in original_by_id for sid in item.evidence_ids)
+            )
+            cited = [s for s in item.evidence_segments if (
+                s.segment_id in item.evidence_ids
+                and s.segment_id in original_by_id
+                and s.text == original_by_id[s.segment_id].text
+                and s.section == original_by_id[s.segment_id].section
+                and not instruction_like_evidence(s.text)
+                and not non_candidate_requirement_copy(s.text)
+            )]
+            explicit_knowledge = (
+                prior_source and item.status == "matched"
+                and requirement.constraint.kind == "skill"
+                and not re.search(r"\bboth\b", requirement.jd_evidence, re.I)
+                and any(s.section in {"skills", "inferred_skills"}
+                        and phrase_present(requirement.jd_evidence, s.text)
+                        and classify_requirement_tone(s.text, requirement.name,
+                                                      requirement.jd_evidence) == "positive"
+                        and _positive_literal_segment_is_capability_evidence(
+                            requirement, original_by_id[s.segment_id])
+                        for s in cited)
+            )
+            completed_related_work = (
+                prior_source and item.status != "matched"
+                and item.unified_status == "Transferable"
+                and any(s.section in _WORK_SECTIONS
+                        and not _NEGATED_WORK.search(s.text)
+                        for s in cited)
+            )
+            if explicit_knowledge or completed_related_work:
+                result.append(item.model_copy(update={
+                    "compound_check": check,
+                    "review_recommended": True,
+                    "decision_trace": [*item.decision_trace, DecisionTransition(
+                        stage="compound_review", from_status=item.unified_status or item.status,
+                        to_status=item.unified_status or item.status,
+                        reason_code="syntax_review_not_candidate_failure",
+                        evidence_ids=list(item.evidence_ids),
+                    )] if not any(t.stage == "compound_review" and
+                                 t.reason_code == "syntax_review_not_candidate_failure"
+                                 for t in item.decision_trace) else list(item.decision_trace),
+                }))
+                notes.append(
+                    f"{item.requirement_id}: ambiguous JD conjunction requires "
+                    "review; previously accepted positive source relationship "
+                    "has not been interpreted as a negative."
+                )
+                continue
+        # Non-preserved positive claims are NOT accepted as verified Found.
         status = "uncertain" if check.outcome == "needs_review" else check.outcome
         citations = []
         seen = set()
@@ -308,7 +401,24 @@ def apply_compound_checks(*, requirements: list[ValidatedRequirement],
         # For an uncertain/matched check source data should be visible, but
         # never repeat the original compound claim as proof of each component.
         update = {"status": status, "compound_check": check, "matched_term": None}
-        if status != item.status:
+        if check.outcome == "needs_review" and item.status == "matched":
+            # A syntax-only parser cannot disprove the model's cited work.
+            # Keep original citations for bounded semantic adjudication and
+            # withhold BOTH positive credit and a verified negative until it
+            # resolves. This is a JD-meaning/evaluation gap, not a CV deficit.
+            update.update({
+                "assessment_state": "unverified", "unified_status": None,
+                "current_decision": DecisionRecord(processing_state="pending",
+                    explanation="Compound condition requires independent source review"),
+                "review_recommended": True,
+                "reason": (
+                    "The frozen JD combines conditions whose semantic scope "
+                    "the structural parser could not resolve. The cited "
+                    "passage remains a review lead; no direct or negative "
+                    "candidate judgment was established by this syntax check."
+                ),
+            })
+        if status != item.status and check.outcome != "needs_review":
             details = '; '.join(
                 f'{component.name}: {component.status.replace("_", " ")} '
                 f'({component.reason})' for component in check.components)
@@ -335,6 +445,14 @@ def apply_compound_checks(*, requirements: list[ValidatedRequirement],
                            "evidence": item.evidence, "matched_term": None})
         else:
             update.update({"evidence_ids": [], "evidence_segments": [], "evidence": None, "matched_term": None})
+        if status != item.status:
+            update["decision_trace"] = [*item.decision_trace, DecisionTransition(
+                stage="compound_validation", from_status=item.status,
+                to_status=status,
+                reason_code=("jd_syntax_needs_review" if check.outcome == "needs_review"
+                             else "explicit_compound_source_check"),
+                evidence_ids=list(item.evidence_ids),
+            )]
         new_item = item.model_copy(update=update)
         if new_item.status != item.status:
             changed = True

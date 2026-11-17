@@ -54,15 +54,21 @@ class SQLiteVectorCache:
         if row is None:
             return None
         size, blob = row
-        if dimensions is not None and dimensions != size:
-            return None
         try:
+            # SQLite accepts text or REAL in an INTEGER/BLOB column unless
+            # STRICT. Check actual storage types, not only SQL declarations.
+            if type(size) is not int or size <= 0 or size > 1_000_000:
+                raise ValueError("Invalid stored embedding dimension")
+            if type(blob) is not bytes or len(blob) != size * 4:
+                raise ValueError("Invalid stored embedding payload")
+            if dimensions is not None and dimensions != size:
+                # A valid cached row from a different model dimension is a
+                # cache miss, not grounds to delete a healthy neighbor.
+                return None
             vector = np.frombuffer(blob, dtype="<f4")
-            if vector.size != size:
-                raise ValueError("Stored vector size mismatch")
             return normalize(vector.reshape(1, size), 1, size)[0]
-        except (ValueError, EmbeddingError) as exc:
-            raise EmbeddingError(f"Corrupted cached embedding: {key}") from exc
+        except (TypeError, ValueError, OverflowError, EmbeddingError) as exc:
+            raise EmbeddingError("Corrupted cached embedding (single key)") from exc
 
     def put(self, key: str, vector: np.ndarray) -> None:
         value = normalize(np.asarray(vector, dtype=np.float32).reshape(1, -1), 1)[0]

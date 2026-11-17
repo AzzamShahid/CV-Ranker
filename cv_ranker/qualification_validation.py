@@ -243,9 +243,37 @@ def _named_diploma_claims(requirement: ValidatedRequirement, lines) -> list[Qual
     return claims
 
 
+def _academic_hierarchy_substitution_allowed(
+        requirement: ValidatedRequirement, claimed_level: str | None) -> bool:
+    """A completed higher degree can meet a minimum LEVEL, not prove a diploma.
+
+    Exact named majors and the CV's completion status are checked separately.
+    The employer can require an actual lower credential by stating it is
+    exclusive / separately required for a policy or accreditation reason.
+    An explicit AND of separate degree requirements is NOT one level minimum.
+    No occupation- or degree-field-specific assumptions are made here.
+    """
+    expected = requirement.constraint.degree_level
+    if not (expected in _ACADEMIC_RANK and claimed_level in _ACADEMIC_RANK
+            and _ACADEMIC_RANK[claimed_level] > _ACADEMIC_RANK[expected]):
+        return False
+    jd = requirement.jd_evidence.casefold()
+    if re.search(r"\b(?:exactly|only|specifically)\s+(?:an?\s+)?(?:bachelor|master|associate|undergraduate)\b", jd):
+        return False
+    if re.search(r"\b(?:accreditation|licensure|licensing|registration|statutory|\bundergraduate\b)\b", jd):
+        return False
+    # A JD requesting two degrees separately must not collapse to a single
+    # 'higher qualification' without the lower award also being documented.
+    if (re.search(r"\band\b", jd)
+            and len(re.findall(r"\b(?:bachelor(?:'s)?|master(?:'s)?|doctorate|ph\.?d\.?|associate(?:'s)?)\b", jd)) >= 2):
+        return False
+    return True
+
+
 def _education_claim_accepted(requirement: ValidatedRequirement,
                               claim: QualificationClaim) -> bool:
-    if (claim.degree_level == requirement.constraint.degree_level
+    if ((claim.degree_level == requirement.constraint.degree_level
+         or _academic_hierarchy_substitution_allowed(requirement, claim.degree_level))
             and (not requirement.constraint.field_of_study
                  or _accepted_degree_field(requirement, claim.field_of_study))):
         return True
@@ -406,8 +434,14 @@ def _education(requirement: ValidatedRequirement, lines) -> QualificationCheck:
         return QualificationCheck(kind='education', outcome='ambiguous', claims=claims,
                                   explanation='Compatible degree claims conflict with incomplete or negative claims.')
     if positives:
+        higher = any(x.degree_level != expected_level for x in positives)
         return QualificationCheck(kind='education', outcome='satisfied', claims=claims,
-                                  explanation='CV explicitly claims the required degree level and field; authenticity not checked.')
+                                  explanation=(
+                                      'CV explicitly claims a completed higher academic degree in the required field; '
+                                      'this meets the JD minimum academic level, but does not prove possession of '
+                                      'the lower award. Credential authenticity not independently checked.'
+                                      if higher else
+                                      'CV explicitly claims the required degree level and field; authenticity not checked.'))
     if broad_category and same_level:
         if any(x.state != 'claimed' for x in same_level):
             return QualificationCheck(kind='education', outcome='ambiguous', claims=claims,
@@ -424,10 +458,14 @@ def _education(requirement: ValidatedRequirement, lines) -> QualificationCheck:
     if compatible and any(x.state in {'denied', 'expired'} for x in compatible):
         return QualificationCheck(kind='education', outcome='mismatch', claims=claims,
                                   explanation='Resume explicitly denies completion of the required degree.')
-    # CV may claim a different degree. Higher-level degree substitution is an
-    # employer policy decision, not an unrequested automatic equivalence.
+    # A lower academic award cannot meet a higher minimum. A higher award
+    # may require manual review where the employer explicitly names a separate
+    # original-degree credential or a regulated-accreditation condition.
     if expected_field and any(x.degree_level != expected_level and x.field_of_study and
-                              _field_equal(expected_field, x.field_of_study) for x in claims):
+                              _field_equal(expected_field, x.field_of_study) and
+                              _degree_level_can_overlap(required=expected_level,
+                                                        claimed=x.degree_level)
+                              for x in claims):
         return QualificationCheck(kind='education', outcome='ambiguous', claims=claims,
                                   explanation='Different degree level in same field; employer equivalence policy required.')
     if any(x.degree_level == expected_level and x.field_of_study is None for x in claims):
@@ -717,11 +755,16 @@ def apply_qualification_checks(*, requirements: list[ValidatedRequirement],
                                      if x.state == 'claimed'
                                      and _education_claim_accepted(requirement, x)), None)
             if supported_degree:
+                higher = _academic_hierarchy_substitution_allowed(
+                    requirement, supported_degree.degree_level)
                 reason = (f"The CV reports a completed {supported_degree.degree_level} "
                           f"{supported_degree.credential_name or 'degree'} "
                           f"in {supported_degree.field_of_study or 'the required field'}. "
-                          "This matches an explicitly accepted JD qualification; "
-                          "credential authenticity has not been independently checked.")
+                          + ("This higher academic award meets the minimum level and named subject "
+                             "without claiming the candidate also holds the lower award. "
+                             if higher else
+                             "This matches an explicitly accepted JD qualification. ")
+                          + "Credential authenticity has not been independently checked.")
         elif is_changed and status != 'matched':
             reason = (f"The reported qualification does not establish the exact JD "
                       f"condition: {check.explanation}")

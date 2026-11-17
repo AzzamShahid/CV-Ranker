@@ -1,0 +1,18 @@
+Environment: 2026-11-16 Linux engineering container; not native Windows.
+Python 3.13.5
+v22.16.0
+10.9.2
+Name: fastapi
+Version: 0.128.2
+Name: pydantic
+Version: 2.13.5
+Name: uvicorn
+Version: 0.48.0
+Name: python-multipart
+Version: 0.0.29
+Name: httpx
+Version: 0.28.1
+Name: pytest
+Version: 9.0.2
+npm registry DNS (previous observed ENOTCACHED / no package cache): see npm_install.log
+Full modern npm/Vite build NOT executable; frontend/dist absent.

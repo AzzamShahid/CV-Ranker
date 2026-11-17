@@ -11,6 +11,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from math import isfinite
 
 from .schemas import CandidateResult, RankingReport, RequirementAssessment, ValidatedRequirement
+from .decision_contract import incomplete
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,8 @@ class ScoreWeights:
     # Frozen JD requirement IDs and their percentage of their OWN category.
     # Empty means equal shares, preserving the previous scoring defaults.
     requirement_shares: tuple[tuple[str, float], ...] = ()
+    # Explicit v48 opt-in: old split_jd remains a display-only legacy option.
+    jd_allocation_mode: str = "pooled"  # pooled | weighted_split
 
     def __post_init__(self) -> None:
         for name in ("experience", "education", "jd", "required_share"):
@@ -31,6 +34,8 @@ class ScoreWeights:
                 raise ValueError(f"{name} must be an integer from 0 to 100")
         if not isinstance(self.split_jd, bool):
             raise ValueError("split_jd must be a Boolean")
+        if self.jd_allocation_mode not in {"pooled", "weighted_split"}:
+            raise ValueError("jd_allocation_mode must be pooled or weighted_split")
         if not self.experience + self.education + self.jd:
             raise ValueError("At least one category must have positive weight")
         if self.experience + self.education + self.jd != 100:
@@ -55,9 +60,9 @@ class ScoreWeights:
         return {"experience": self.experience, "education": self.education,
                 "jd": self.jd, "split_jd": self.split_jd,
                 "jd_view": "separate_counts" if self.split_jd else "combined_counts",
-                "jd_allocation": "pooled",
-                "jd_required_share": None,
-                "jd_preferred_share": None,
+                "jd_allocation": self.jd_allocation_mode,
+                "jd_required_share": self.required_share if self.jd_allocation_mode == "weighted_split" else None,
+                "jd_preferred_share": (100 - self.required_share) if self.jd_allocation_mode == "weighted_split" else None,
                 "requirement_shares_percent_of_category": dict(self.requirement_shares),
                 "default_requirement_allocation": "equal" if not self.requirement_shares else "custom"}
 
@@ -73,7 +78,19 @@ def requirement_bucket(req: ValidatedRequirement) -> str:
     return "jd_preferred" if req.priority == "preferred" else "jd_required"
 
 
+def jd_scoring_group(req: ValidatedRequirement) -> str:
+    """Unknown priority is scored with Required, but remains labeled unknown.
+
+    This is a JD bucket policy, not an assertion that the employer said
+    'Required'. Preserve the original priority in exports and review.
+    """
+    return "preferred" if req.priority == "preferred" else "required"
+
+
 def _earned(item: RequirementAssessment) -> bool:
+    if item.current_decision is not None:
+        return (item.current_decision.processing_state == "completed" and
+                item.current_decision.verdict == "Found")
     return (item.assessment_state == "verified" and item.status == "matched"
             and item.unified_status in {None, "Found"})
 
@@ -106,8 +123,11 @@ def rebalance_requirement_share(
     expected = {r.requirement_id: allocation_bucket(r) for r in requirements}
     if changed_id not in expected or set(shares) != set(expected):
         raise ValueError("Allocation does not match the approved frozen JD")
-    if not isinstance(new_share, (int, float)) or isinstance(new_share, bool) or not isfinite(new_share):
-        raise ValueError("New share must be a finite number")
+    # Validate raw user input BEFORE rounding: -0.001 and 100.001 must
+    # not become valid endpoints through centi-percent quantization.
+    if (not isinstance(new_share, (int, float)) or isinstance(new_share, bool)
+            or not isfinite(new_share) or not 0 <= new_share <= 100):
+        raise ValueError("New share must be a finite number between 0 and 100")
     target_units = int((Decimal(str(new_share)) * 100).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
     if not 0 <= target_units <= 10000:
         raise ValueError("New share must be between 0 and 100%")
@@ -171,7 +191,7 @@ def criterion_bucket_counts(report: RankingReport,
 
 def weighted_candidate(report: RankingReport, candidate: CandidateResult,
                        weights: ScoreWeights) -> dict[str, object]:
-    """Return a 0–100 result; `None` signals incomplete/invalid scoring.
+    """Return verified Found credit, marking incomplete assessments provisional.
 
     Category weights are renormalized across present buckets only. JD always
     has exactly one scoring denominator: all Required + Preferred criteria,
@@ -179,16 +199,35 @@ def weighted_candidate(report: RankingReport, candidate: CandidateResult,
     changes presentation only, never the points per JD requirement.
     Missing candidate evidence in a present bucket counts as zero.
     """
-    if candidate.primary_score is None or any(
-            a.assessment_state == "unverified" for a in candidate.assessments):
-        return {"score": None, "components": {}, "effective_weights": {},
-                "reason": "Assessment incomplete; weighted rank withheld"}
     requirements = {r.requirement_id: r for r in report.requirements}
     assessments = {a.requirement_id: a for a in candidate.assessments}
-    if len(assessments) != len(candidate.assessments) or set(requirements) != set(assessments):
-        return {"score": None, "components": {}, "effective_weights": {},
-                "reason": "Incomplete frozen JD coverage; weighted rank withheld"}
-    counts = criterion_bucket_counts(report, candidate)
+    if len(requirements) != len(report.requirements):
+        raise ValueError("Duplicate frozen JD requirement IDs")
+    if len(assessments) != len(candidate.assessments):
+        raise ValueError("Duplicate candidate assessment IDs")
+    if set(assessments) - set(requirements):
+        raise ValueError("Candidate contains a foreign JD requirement ID")
+    if not assessments:
+        # An entirely missing evaluation is not a verified 0%. The old
+        # supervisor report explicitly distinguishes Unavailable from zero.
+        return {"score": None, "components": criterion_bucket_counts(report),
+                "effective_weights": {}, "provisional": True,
+                "unverified_ids": list(requirements), "possible_ceiling": None,
+                "reason": "No candidate assessment was completed"}
+    # Missing rows denote absent response data, never a current candidate
+    # verdict or a mutation of the saved candidate/report.
+    missing = set(requirements) - set(assessments)
+    if missing:
+        assessments.update({identifier: RequirementAssessment(
+            requirement_id=identifier, status="uncertain", unified_status=None,
+            assessment_state="unverified", review_recommended=True,
+            reason="No assessment row was produced for the frozen requirement.",
+            current_decision=incomplete("response_row_missing", stage="weighted_projection",
+                detail="The frozen requirement has no candidate assessment row.")
+        )
+            for identifier in missing})
+    snapshot = candidate.model_copy(update={"assessments": list(assessments.values())})
+    counts = criterion_bucket_counts(report, snapshot)
     shares = _validated_shares(report, weights)
 
     raw = {"experience": weights.experience, "education": weights.education, "jd": weights.jd}
@@ -201,6 +240,27 @@ def weighted_candidate(report: RankingReport, candidate: CandidateResult,
         return {"score": None, "components": counts, "effective_weights": {},
                 "reason": "No positive weight applies to the frozen JD"}
 
+    # In explicit weighted-split mode, normalize custom criterion shares
+    # *within* each Required/Preferred group. The reviewed group percentage
+    # controls their relative overall weight; no arbitrary 50/50 default.
+    split_group_totals = {
+        "required": sum(shares[r.requirement_id] for r in report.requirements
+                        if allocation_bucket(r) == "jd" and jd_scoring_group(r) == "required"),
+        "preferred": sum(shares[r.requirement_id] for r in report.requirements
+                         if allocation_bucket(r) == "jd" and jd_scoring_group(r) == "preferred"),
+    }
+    group_allocations = {"required": weights.required_share,
+                         "preferred": 100 - weights.required_share}
+    if weights.jd_allocation_mode == "weighted_split":
+        active_group_total = sum(group_allocations[k] for k, v in split_group_totals.items() if v)
+        if not active_group_total:
+            # A single nonempty JD group with a user-selected zero share
+            # still receives the entire active JD category (no lost points).
+            group_allocations = {k: int(v > 0) for k, v in split_group_totals.items()}
+            active_group_total = sum(group_allocations.values())
+        for key in group_allocations:
+            group_allocations[key] = (100.0 * group_allocations[key] / active_group_total
+                                      if split_group_totals[key] else 0.0)
     jd_total = counts["jd_required"]["total"] + counts["jd_preferred"]["total"]
     jd_found = counts["jd_required"]["found"] + counts["jd_preferred"]["found"]
     effective: dict[str, float] = {}
@@ -209,77 +269,73 @@ def weighted_candidate(report: RankingReport, candidate: CandidateResult,
     effective["jd"] = 100.0 * weights.jd / active if jd_exists else 0.0
     contributions = []
     score = 0.0
+    unresolved_ids: list[str] = []
+    possible_remaining = 0.0
     for requirement in report.requirements:
         key = allocation_bucket(requirement)
         item = assessments[requirement.requirement_id]
-        possible = effective[key] * shares[requirement.requirement_id] / 100
+        if key == "jd" and weights.jd_allocation_mode == "weighted_split":
+            group = jd_scoring_group(requirement)
+            group_total = split_group_totals[group]
+            item_fraction = (shares[requirement.requirement_id] / group_total
+                             if group_total > 0 else 0)
+            possible = effective[key] * group_allocations[group] / 100 * item_fraction
+        else:
+            possible = effective[key] * shares[requirement.requirement_id] / 100
         earned = possible if _earned(item) else 0.0
         score += earned
+        if ((item.current_decision is not None and
+             item.current_decision.processing_state != "completed") or
+            (item.current_decision is None and item.assessment_state == "unverified")):
+            unresolved_ids.append(requirement.requirement_id)
+            possible_remaining += possible
         contributions.append({
             "requirement_id": requirement.requirement_id,
             "requirement": requirement.name,
             "priority": requirement.priority,
             "category": key,
             "share_of_category": shares[requirement.requirement_id],
+            "jd_group_allocation": (group_allocations.get(jd_scoring_group(requirement))
+                                    if key == "jd" and weights.jd_allocation_mode == "weighted_split"
+                                    else None),
             "possible_points": round(possible, 6),
             "earned_points": round(earned, 6),
             "found": bool(_earned(item)),
+            "incomplete": item.assessment_state == "unverified",
         })
+    provisional = bool(unresolved_ids)
     return {"score": round(score, 2), "components": counts,
             "jd_combined": {"found": jd_found, "total": jd_total},
             "effective_weights": {k: round(v, 4) for k, v in effective.items()},
             "requirement_contributions": contributions,
-            "reason": "Verified Found only; Transferable and Not Found earn zero"}
+            "provisional": provisional, "unverified_ids": unresolved_ids,
+            "possible_ceiling": round(min(100.0, score + possible_remaining), 2),
+            "reason": ("Provisional lower-bound score: verified Found credit only; "
+                       "incomplete criteria may change the order and require review"
+                       if provisional else
+                       "Verified Found only; Transferable and Not Found earn zero")}
 
 
 def provisional_score_bounds(report: RankingReport, candidate: CandidateResult,
                              weights: ScoreWeights) -> dict[str, object]:
-    """Show useful partial evidence without manufacturing a final rank.
+    """Project partial-credit bounds through the SAME allocation as leaderboard.
 
-    The floor contains *only* verified Found credit; the ceiling assumes all
-    unresolved requirements might later be Found. This is an evidence range,
-    never a confidence percentage, an earned score, or a hiring recommendation.
-    A model outage must not erase the verified work already available to HR.
+    Never derive a second, incompatible weighted formula. Missing rows are
+    accounted for by weighted_candidate on an isolated in-memory snapshot.
+    No persisted verdict, source evidence or score is changed by this view.
     """
-    requirements = {r.requirement_id: r for r in report.requirements}
-    assessments = {a.requirement_id: a for a in candidate.assessments}
-    if (len(requirements) != len(report.requirements)
-            or len(assessments) != len(candidate.assessments)
-            or set(assessments) - set(requirements)):
-        raise ValueError("Cannot estimate bounds from duplicate or unexpected requirement IDs")
-    shares = _validated_shares(report, weights)
-    counts = criterion_bucket_counts(report)
-    active_groups = {
-        "experience": counts["experience"]["total"] > 0,
-        "education": counts["education"]["total"] > 0,
-        "jd": counts["jd_required"]["total"] + counts["jd_preferred"]["total"] > 0,
-    }
-    raw = {"experience": weights.experience, "education": weights.education, "jd": weights.jd}
-    total_active = sum(raw[key] for key, enabled in active_groups.items() if enabled)
-    if not total_active:
-        raise ValueError("No positive weighted category applies to the frozen JD")
-    confirmed = 0.0
-    unresolved_possible = 0.0
-    unresolved = 0
-    for req in report.requirements:
-        row = assessments.get(req.requirement_id)
-        bucket = allocation_bucket(req)
-        possible = (100.0 * raw[bucket] / total_active
-                    * shares[req.requirement_id] / 100.0)
-        if row is not None and _earned(row):
-            confirmed += possible
-        elif row is None or row.assessment_state == "unverified":
-            unresolved_possible += possible
-            unresolved += 1
-    return {
-        "verified_floor": round(confirmed, 2),
-        "possible_ceiling": round(min(100.0, confirmed + unresolved_possible), 2),
-        "unverified_requirements": unresolved,
-        "provisional": candidate.primary_score is None or unresolved > 0,
-        "reason": ("Only verified Found requirements contribute to the floor; "
-                   "unresolved requirements contribute to the possible ceiling, "
-                   "not an earned score."),
-    }
+    projected = weighted_candidate(report, candidate, weights)
+    if projected["score"] is None:
+        return {"verified_floor": None, "possible_ceiling": None,
+                "unverified_requirements": len(projected.get("unverified_ids", [])),
+                "provisional": True, "reason": projected["reason"]}
+    return {"verified_floor": projected["score"],
+            "possible_ceiling": projected["possible_ceiling"],
+            "unverified_requirements": len(projected["unverified_ids"]),
+            "provisional": bool(projected["provisional"]),
+            "reason": ("Only verified Found credit contributes to the floor; "
+                       "unresolved frozen criteria contribute to the ceiling "
+                       "using exactly the leaderboard's approved weighting.")}
 
 
 def weighted_leaderboard(report: RankingReport, weights: ScoreWeights) -> list[dict[str, object]]:
@@ -287,18 +343,33 @@ def weighted_leaderboard(report: RankingReport, weights: ScoreWeights) -> list[d
     for index, candidate in enumerate(report.candidates):
         scored = weighted_candidate(report, candidate, weights)
         grouped = criterion_bucket_counts(report, candidate)
+        # Derive weighted-score completeness from the canonical per-JD rows,
+        # not a possibly absent/stale primary-score display projection. A
+        # fully examined negative remains a verified zero, even if no prior
+        # unweighted display score was populated in a saved report.
+        provisional = bool(scored.get("provisional", False) or scored.get("score") is None)
+        # Never rank a provisional lower bound; retain that number separately.
+        official_score = scored["score"] if not provisional else None
         rows.append({"candidate_index": index, "candidate": candidate.candidate_name,
-                     "weighted_score": scored["score"],
+                     "weighted_score": official_score,
+                     "verified_floor": scored["score"] if provisional else None,
+                     "provisional": provisional,
+                     "score_status": ("Unavailable" if scored["score"] is None else
+                                       "Unavailable · incomplete" if provisional else "Verified"),
+                     "unverified_count": len(scored.get("unverified_ids", [])),
                      "jd_overall": f"{grouped['jd_required']['found'] + grouped['jd_preferred']['found']}/"
                                    f"{grouped['jd_required']['total'] + grouped['jd_preferred']['total']}",
                      "required": f"{grouped['jd_required']['found']}/{grouped['jd_required']['total']}",
                      "preferred": f"{grouped['jd_preferred']['found']}/{grouped['jd_preferred']['total']}",
                      "experience": f"{grouped['experience']['found']}/{grouped['experience']['total']}",
                      "education": f"{grouped['education']['found']}/{grouped['education']['total']}",
-                     "review": "Unverified" if scored["score"] is None else "Review evidence",
+                     "review": ("Unavailable · incomplete coverage" if scored["score"] is None else
+                                f"Incomplete · {len(scored['unverified_ids'])} pending/failed"
+                                if scored.get("provisional") else "Review evidence"),
                      "breakdown": scored})
     rows.sort(key=lambda row: (
         row["weighted_score"] is None, -(row["weighted_score"] or 0),
+        row["provisional"],
         row["candidate"].casefold(),
         report.candidates[int(row["candidate_index"])].candidate_source.casefold()))
     last_key = None
@@ -309,7 +380,7 @@ def weighted_leaderboard(report: RankingReport, weights: ScoreWeights) -> list[d
             continue
         # Within the weighted leaderboard, equal pooled scores are genuine
         # ties: Preferred coverage must not reintroduce hidden extra weight.
-        key = row["weighted_score"]
+        key = (row["weighted_score"], row["provisional"])
         if key != last_key:
             last_rank = position
             last_key = key

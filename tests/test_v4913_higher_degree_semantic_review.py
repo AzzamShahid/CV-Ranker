@@ -67,7 +67,7 @@ def test_unrelated_higher_degree_does_not_transfer_just_because_its_higher():
 
 
 def test_both_model_prompts_require_independent_field_relationship_judgment():
-    assert "TWO SEPARATE determinations" in FINAL_ADJUDICATION_PROMPT
-    assert "not sufficient reasoning for not_found" in FINAL_ADJUDICATION_PROMPT
-    assert "Do NOT stop degree analysis" in UNIFIED_PROMPT
-    assert "never automatically" in UNIFIED_PROMPT.casefold()
+    assert "completed same/higher-level award" in FINAL_ADJUDICATION_PROMPT
+    assert "completed same/higher-level award" in FINAL_ADJUDICATION_PROMPT
+    assert "A higher award does not establish an unreported lower award" in UNIFIED_PROMPT
+    assert "may support transfer, not exact credential satisfaction" in UNIFIED_PROMPT

@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import tempfile
 from math import isfinite
 from typing import Mapping
 from zipfile import ZIP_DEFLATED, BadZipFile, ZipFile
@@ -34,7 +35,7 @@ RECOVERY_KEYS = (
     "cv_unified_metrics", "cv_request_metrics", "cv_final_results",
     "cv_resume_cache", "cv_weight_split", "cv_weight_slider_experience",
     "cv_weight_slider_education", "cv_weight_slider_jd",
-    "cv_weight_slider_required", "cv_requirement_allocations",
+    "cv_weight_slider_required", "cv_requirement_allocations", "cv_jd_allocation_mode",
 )
 
 
@@ -49,15 +50,26 @@ def local_signing_key(path: Path) -> bytes:
         raise ValueError("Recovery signing key cannot be a symbolic link")
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     if not path.exists():
-        flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
-        flags |= getattr(os, "O_NOFOLLOW", 0)
+        # Never publish a zero-byte key then fill it: another process may
+        # read the empty file and incorrectly diagnose a corrupt checkpoint.
+        # A fully fsynced private temporary file is published by atomic hard
+        # link (which fails with FileExistsError rather than replacing an
+        # existing signing key). This works on local POSIX and NTFS volumes.
+        fd, pending = tempfile.mkstemp(prefix=".cvr-signing-", dir=path.parent)
         try:
-            fd = os.open(path, flags, 0o600)
-        except FileExistsError:
-            pass  # Concurrent Streamlit rerun already initialized the key.
-        else:
+            os.chmod(pending, 0o600)
             with os.fdopen(fd, "wb") as handle:
                 handle.write(secrets.token_bytes(32))
+                handle.flush()
+                os.fsync(handle.fileno())
+            try:
+                os.link(pending, path)
+            except FileExistsError:
+                pass  # Another complete key was published first.
+        finally:
+            Path(pending).unlink(missing_ok=True)
+    if path.is_symlink():
+        raise ValueError("Recovery signing key cannot be a symbolic link")
     key = path.read_bytes()
     if len(key) != 32:
         raise ValueError("Recovery signing key was missing, truncated or corrupted")
@@ -123,6 +135,8 @@ def _validate_snapshot(snapshot: object) -> dict:
     ScoreWeights(*weights)
     if "cv_weight_split" in snapshot and not isinstance(snapshot["cv_weight_split"], bool):
         raise ValueError("Recovery weight display setting was invalid")
+    if snapshot.get("cv_jd_allocation_mode", "pooled") not in {"pooled", "weighted_split"}:
+        raise ValueError("Recovery JD scoring policy was invalid")
     return snapshot
 
 

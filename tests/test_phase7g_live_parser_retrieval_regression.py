@@ -181,7 +181,7 @@ def test_compact_integration_flags_exact_named_skill_as_potential_direct(tmp_pat
         supports_compact_transferability = True
         def prompt_fits(self, *_): return True
         def invoke_structured(self, *, system_prompt, user_prompt, schema):
-            assert "same work for another employer" in system_prompt
+            assert "Direct work remains direct in another company or sector" in system_prompt
             return CompactTransferabilityResponse(capabilities=[CompactCapabilityProposal(
                 capability_id="R001-C01", relationship="transferable",
                 source_ids=[chosen.segment_id], explanation="Earlier position")])

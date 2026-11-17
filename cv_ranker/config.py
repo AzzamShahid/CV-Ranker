@@ -65,6 +65,14 @@ class Settings:
     llm_type_review: bool = False
     eligibility_policy_path: str | None = None
     llm_retries: int = 2
+    # Application-level conservative cloud packet ceiling, not a claim about
+    # any provider's published maximum. Set lower values for smaller models.
+    # Cloud limits must NEVER inherit local Ollama settings or silently expand
+    # the user's selected API-request ceiling.
+    openrouter_context_tokens: int = field(default_factory=lambda: int(
+        os.getenv("OPENROUTER_CONTEXT_TOKENS", "32768")))
+    openrouter_output_tokens: int = field(default_factory=lambda: int(
+        os.getenv("OPENROUTER_OUTPUT_TOKENS", "4096")))
     ollama_num_ctx: int = 8192
     ollama_num_predict: int = 2048
     ollama_keep_alive: str = "15m"
@@ -114,6 +122,10 @@ class Settings:
             raise ValueError("assessment_batch_size must be >= 1")
         if self.llm_retries < 0:
             raise ValueError("llm_retries must be >= 0")
+        if (self.openrouter_context_tokens < 2048
+                or self.openrouter_output_tokens < 1
+                or self.openrouter_output_tokens >= self.openrouter_context_tokens):
+            raise ValueError("OpenRouter context/output token settings are invalid")
         if self.ollama_num_ctx < 2048:
             raise ValueError("ollama_num_ctx must be >= 2048")
         if self.ollama_num_predict < 1 or self.ollama_num_predict >= self.ollama_num_ctx:

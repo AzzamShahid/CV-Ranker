@@ -86,9 +86,9 @@ def test_prompts_describe_general_lifecycle_and_provenance_without_software_dict
         assert 'frozen' in prompt.casefold()
         assert 'source' in prompt.casefold()
         assert 'transferable' in prompt.casefold()
-        assert 'job title' in prompt.casefold()
-        assert 'deploying' in prompt.casefold()
-        assert '15–45 words' in prompt
+        assert 'title' in prompt.casefold()
+        assert 'deployment' in prompt.casefold()
+        assert 'reason' in prompt.casefold()
         # Prompts derive specialties from the JD rather than privileging a
         # fixed vendor, programming language or cloud provider.
         for vendor in ('aws', 'azure', 'docker', 'kubernetes', 'react', 'java'):

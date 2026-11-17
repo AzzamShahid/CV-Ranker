@@ -42,7 +42,8 @@ def test_nlp_invalid_grouped_match_gets_focused_citation_repair():
     assert res[0].status == "matched" and res[0].matched_term == "NLP"
     assert res[0].evidence_ids == ["S001"]
     assert len(llm.calls) == 3 and mode == "llm_assessed"
-    assert llm.calls[-1][1].startswith("SECOND LOOK FOCUSED ABBREVIATION")
+    from cv_ranker import prompt_fragments as pf
+    assert llm.calls[-1][1].startswith(pf.LEGACY_ABBREVIATION_RECHECK)
     assert any("focused Qwen abbreviation match accepted" in w for w in warnings)
 
 

@@ -1,0 +1,9 @@
+Prompt/endpoint,Module,Role,Change,Status,Comment
+unified.UNIFIED_PROMPT,cv_ranker/unified.py,live model final decision,Three-value model enum and rewritten prompt,changed,Schema accepts found/transferable/not_found; no live model measurement
+unified.FINAL_ADJUDICATION_PROMPT,cv_ranker/unified.py,independent model decision,Three-value enum and prompt,changed,Model may still produce invalid output; bounded review remains
+condition_review.REVIEW_PROMPT,cv_ranker/condition_review.py,compound semantic final decision,Three final choices; facet uncertainty retained,changed,Legacy selectors still use internal assessment_state
+ui.final_decisions._JUDGE_PROMPT,cv_ranker/ui/final_decisions.py,focused final model judgment,Strict three-choice result enum,partial,Legacy handler contains branch for old uncertain result
+assessor.SYSTEM_PROMPT,cv_ranker/assessor.py,legacy model decision,Not migrated,open,Matched/not_matched/uncertain remains; no canonical direct transferable wire option
+assessor.CORRECTION_PROMPT,cv_ranker/assessor.py,legacy correction,Not migrated,open,Same legacy wire schema; must be migrated with validator
+semantic.transferability prompts,cv_ranker/semantic/transferability.py,semantic relation proposals,Not migrated,open,Inspect all full/compact/batch callers and response schemas
+JD typing and retrieval,cv_ranker/requirement_typing.py,"JD interpretation, non-candidate verdict",No change required to candidate contract,retained,Intermediate typing uncertainty is permitted

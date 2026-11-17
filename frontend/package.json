@@ -1,0 +1,44 @@
+{
+  "name": "textilehr-ai-frontend",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "test:route": "tsc --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir .route-test src/router.ts && node --test tests/router.test.mjs",
+    "test": "npm run test:route && npm run test:observation && npm run test:submission && npm run test:jd-years && npm run test:jd-rows && npm run test:mounted",
+    "test:observation": "tsc --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir .observation-test src/api/observation.ts && node --test tests/observation.test.mjs",
+    "test:submission": "tsc --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir .submission-test src/api/submissionIntent.ts && node --test tests/submissionIntent.test.mjs",
+    "test:jd-years": "tsc --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir .jdyears-test src/api/jdYears.ts && node --test tests/jdYears.test.mjs",
+    "test:jd-rows": "tsc --target ES2022 --module NodeNext --moduleResolution NodeNext --outDir .jdrows-test src/api/jdRows.ts && node --test tests/jdRowIdentity.test.mjs",
+    "pretest:mounted": "vite build --target es2022 --ssr src/pages/Workflow.tsx --outDir .test-dist/workflow && vite build --target es2022 --ssr src/pages/Results.tsx --outDir .test-dist/results",
+    "test:mounted": "node --test tests/mountedComponents.test.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "react-router-dom": "7.9.5",
+    "zod": "4.1.12"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.1",
+    "@tailwindcss/vite": "4.1.17",
+    "@types/jsdom": "^30.0.0",
+    "@types/react": "19.2.6",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "5.1.1",
+    "eslint": "9.39.1",
+    "eslint-plugin-react-hooks": "7.0.1",
+    "jsdom": "^27.0.1",
+    "tailwindcss": "4.1.17",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.46.3",
+    "vite": "7.2.2"
+  }
+}

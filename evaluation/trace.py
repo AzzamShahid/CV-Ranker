@@ -6,6 +6,7 @@ and stores only structured outputs, never prompts, CV text, or model internals.
 from __future__ import annotations
 
 from collections import defaultdict
+from cv_ranker import prompt_fragments as pf
 from typing import Any
 
 
@@ -24,9 +25,9 @@ class RecordingLLM:
         )
         if hasattr(result, "assessments"):
             phase = (
-                "focused_abbreviation" if user_prompt.startswith("SECOND LOOK FOCUSED ABBREVIATION")
-                else "second_look" if user_prompt.startswith("SECOND LOOK")
-                else "correction" if "correcting invalid rows" in system_prompt.casefold()
+                "focused_abbreviation" if (user_prompt.startswith(pf.LEGACY_ABBREVIATION_RECHECK) or user_prompt.startswith("SECOND LOOK FOCUSED ABBREVIATION"))
+                else "second_look" if (user_prompt.startswith(pf.LEGACY_UNMATCHED_SECOND_LOOK) or user_prompt.startswith("SECOND LOOK"))
+                else "correction" if ("correcting invalid rows" in system_prompt.casefold() or "CORRECTION TASK:" in system_prompt)
                 else "initial"
             )
             self.assessment_calls.append({

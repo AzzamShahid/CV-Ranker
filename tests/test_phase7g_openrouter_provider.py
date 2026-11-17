@@ -111,7 +111,8 @@ def test_structured_parse_error_retries_then_succeeds(monkeypatch):
     monkeypatch.setattr(llm, "_post_chat", fake)
     assert llm.invoke_structured(system_prompt="s", user_prompt="u", schema=Reply).ok
     assert len(seen) == 2
-    assert "CORRECTION" in seen[1]["messages"][1]["content"]
+    from cv_ranker import prompt_fragments as pf
+    assert pf.OPENROUTER_STRUCTURAL_CORRECTION_SUFFIX in seen[1]["messages"][1]["content"]
 
 
 def test_exhausted_schema_retries_fail_closed(monkeypatch):
@@ -129,7 +130,7 @@ def test_missing_or_truncated_response_is_not_accepted(monkeypatch):
 
 
 def test_context_budget_blocks_post(monkeypatch):
-    llm = StructuredLLM(cloud_settings(ollama_num_ctx=2048, ollama_num_predict=1900))
+    llm = StructuredLLM(cloud_settings(openrouter_context_tokens=2048, openrouter_output_tokens=1900))
     monkeypatch.setattr(llm, "_post_chat", lambda p: (_ for _ in ()).throw(AssertionError("posted despite over-limit")))
     with pytest.raises(LLMError, match="Context budget exceeded"):
         llm.invoke_structured(system_prompt="system " * 300, user_prompt="user " * 500, schema=Reply)

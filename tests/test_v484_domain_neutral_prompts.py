@@ -45,13 +45,14 @@ def test_all_literal_model_prompts_avoid_fixed_professional_examples():
 def test_unified_contract_is_decision_based_and_source_grounded():
     source = (ROOT / "unified.py").read_text(encoding="utf-8")
     from cv_ranker.unified import UNIFIED_PROMPT
-    required = ("found", "transferable", "not_found", "uncertain",
-                "FROZEN JD", "ENTAILMENT CHECK", "all supplied sources",
-                "performed work", "denial", "including/such as",
-                "AND", "VERBATIM", "source IDs")
+    required = ("found", "transferable", "not_found",
+                "frozen employer requirement", "equivalent wording", "original candidate sources",
+                "performed duty", "denial", "examples are not automatically",
+                "AND/OR", "exact source", "source IDs")
     normalized = " ".join(UNIFIED_PROMPT.casefold().split())
     for term in required:
         assert term.casefold() in normalized, term
+    assert "choose uncertain" not in normalized
     assert '"Time-series anomaly screening' not in source
     assert "BM25" not in source
     # Normal and corrective calls retain one required-ID schema. Unresolved
@@ -65,7 +66,7 @@ def test_unified_contract_is_decision_based_and_source_grounded():
 def test_jd_alternative_and_validation_prompts_are_domain_neutral():
     from cv_ranker.jd import SYSTEM_PROMPT, CORRECTION_PROMPT
     from cv_ranker.assessor import SYSTEM_PROMPT as LEGACY_PROMPT
-    assert '"A or B"' in SYSTEM_PROMPT
-    assert "including" in SYSTEM_PROMPT and "including" in CORRECTION_PROMPT
-    assert "DIFFERENT item" in LEGACY_PROMPT
-    assert "Do not give transferable credit" in LEGACY_PROMPT
+    assert "OR alternatives" in SYSTEM_PROMPT
+    assert "including" in SYSTEM_PROMPT and "faithful scope and qualifiers" in CORRECTION_PROMPT
+    assert "Another tool is not the named tool" in LEGACY_PROMPT
+    assert "bare list of alternative tools alone" in LEGACY_PROMPT

@@ -86,7 +86,7 @@ class FirstPassMissesNamedSkills:
     def invoke_structured(self, *, system_prompt, user_prompt, schema):
         ids = list(schema.model_fields)
         self.calls.append(tuple(ids))
-        if "second, independent" in system_prompt:
+        if "INDEPENDENT REVIEW:" in system_prompt:
             self.final_ids.extend(ids)
             return schema.model_validate({rid: {
                 "decision": "not_found", "relation": "absent",

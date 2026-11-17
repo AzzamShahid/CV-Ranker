@@ -163,6 +163,8 @@ Create `.env` beside `app.py` using `.env.example` as a starting point. Explicit
 | `OLLAMA_BASE_URL` | `http://127.0.0.1:11434` | Local Ollama service endpoint. |
 | `OPENROUTER_API_KEY` | empty | **Required when using cloud provider**; never commit or print. |
 | `OPENROUTER_MODEL` | `google/gemini-2.5-flash-lite` | Selected cloud assessment model; schema support depends on endpoint. |
+| `OPENROUTER_CONTEXT_TOKENS` | `32768` | Conservative configured cloud request packet ceiling, **not** model/provider maximum; independent of Ollama. |
+| `OPENROUTER_OUTPUT_TOKENS` | `4096` | Cloud maximum output reservation and API `max_tokens`, separate from local Ollama. |
 | `EMBEDDING_MODEL` | `embeddinggemma-2:latest` | Local retrieval model, required by current unified AI assessment even with cloud inference. |
 | `EMBEDDING_TIMEOUT_SECONDS` | `180` | Timeout for local embedding requests. |
 | `EMBEDDING_BATCH_SIZE` | `16` | Embedding request batch size. |
@@ -215,3 +217,13 @@ The generated manifest protects against accidentally loading mixed files but is 
 2. `README.md` is the current entry point and quick start; it links here rather than duplicating the design specification.
 3. Historical release notes are archived in [`docs/history/releases/`](history/releases/); superseded overview documents live in [`docs/history/legacy_reference/`](history/legacy_reference/). `V48_*` design records, checkpoint logs and historical validation reports are **not** authoritative for the current build.
 4. When behavior changes, update the corresponding module tests, this architecture reference, any affected user guide, and the build manifest together. A UI-only visual change should not change assessment identity or rerun paid model assessments.
+
+
+## v52 integrity boundaries (13 November 2026)
+
+- `jd_review.py` optionally freezes an exact-offset nested `JDConditionNode` in `schemas.py`; `jd_expression.py` validates original full scope and evaluates AND/OR without merging score rows. Older flat annotations remain historical/reviewable.
+- `pipeline.py` coordinates immutable per-slot source snapshots (`source_snapshot.py`), original segmentation, the unified/legacy assessor, specialist checks and condition-level semantic review. It remains a modular monolith, not a REST server or distributed durable queue.
+- `condition_review.py` receives sent original candidate source IDs and exact JD span offsets, validates proof quotes and approved expression, saves detailed `CompoundCheck.components` and refuses incomplete direct credit. Source attribution alone is **not** independent semantic truth.
+- `operation_ledger.py` provides an atomic local SQLite claim before semantic dispatch; unknown delivery blocks automatic resend. This does not make OpenRouter idempotent or remotely tenant-safe.
+- `weighted_scoring.py` is the sole allocation arithmetic for both candidate score and provisional floor/ceiling. UI and exporters must only project this result.
+- Protocol v52 invalidates old assessment semantics; v51 results are historical and not silently verified under new code.

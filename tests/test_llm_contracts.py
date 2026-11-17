@@ -102,9 +102,13 @@ def test_invalid_evidence_after_correction_receives_no_credit():
     )
     assert llm.calls == 2
     assert mode == "llm_assessed"
-    assert items[0].status == "not_matched"
+    # Three-verdict policy: exhausted invalid citations cannot be misreported
+    # as a verified candidate negative, even when no credit is awarded.
+    assert items[0].status == "uncertain"  # intermediate processing state only
+    assert items[0].unified_status is None
+    assert items[0].current_decision.failure.code == "citation_identity_invalid"
     assert items[0].evidence is None
-    assert any("no credit awarded" in warning for warning in warnings)
+    assert any("correction" in warning for warning in warnings)
 
 
 def test_hallucinated_evidence_is_retried_and_not_trusted():
@@ -177,8 +181,10 @@ def test_main_llm_failure_uses_conservative_technical_fallback():
         requirements=[req("Python")],
         llm=llm,
     )
-    assert mode == "fallback_exact"
-    assert items[0].status == "matched"
+    # An unavailable LLM cannot silently become a verified literal match.
+    assert mode == "failed"
+    assert items[0].current_decision.verdict is None
+    assert items[0].current_decision.failure.code == "provider_timeout"
     assert warnings
 
 
@@ -204,10 +210,10 @@ def test_duplicate_id_is_retried_not_silently_accepted():
 def test_prompt_explicitly_rejects_transferable_technology_credit():
     # The runtime policy is domain-independent, not a list of pairs chosen for
     # one synthetic benchmark. Semantic abbreviations still belong to Qwen.
-    assert "DIFFERENT item" in SYSTEM_PROMPT
-    assert "Do not give transferable credit" in SYSTEM_PROMPT
-    assert "abbreviations" in SYSTEM_PROMPT
+    assert "Another tool is not the named tool" in SYSTEM_PROMPT
+    assert "bare list of alternative tools alone" in SYSTEM_PROMPT
+    assert "abbreviation" in SYSTEM_PROMPT
 
 
 def test_prompt_forbids_llm_scoring():
-    assert "Do not calculate scores" in SYSTEM_PROMPT
+    assert "no extra keys, scores" in SYSTEM_PROMPT

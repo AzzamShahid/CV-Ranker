@@ -63,7 +63,7 @@ class RecheckingProvider:
         result = {}
         for req in payload["requirements"]:
             rid = req["id"]
-            if "second, independent" in system_prompt:
+            if "INDEPENDENT REVIEW:" in system_prompt:
                 assert rid in {"R001", "R018"}
                 ids = (["S011", "S014"] if rid == "R001" else ["S014"])
                 assert all(sid in sources for sid in ids)

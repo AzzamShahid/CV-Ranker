@@ -526,6 +526,7 @@ def _coordinated_denial_scope(text: str, target: str) -> bool:
         cue = re.search(
             r"\b(?:no\s+(?:direct\s+|hands-on\s+|professional\s+|practical\s+)?"
             r"(?:(?:experience|knowledge|exposure|proficiency)\s+(?:with|in|of|using)\s+)?|"
+            r"without\s+(?:using\s+)?|"
             r"(?:have|has|had|did)\s+not\s+(?:used?|worked\s+with|developed|built)\s+|"
             r"never\s+(?:used|worked\s+with|developed)\s+|"
             r"(?:haven't|hasn't|didn't)\s+(?:used?|worked\s+with|developed)\s+)"

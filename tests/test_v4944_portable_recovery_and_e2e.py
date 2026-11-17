@@ -4,6 +4,7 @@ from __future__ import annotations
 import csv
 import io
 import json
+import os
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -238,11 +239,21 @@ def test_signing_key_survives_restart_without_entering_recovery_file(tmp_path):
     first = local_signing_key(path)
     second = local_signing_key(path)
     assert first == second and len(first) == 32
-    if path.exists():
+    # POSIX mode bits enforce owner-only access on Unix. On Windows,
+    # st_mode does not represent NTFS ACL entries and a Unix bitmask check
+    # produces a false failure (for example 0o100666 on NTFS).
+    if os.name != "nt":
         assert path.stat().st_mode & 0o077 == 0
     assert path.read_bytes() == first
     path.unlink()
-    path.symlink_to(tmp_path / "untrusted-key")
+    try:
+        path.symlink_to(tmp_path / "untrusted-key")
+    except OSError as exc:
+        # Windows can require Developer Mode or SeCreateSymbolicLinkPrivilege.
+        # Skip only this OS-privilege-dependent check, not the key checks.
+        if os.name == "nt" and getattr(exc, "winerror", None) == 1314:
+            pytest.skip("Windows account cannot create test symlinks")
+        raise
     with pytest.raises(ValueError, match="symbolic link"):
         local_signing_key(path)
 

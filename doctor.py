@@ -1,3 +1,4 @@
+from cv_ranker import prompt_fragments as pf
 import argparse
 import importlib
 import importlib.metadata
@@ -99,8 +100,8 @@ def check_structured_output(settings) -> bool:
             message: str
 
         result = StructuredLLM(settings).invoke_structured(
-            system_prompt="Return a structured JSON response matching the supplied schema.",
-            user_prompt="Return ok=true and message='structured output works'.",
+            system_prompt=pf.DOCTOR_SYSTEM_PROMPT,
+            user_prompt=pf.DOCTOR_USER_PROMPT,
             schema=HealthCheck,
         )
         print(f"[OK] {result.model_dump()}")
@@ -124,8 +125,8 @@ def check_openrouter_structured_output(settings) -> bool:
             message: str
 
         result = StructuredLLM(settings).invoke_structured(
-            system_prompt="Return only a structured JSON response matching the supplied schema.",
-            user_prompt="Return ok=true and message='structured output works'.",
+            system_prompt=pf.DOCTOR_SYSTEM_PROMPT,
+            user_prompt=pf.DOCTOR_USER_PROMPT,
             schema=HealthCheck,
         )
         print("[OK] OpenRouter returned schema-validated JSON")

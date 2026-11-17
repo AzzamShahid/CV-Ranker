@@ -7,12 +7,14 @@ from cv_ranker.build_info import (ASSESSMENT_PROTOCOL_VERSION, BUILD_ID,
 
 
 def test_assessment_repair_has_a_new_protocol_identity():
-    # The 4.9.40–4.9.42 styling revisions left the paid assessment identity
-    # unchanged. This release changes how invalid grouped model rows are
-    # reconciled, so old incomplete checkpoints must not mix with new results.
-    assert UI_RELEASE_VERSION == "4.9.55"
-    assert BUILD_ID == "phase7g-v4-9-55-calibrated-uncertainty-local-edit-2026-11-11"
-    assert ASSESSMENT_PROTOCOL_VERSION == 41
+    # The styling revisions must not force paid reassessment; decision-engine
+    # repairs from v4.9.58 onward require protocol v44 or newer. Test the
+    # relationship between UI/build identities instead of pinning an old
+    # release number (which breaks whenever the application is updated).
+    assert UI_RELEASE_VERSION
+    expected_build_prefix = f"phase7g-v{UI_RELEASE_VERSION.replace('.', '-')}-"
+    assert BUILD_ID.startswith(expected_build_prefix)
+    assert ASSESSMENT_PROTOCOL_VERSION >= 44
 
 
 def test_supervisor_cards_render_consistently_in_streamlit():

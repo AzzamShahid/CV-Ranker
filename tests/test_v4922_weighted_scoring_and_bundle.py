@@ -184,7 +184,7 @@ def test_preferred_only_jd_receives_its_full_applicable_weight():
     assert weighted_candidate(report(requests, [cv]), cv, ScoreWeights())["score"] == 100
 
 
-def test_unverified_cannot_become_numeric_or_ranked():
+def test_unverified_gets_only_provisional_zero_credit_not_verified_match():
     requests = [req("skill")]
     good = candidate("Good", {"skill": "Found"})
     failed = candidate("Unverified", {"skill": "Not Found"}, unverified=True)
@@ -194,6 +194,8 @@ def test_unverified_cannot_become_numeric_or_ranked():
     assert results[0]["weighted_score"] == 100
     assert results[1]["weighted_score"] is None
     assert results[1]["rank"] is None
+    assert results[1]["provisional"] is True
+    assert results[1]["review"].startswith("Incomplete")
 
 
 def test_no_positive_weights_are_rejected():

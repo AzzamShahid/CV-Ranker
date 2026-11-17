@@ -1,0 +1,53 @@
+{
+  "baseline": {
+    "name": "TextileHR_DA021_Audit_Repairs_2026-11-16.zip",
+    "sha256": "aa2eddacf7bbb7a9611d65f9ada9dd802909bc9f7ab20af23e6e66b03d7d31d3",
+    "git_base_commit": "69b9ee34621578260bea566cde6e3b6755ffd076"
+  },
+  "source_snapshot": {
+    "base_commit": "69b9ee34621578260bea566cde6e3b6755ffd076",
+    "dirty_source_status": "tracked_qualified_release",
+    "assessment_authority_files_unchanged": 61,
+    "strict_source_hash_integrity": "strict_verified"
+  },
+  "versions": {
+    "build_id": "phase7g-v4-9-72-p1-prompt-integration-rc1-2026-11-16",
+    "ui_release_version": "4.9.72-p1-rc1",
+    "assessment_protocol": "segment_ids_semantic_llm",
+    "assessment_protocol_version": 58,
+    "storage_schema_version": 4
+  },
+  "release_archive": {
+    "filename": "TextileHR_AI_Migration_Qualified_2026-11-17.zip",
+    "path": "C:\\Users\\Azzam Shahid\\Downloads\\TextileHR_AI_Migration_Qualified_2026-11-17.zip",
+    "sha256": "250846079c099415388127b19b51f1ea42109a1a9dee0a7d5f7eaf65bc49868e",
+    "byte_size": 3536537,
+    "manifest_file_count": 762,
+    "archive_entry_count": 763,
+    "clean_room_extraction_test": "PASSED"
+  },
+  "patch": {
+    "filename": "da021_to_qualified.patch",
+    "sha256": "cc41856b49206ffd2c5b1f850c0ef651a8d82430381c2ed8b1db24d642f9a0fe",
+    "validation_baseline": "69b9ee34621578260bea566cde6e3b6755ffd076",
+    "reverse_apply_check": "PASSED"
+  },
+  "verification_source_identity": {
+    "engine_strict_runtime_check": "SOURCE_INTEGRITY=strict_verified",
+    "python_web_tests": "70 passed, 0 failed",
+    "protected_engine_tests": "71 passed, 0 failed",
+    "frontend_tests": "31 passed, 0 failed",
+    "frontend_lint": "0 errors, 0 warnings (--max-warnings 0)",
+    "frontend_typecheck": "0 errors",
+    "web_contract_check": "OpenAPI and client DTOs in sync (exit 0)",
+    "browser_verification": "B01-B14 verified"
+  },
+  "metadata": {
+    "target_architecture": "Local single-operator supervised operation (React 19 + FastAPI + Python 3.11)",
+    "timestamp": "2026-11-17T05:36:00+05:00",
+    "timezone": "+05:00"
+  },
+  "release_zip": "TextileHR_AI_Migration_Qualified_2026-11-17.zip",
+  "release_sha256": "64766854d59b81ae4e4bc382166a5a116068c966775202bd4f5126a7301690b0",
+  "manifest_file_count": 762
+}

@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import asdict
 import hashlib
 import json
+from pathlib import Path
 
 from .build_info import BUILD_ID
 from .config import Settings
@@ -21,6 +22,40 @@ _TRANSPORT_FIELDS = {
     "llm_retries",
     "approved_aliases_path", "eligibility_policy_path",
 }
+
+# Changes to this *general assessment pipeline*, not CSS or unrelated docs,
+# invalidate prior in-session decisions even when local source edits are
+# intentionally permitted without a release-manifest failure. No job, skill,
+# person or named model is an assessment result baked into this fingerprint.
+_ASSESSMENT_LOGIC_FILES = (
+    "jd.py", "jd_coverage.py", "fallback.py", "requirement_typing.py", "documents.py", "segments.py",
+    "assessment_clock.py", "failure_diagnostics.py", "source_subject_guard.py",
+    "condition_review.py", "jd_expression.py", "source_snapshot.py", "operation_ledger.py",
+    "retrieval_priorities.py", "assessor.py", "unified.py",
+    "experience_validation.py", "qualification_validation.py",
+    "compound_validation.py", "scoring.py", "weighted_scoring.py",
+    "llm.py", "text_utils.py", "criteria_scope.py", "jd_review.py",
+    "constraints.py", "evidence_bridge.py", "semantic/core.py",
+    "semantic/integration.py", "semantic/adapters.py",
+    "semantic/embedding.py", "pipeline.py", "schemas.py", "eligibility.py",
+    "semantic/transferability.py", "semantic/decomposition.py",
+    "semantic/relationship_consistency.py", "semantic/cache.py",
+)
+
+
+def assessment_logic_fingerprint(root: Path | None = None) -> str:
+    """Hash source *bytes*, so changing local scoring code invalidates reuse.
+
+    Unlike the signed distribution manifest, this is a cache identity, not an
+    access control. Reading it afresh permits editing during a local session.
+    Missing logic files fail closed instead of accepting stale results.
+    """
+    root = root or Path(__file__).resolve().parent
+    digest = hashlib.sha256()
+    for name in _ASSESSMENT_LOGIC_FILES:
+        digest.update(name.encode("utf-8") + b"\x00")
+        digest.update(hashlib.sha256((root / name).read_bytes()).digest())
+    return digest.hexdigest()
 
 
 def candidate_resume_key(filename: str, content: bytes) -> str:
@@ -66,6 +101,7 @@ def assessment_context_key(
     }
     payload = {
         "build_id": BUILD_ID,
+        "assessment_logic_fingerprint": assessment_logic_fingerprint(),
         "use_llm": bool(use_llm),
         "settings": meaningful_settings,
         "jd": hashlib.sha256(jd_bytes).hexdigest(),

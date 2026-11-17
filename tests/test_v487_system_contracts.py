@@ -246,7 +246,8 @@ def test_technical_error_after_one_correction_is_unverified_not_absent(tmp_path)
     assert len(llm.calls) == 3
     assert metrics.final_verification_calls == 1
     assert metrics.correction_calls == 1 and metrics.unresolved_criteria == 1
-    assert rows[0].assessment_state == "unverified" and rows[0].unified_status == "Unverified"
+    assert rows[0].assessment_state == "unverified" and rows[0].unified_status is None
+    assert rows[0].current_decision.verdict is None
     assert score_candidate(candidate_name="Worker", requirements=[requirement],
                            assessments=rows, evaluation_mode="llm_assessed",
                            errors=[]).primary_score is None

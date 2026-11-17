@@ -91,6 +91,25 @@ def _heading(line: str) -> str | None:
     key = canonical_key(clean)
     if key in KNOWN_HEADINGS:
         return KNOWN_HEADINGS[key]
+    # Employment history is often headed "Experience Highlights", "Selected
+    # Professional Experience", or "Relevant Work Experience".  These are
+    # section-layout variants, not a profession/skills dictionary.  Require
+    # the *entire* short line to be a heading, never a sentence mentioning
+    # experience, so work below it does not inherit a preceding Skills tag.
+    if (len(clean) <= 80 and not re.search(r"[.!?]", clean)
+            and re.fullmatch(
+                r"(?:(?:selected|relevant|additional|recent|key)\s+)?"
+                r"(?:(?:professional|work|employment|career|industry)\s+)?"
+                r"(?:experience|employment|work history|career history)"
+                r"(?:\s+(?:highlights|overview|summary|details|record|history))?",
+                key, re.I)):
+        return "experience"
+    if (len(clean) <= 80 and not re.search(r"[.!?]", clean)
+            and re.fullmatch(
+                r"(?:(?:selected|relevant|professional|academic)\s+)?"
+                r"(?:projects|project experience|project history)"
+                r"(?:\s+(?:highlights|portfolio|summary|details))?", key, re.I)):
+        return "projects"
     # Resume layouts often qualify generic section headings with two or more
     # ordinary adjectives. This is a *layout* rule, not a textile/software
     # skill map; otherwise the following skills are mislabeled as Education.

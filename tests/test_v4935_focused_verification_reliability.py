@@ -90,10 +90,13 @@ def test_unverified_r008_is_recovered_by_a_valid_focused_final_judgment():
 
         def invoke_structured(self, *, system_prompt, user_prompt, schema):
             self.calls += 1
-            if self.calls <= 2:
+            if self.calls == 1:
+                # An invented optional highlight triggers independent source review
+                # under the current three-verdict response schema.
                 return UnifiedResponse(assessments=[UnifiedItem(
-                    requirement_id="R008", decision="uncertain", relation="uncertain",
-                    evidence_ids=[], reason="Unable to reach a verdict for this row")])
+                    requirement_id="R008", decision="found", relation="direct",
+                    evidence_ids=[source.segment_id], matched_term="unsupported invented highlight",
+                    reason="Verify a source-grounded evaluation claim independently.")])
             return schema.model_validate(_independent_reply(
                 source.segment_id,
                 "Prepared held out evaluation sets tracked retrieval recall 5"))
@@ -107,7 +110,7 @@ def test_unverified_r008_is_recovered_by_a_valid_focused_final_judgment():
         "R008": [SimpleNamespace(source=SimpleNamespace(segment_id=source.segment_id))]})
 
     assessments, metrics = engine.assess([req], segments, text, candidate_id="bilal")
-    assert engine.llm.calls == 3
+    assert engine.llm.calls == 2
     assert assessments[0].assessment_state == "verified"
     assert assessments[0].unified_status == "Found"
     assert metrics.unresolved_ids == []
@@ -125,10 +128,13 @@ def test_fabricated_final_excerpt_still_withholds_credit_and_explains_why():
 
         def invoke_structured(self, *, schema, **_):
             self.calls += 1
-            if self.calls <= 2:
+            if self.calls == 1:
+                # An invented optional highlight triggers independent source review
+                # under the current three-verdict response schema.
                 return UnifiedResponse(assessments=[UnifiedItem(
-                    requirement_id="R008", decision="uncertain", relation="uncertain",
-                    evidence_ids=[], reason="Unable to reach a verdict for this row")])
+                    requirement_id="R008", decision="found", relation="direct",
+                    evidence_ids=[source.segment_id], matched_term="unsupported invented highlight",
+                    reason="Verify a source-grounded evaluation claim independently.")])
             return schema.model_validate(_independent_reply(
                 source.segment_id, "invented completed training deployment"))
 
@@ -141,7 +147,7 @@ def test_fabricated_final_excerpt_still_withholds_credit_and_explains_why():
         "R008": [SimpleNamespace(source=SimpleNamespace(segment_id=source.segment_id))]})
     assessments, metrics = engine.assess([req], segments, text, candidate_id="bilal")
 
-    assert engine.llm.calls == 3
+    assert engine.llm.calls == 2
     assert assessments[0].assessment_state == "unverified"
     assert metrics.unresolved_ids == ["R008"]
     assert any("no substantial overlap" in note for note in metrics.warnings)
@@ -159,10 +165,13 @@ def test_final_model_schema_failure_has_requirement_specific_diagnostic():
 
         def invoke_structured(self, **_):
             self.calls += 1
-            if self.calls <= 2:
+            if self.calls == 1:
+                # An invented optional highlight triggers independent source review
+                # under the current three-verdict response schema.
                 return UnifiedResponse(assessments=[UnifiedItem(
-                    requirement_id="R008", decision="uncertain", relation="uncertain",
-                    evidence_ids=[], reason="Cannot decide without a valid source citation")])
+                    requirement_id="R008", decision="found", relation="direct",
+                    evidence_ids=[source.segment_id], matched_term="unsupported invented highlight",
+                    reason="Verify a source-grounded evaluation claim independently.")])
             raise ModelStructuredResponseError("model reply was not valid JSON")
 
     engine = UnifiedEvidenceEngine.__new__(UnifiedEvidenceEngine)

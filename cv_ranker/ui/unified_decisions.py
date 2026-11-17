@@ -29,9 +29,16 @@ def reconcile_unified_candidate(report: RankingReport, candidate_index: int,
     for req in report.requirements:
         assessment = assessments.get(req.requirement_id)
         final = (assessment.unified_status if assessment is not None else None)
-        if (assessment is not None and assessment.assessment_state == "unverified") or (
-                assessment is None and candidate.primary_score is None):
-            final = "Unverified"
+        # New records separate *no verdict* from the historical Unverified label.
+        if assessment is not None and assessment.current_decision is not None:
+            current = assessment.current_decision
+            final = (current.verdict if current.processing_state == "completed"
+                     else "Assessment incomplete")
+        elif assessment is None and candidate.primary_score is None:
+            # No candidate result is not proof of absence, nor a legacy verdict.
+            final = "Assessment incomplete"
+        elif assessment is not None and assessment.assessment_state == "unverified":
+            final = "Assessment incomplete"
         elif final is None:
             final = "Found" if assessment is not None and assessment.status == "matched" else "Not Found"
         # The score boundary remains authoritative after qualification/tenure
@@ -44,7 +51,7 @@ def reconcile_unified_candidate(report: RankingReport, candidate_index: int,
         checkpoints = []
         if assessment is not None:
             if assessment.reason.startswith("The model did not produce a valid source-grounded decision"):
-                source_label = "Unverified retrieval lead · human review only"
+                source_label = "Uncredited retrieval lead · human review only"
             elif assessment.reason.startswith("The LLM response remained invalid"):
                 source_label = "Existing exact-source validator · review recommended"
             elif assessment.review_checkpoint_origin == "retrieval":
@@ -76,7 +83,7 @@ def reconcile_unified_candidate(report: RankingReport, candidate_index: int,
             review = True
         if final == "Found" and not checkpoints:
             # An ungrounded positive has no right to survive presentation.
-            final, review = "Unverified", True
+            final, review = "Assessment incomplete", True
         explanation = assessment.reason if assessment else "Assessment unavailable; this is not evidence of absence."
         # The *final* row reasoning is authoritative: specialist validators
         # already reconciled it with the changed status. Overwriting it here
@@ -84,8 +91,12 @@ def reconcile_unified_candidate(report: RankingReport, candidate_index: int,
         # saying "closely related" under a Not Found degree label, and of
         # experience rows displaying a generic role-date message instead of
         # why their final decision was made.
-        if final == "Unverified":
-            level = "Technical assessment incomplete · retrieval leads are not proof"
+        if final in {"Unverified", "Assessment incomplete"}:
+            if (assessment and assessment.compound_check is not None
+                    and assessment.compound_check.outcome == "needs_review"):
+                level = "Employer JD condition needs review · not a candidate failure"
+            else:
+                level = "Technical assessment incomplete · retrieval leads are not proof"
             review = True
         elif final == "Transferable":
             level = ("Related completed qualification, not direct requirement credit"
@@ -110,6 +121,12 @@ def reconcile_unified_candidate(report: RankingReport, candidate_index: int,
             "Display checkpoints": checkpoints[:4] if final == "Not Found" else checkpoints,
             "Total checkpoints considered": len(checkpoints),
             "Review recommended": review,
+            "Processing state": (assessment.current_decision.processing_state
+                                 if assessment and assessment.current_decision is not None
+                                 else "legacy" if assessment else "missing"),
+            "Failure code": (assessment.current_decision.failure.code
+                             if assessment and assessment.current_decision is not None
+                             and assessment.current_decision.failure is not None else None),
             "Primary diagnostic": {
                 "status": assessment.status if assessment else "missing",
                 "reason": assessment.reason if assessment else "",
@@ -125,6 +142,7 @@ def reconcile_unified_candidate(report: RankingReport, candidate_index: int,
         "Preferred total": sum(r["Priority"] == "Preferred" for r in criteria),
         "Transferable": sum(r["Result"] == "Transferable" for r in criteria),
         "Unverified": sum(r["Result"] == "Unverified" for r in criteria),
+        "Processing incomplete": sum(r["Result"] == "Assessment incomplete" for r in criteria),
         "Criteria": criteria, "Notices": notices,
         "Run warnings": list(report.warnings),
         # A successfully corrected model citation/typed check is a historical

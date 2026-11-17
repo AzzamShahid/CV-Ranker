@@ -1,0 +1,178 @@
+{
+  "prompt_definitions": [
+    {
+      "path": "cv_ranker/jd.py",
+      "name": "SYSTEM_PROMPT",
+      "line": 23,
+      "assignment_sha256": "4ef3b76bc4a0b4e10b0d118f9cba1d2ca261618abbe3cc19b659f71a9fe7bac8",
+      "assignment_bytes": 3197
+    },
+    {
+      "path": "cv_ranker/jd.py",
+      "name": "CORRECTION_PROMPT",
+      "line": 74,
+      "assignment_sha256": "c0ba561923424315bb59372aae15add29a44f223cd85367526deb295dcfef099",
+      "assignment_bytes": 748
+    },
+    {
+      "path": "cv_ranker/requirement_typing.py",
+      "name": "TYPE_SYSTEM_PROMPT",
+      "line": 291,
+      "assignment_sha256": "4f62acbf4cf7a8bff12adf86cd123138ae1c46e1aa796a72d7439dd42a188030",
+      "assignment_bytes": 593
+    },
+    {
+      "path": "cv_ranker/unified.py",
+      "name": "UNIFIED_PROMPT",
+      "line": 292,
+      "assignment_sha256": "0b64b070f94402dd02e1d1bb11cbd8c4355a614b35479e9e4edbd6bda1912e78",
+      "assignment_bytes": 12616
+    },
+    {
+      "path": "cv_ranker/unified.py",
+      "name": "FINAL_ADJUDICATION_PROMPT",
+      "line": 108,
+      "assignment_sha256": "8cc2465069e300302eaaf6b8d8626010df2a99422cad750f108a045f30b5e072",
+      "assignment_bytes": 9810
+    },
+    {
+      "path": "cv_ranker/assessor.py",
+      "name": "SYSTEM_PROMPT",
+      "line": 31,
+      "assignment_sha256": "51c842dda7b32fb7a369fcaf0d2c62b8855833c2f4b0f4089fcc5e852098d584",
+      "assignment_bytes": 6653
+    },
+    {
+      "path": "cv_ranker/assessor.py",
+      "name": "CORRECTION_PROMPT",
+      "line": 72,
+      "assignment_sha256": "c99fe78fa21462826c39d93b181f6c1c22a0c8e12a9ec73a8aecabb802da0f18",
+      "assignment_bytes": 3484
+    },
+    {
+      "path": "cv_ranker/semantic/decomposition.py",
+      "name": "SYSTEM_PROMPT",
+      "line": 19,
+      "assignment_sha256": "46c6026a5c85e843c5f04e8e098e0f7852fc9254408051f07b0be924ac12cbf0",
+      "assignment_bytes": 1663
+    },
+    {
+      "path": "cv_ranker/semantic/transferability.py",
+      "name": "SYSTEM_PROMPT",
+      "line": 386,
+      "assignment_sha256": "21a079fec97bfaaef5756aff22c3ac11cc950fe731860b37579633f9da5bd4e1",
+      "assignment_bytes": 1695
+    },
+    {
+      "path": "cv_ranker/semantic/transferability.py",
+      "name": "COMPACT_SYSTEM_PROMPT",
+      "line": 140,
+      "assignment_sha256": "dd183f527bb452baa26e44743079b0459179169e83cef347d4e1a0b8afe54c3a",
+      "assignment_bytes": 867
+    },
+    {
+      "path": "cv_ranker/semantic/transferability.py",
+      "name": "BATCH_SYSTEM_PROMPT",
+      "line": 158,
+      "assignment_sha256": "19165cf351f76da0c3946e0f7b25223781278dee5031eba5667196e881413a8d",
+      "assignment_bytes": 931
+    },
+    {
+      "path": "cv_ranker/ui/final_decisions.py",
+      "name": "_JUDGE_PROMPT",
+      "line": 42,
+      "assignment_sha256": "ce873d09570e70bf0a559d60e0e77b2f91e253923afd9e8c9dfa53a3a2ef69e6",
+      "assignment_bytes": 4435
+    },
+    {
+      "path": "cv_ranker/condition_review.py",
+      "name": "REVIEW_PROMPT",
+      "line": 58,
+      "assignment_sha256": "f5d63ca216794cac7cb26c48e579630e60f204618980cd701a917c10dbd5c17c",
+      "assignment_bytes": 2517
+    }
+  ],
+  "builders_to_review": [
+    {
+      "path": "cv_ranker/jd.py",
+      "name": "_user_prompt",
+      "line": 399
+    },
+    {
+      "path": "cv_ranker/jd.py",
+      "name": "validate_jd_requirements",
+      "line": 423
+    },
+    {
+      "path": "cv_ranker/requirement_typing.py",
+      "name": "enrich_ambiguous_types",
+      "line": 301
+    },
+    {
+      "path": "cv_ranker/assessor.py",
+      "name": "_build_user_prompt",
+      "line": 114
+    },
+    {
+      "path": "cv_ranker/assessor.py",
+      "name": "_correct_invalid_rows",
+      "line": 974
+    },
+    {
+      "path": "cv_ranker/assessor.py",
+      "name": "_focused_abbreviation_recheck",
+      "line": 1103
+    },
+    {
+      "path": "cv_ranker/unified.py",
+      "name": "_payload",
+      "line": 663
+    },
+    {
+      "path": "cv_ranker/unified.py",
+      "name": "_correction_payload",
+      "line": 853
+    },
+    {
+      "path": "cv_ranker/unified.py",
+      "name": "plan_evidence_batches",
+      "line": 709
+    },
+    {
+      "path": "cv_ranker/unified.py",
+      "name": "_independently_adjudicate",
+      "line": 1417
+    },
+    {
+      "path": "cv_ranker/semantic/decomposition.py",
+      "name": "create_shadow_search_plan",
+      "line": 146
+    },
+    {
+      "path": "cv_ranker/semantic/transferability.py",
+      "name": "assess_transferability_shadow",
+      "line": 636
+    },
+    {
+      "path": "cv_ranker/semantic/transferability.py",
+      "name": "_assess_single_compact",
+      "line": 531
+    },
+    {
+      "path": "cv_ranker/semantic/transferability.py",
+      "name": "_assess_compact_jobs",
+      "line": 556
+    },
+    {
+      "path": "cv_ranker/ui/final_decisions.py",
+      "name": "_judge_requirement",
+      "line": 277
+    },
+    {
+      "path": "cv_ranker/condition_review.py",
+      "name": "review_compound_uncertainty",
+      "line": 139
+    }
+  ],
+  "scope": "source-level inventory, not a call count or quality benchmark"
+}

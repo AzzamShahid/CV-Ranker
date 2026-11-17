@@ -88,7 +88,12 @@ def test_typing_never_changes_frozen_id_name_priority_or_quote():
 def test_optional_qwen_type_is_advisory_and_does_not_invent_attributes():
     class FakeLLM:
         def invoke_structured(self, *, schema, user_prompt, system_prompt):
-            assert 'R001' in user_prompt and '<QUOTE>' in user_prompt
+            import json
+            payload = json.loads(user_prompt.split('\n', 1)[1])
+            assert payload['requirements'] == [{
+                'requirement_id': 'R001',
+                'exact_jd_quote': 'Exceptional attention to organizational priorities',
+            }]
             return LLMTypeResponse(requirements=[LLMTypeProposal(requirement_id='R001', kind='responsibility')])
 
     r = req('Exceptional attention to organizational priorities')

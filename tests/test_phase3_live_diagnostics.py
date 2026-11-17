@@ -42,7 +42,7 @@ def test_pdf_wrap_continues_labelled_skill_line():
 
 def test_generic_prompt_guard_does_not_hardcode_benchmark_technology_pairs():
     from cv_ranker.assessor import SYSTEM_PROMPT, CORRECTION_PROMPT
-    assert "Do not give transferable credit" in SYSTEM_PROMPT
-    assert "Functional overlap is not equivalence" in CORRECTION_PROMPT
+    assert "bare list of alternative tools alone" in SYSTEM_PROMPT
+    assert "performed functional overlap" in CORRECTION_PROMPT
     assert "FastAPI is not Django" not in SYSTEM_PROMPT
     assert "PostgreSQL is not Redis" not in SYSTEM_PROMPT

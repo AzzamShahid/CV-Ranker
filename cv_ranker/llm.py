@@ -1,18 +1,56 @@
 import json
+import hashlib
 import time
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.request import Request, build_opener, HTTPRedirectHandler
 
 from typing import TypeVar
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from .config import Settings
+from . import prompt_fragments as pf
 
 
 T = TypeVar("T", bound=BaseModel)
+
+
+class _RejectProviderRedirects(HTTPRedirectHandler):
+    """Cloud credentials and CV excerpts must never follow a redirect.
+
+    An initial endpoint allowlist is insufficient: urllib otherwise may
+    forward sensitive headers to a second host after a 301/302/307/308.
+    Explicit endpoint reconfiguration is safer than a surprise redirect.
+    """
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+_SAFE_CLOUD_OPENER = build_opener(_RejectProviderRedirects())
+
+
+def urlopen(request, timeout):
+    """Explicit cloud HTTP transport; kept injectable for offline tests."""
+    return _SAFE_CLOUD_OPENER.open(request, timeout=timeout)
+
+
+def _safe_structural_detail(error: object) -> str:
+    """Only schema error categories/paths; never put provider bodies or applicant text in retries."""
+    kind = type(error).__name__
+    if not kind.isidentifier():
+        kind = "UnknownStructureError"
+    details = []
+    if isinstance(error, ValidationError):
+        for item in error.errors()[:5]:
+            path = ".".join(str(x)[:40] for x in item.get("loc", ()) if isinstance(x, (int, str)))
+            category = str(item.get("type", "invalid"))[:50]
+            # Field paths only; no supplied values or human-readable messages.
+            if all(ch.isalnum() or ch in "_-." for ch in path + category):
+                details.append(f"{path}:{category}")
+    return kind + ("; " + ", ".join(details) if details else "")
 
 
 class LLMError(RuntimeError):
@@ -90,6 +128,52 @@ def _unique_json_object_pairs(pairs: list[tuple[str, object]]) -> dict:
 class StructuredLLM:
     # A small flat schema is more reliable for local 3B-scale model calls.
     supports_compact_transferability = True
+
+    def _prompt_fingerprint(self, system_prompt: str, user_prompt: str,
+                            schema: type[T]) -> str:
+        return hashlib.sha256(json.dumps({
+            "provider": self.settings.llm_provider,
+            "model": self.settings.model_name,
+            "schema": schema.model_json_schema(),
+            "system": system_prompt, "user": user_prompt,
+        }, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+
+    def _reused_success(self, system_prompt: str, user_prompt: str,
+                        schema: type[T]) -> T | None:
+        """Reuse only identical, successful, structured replies within one run.
+
+        SHA-256 keys avoid retaining extra raw candidate text in the lookup.
+        Failed/partial/provider responses are NEVER cached; a correction with
+        new evidence or instructions has a different key and is evaluated.
+        The cache is instance-local and never written to disk or across users.
+        """
+        # Provider adapters used on their own must always validate the NEXT
+        # provider response, even for an identical request (security/schema
+        # smoke tests rely on this). Only the candidate pipeline opts into
+        # safe run-local reuse of an already *validated* result.
+        if not getattr(self, "_allow_success_replay", False):
+            return None
+        fingerprint = self._prompt_fingerprint(system_prompt, user_prompt, schema)
+        entry = getattr(self, "_successful_prompt_cache", {}).get(fingerprint)
+        if entry is None:
+            return None
+        self.reused_successful_calls = getattr(self, "reused_successful_calls", 0) + 1
+        return schema.model_validate_json(entry)
+
+    def _remember_success(self, result: T, system_prompt: str,
+                          user_prompt: str, schema: type[T]) -> T:
+        if not getattr(self, "_allow_success_replay", False):
+            return result
+        key = self._prompt_fingerprint(system_prompt, user_prompt, schema)
+        cached = getattr(self, "_successful_prompt_cache", None)
+        if cached is None:
+            cached = self._successful_prompt_cache = {}
+        # Bounded FIFO cache: large CV responses must not accumulate for
+        # the entire application lifetime. Python dicts preserve order.
+        if key not in cached and len(cached) >= 32:
+            del cached[next(iter(cached))]
+        cached[key] = result.model_dump_json()
+        return result
     def __new__(cls, settings: Settings | None = None):
         if cls is StructuredLLM and settings is not None and settings.llm_provider == "openrouter":
             return super().__new__(OpenRouterStructuredLLM)
@@ -140,6 +224,9 @@ class StructuredLLM:
                 f"{self.settings.ollama_num_predict} output tokens > num_ctx={self.settings.ollama_num_ctx}. "
                 "Prompt was not sent, so no silent truncation occurred."
             )
+        cached = self._reused_success(system_prompt, user_prompt, schema)
+        if cached is not None:
+            return cached
         # Count only requests that pass the preflight budget check. Some
         # diagnostics/tests construct a lightweight client with __new__ and
         # intentionally skip __init__, so counters must initialize lazily.
@@ -147,6 +234,7 @@ class StructuredLLM:
 
         try:
             from langchain_core.prompts import ChatPromptTemplate
+            from langchain_core.messages import SystemMessage
         except ImportError as exc:
             raise LLMError("langchain-core is not installed.") from exc
 
@@ -157,7 +245,7 @@ class StructuredLLM:
         )
         prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", system_prompt),
+                SystemMessage(content=system_prompt),
                 ("human", "{task}"),
             ]
         )
@@ -175,6 +263,7 @@ class StructuredLLM:
                     f"{self.settings.ollama_num_predict} output tokens > num_ctx={self.settings.ollama_num_ctx}. "
                     "Prompt was not sent, so no silent truncation occurred."
                 )
+            structural_failure = False
             try:
                 self.http_attempts = getattr(self, "http_attempts", 0) + 1
                 result = chain.invoke({"task": task})
@@ -182,20 +271,21 @@ class StructuredLLM:
                 parsing_error = result.get("parsing_error") if isinstance(result, dict) else None
                 if parsed is not None and parsing_error is None:
                     if isinstance(parsed, schema):
-                        return parsed
-                    return schema.model_validate(parsed)
+                        return self._remember_success(parsed, system_prompt, user_prompt, schema)
+                    return self._remember_success(schema.model_validate(parsed), system_prompt, user_prompt, schema)
                 last_error = parsing_error or "Structured output was empty."
-            except Exception as exc:  # network/model/runtime/parsing
+                structural_failure = True
+            except (ValidationError, ValueError, TypeError, KeyError) as exc:
+                last_error = exc
+                structural_failure = True
+            except Exception as exc:  # transport/runtime, not a schema correction
                 last_error = exc
 
             if attempt < attempts - 1:
-                error_text = str(last_error)
-                if len(error_text) > 1000:
-                    error_text = error_text[:1000] + "..."
                 correction = (
-                    "\n\nCORRECTION: The previous structured response failed validation/parsing. "
-                    "Return data conforming exactly to the supplied schema. "
-                    f"Validation/runtime detail: {error_text}"
+                    "\n\n" + pf.OLLAMA_STRUCTURAL_CORRECTION_SUFFIX.format(
+                        sanitized_validation_detail=_safe_structural_detail(last_error))
+                    if structural_failure else ""
                 )
 
         error_text = str(last_error)
@@ -229,6 +319,16 @@ class OpenRouterStructuredLLM(StructuredLLM):
         self.http_429_count = 0
         self.last_retry_after_seconds: float | None = None
         self._schema_mode_rejected = False
+
+    def prompt_fits(self, system_prompt: str, user_prompt: str) -> bool:
+        """Cloud preflight independent of local Ollama context/output settings.
+
+        Token counts remain estimates; the configured limit is intentionally
+        conservative, and real provider errors must still be handled safely.
+        """
+        estimated = estimate_tokens(system_prompt) + estimate_tokens(user_prompt) + 300
+        return (estimated + self.settings.openrouter_output_tokens
+                <= self.settings.openrouter_context_tokens)
 
     def _post_chat(self, payload: dict) -> dict:
         ceiling = self.settings.openrouter_max_requests_per_run
@@ -306,6 +406,9 @@ class OpenRouterStructuredLLM(StructuredLLM):
         if self.disabled_reason:
             raise LLMError(f"LLM circuit is disabled for this run: {self.disabled_reason}")
 
+        cached = self._reused_success(system_prompt, user_prompt, schema)
+        if cached is not None:
+            return cached
         attempts = self.settings.llm_retries + 1
         correction = ""
         last_error = "No valid response"
@@ -318,8 +421,8 @@ class OpenRouterStructuredLLM(StructuredLLM):
                 prompt_tokens = estimate_tokens(system_prompt) + estimate_tokens(task) + 300
                 raise LLMError(
                     f"Context budget exceeded: ~{prompt_tokens} prompt tokens + "
-                    f"{self.settings.ollama_num_predict} output tokens > "
-                    f"configured budget={self.settings.ollama_num_ctx}. No data was sent."
+                    f"{self.settings.openrouter_output_tokens} output tokens > "
+                    f"configured cloud budget={self.settings.openrouter_context_tokens}. No data was sent."
                 )
             if attempt == 0:
                 self.logical_calls = getattr(self, "logical_calls", 0) + 1
@@ -330,7 +433,7 @@ class OpenRouterStructuredLLM(StructuredLLM):
                     {"role": "user", "content": task},
                 ],
                 "temperature": 0,
-                "max_tokens": self.settings.ollama_num_predict,
+                "max_tokens": self.settings.openrouter_output_tokens,
                 "stream": False,
             }
             if response_mode == "json_schema":
@@ -380,7 +483,7 @@ class OpenRouterStructuredLLM(StructuredLLM):
                 choice = result["choices"][0]
                 if choice.get("finish_reason") == "length":
                     raise ModelOutputTruncatedError(
-                        f"OpenRouter model output truncated at max_tokens={self.settings.ollama_num_predict}; "
+                        f"OpenRouter model output truncated at max_tokens={self.settings.openrouter_output_tokens}; "
                         "split the requirement batch")
                 message = choice["message"]
                 content = message.get("content")
@@ -388,7 +491,7 @@ class OpenRouterStructuredLLM(StructuredLLM):
                     raise ValueError("missing structured response content")
                 parsed = schema.model_validate(json.loads(
                     content, object_pairs_hook=_unique_json_object_pairs))
-                return parsed
+                return self._remember_success(parsed, system_prompt, user_prompt, schema)
             except OpenRouterHTTPError as exc:
                 last_error = str(exc)
                 if exc.status_code in {400, 422} and response_mode == "json_schema" and attempt < attempts - 1:
@@ -396,7 +499,7 @@ class OpenRouterStructuredLLM(StructuredLLM):
                     # still requires local Pydantic validation before credit.
                     self._schema_mode_rejected = True
                     response_mode = "json_object"
-                    correction = "\n\nReturn one valid JSON object matching every required field."
+                    correction = ""  # provider rejected schema mode; not malformed model output
                     continue
                 if exc.status_code in {408, 429, 500, 502, 503, 524, 529} and attempt < attempts - 1:
                     # Honor HTTP Retry-After (with a safe cap), otherwise use
@@ -434,7 +537,7 @@ class OpenRouterStructuredLLM(StructuredLLM):
             except (KeyError, IndexError, TypeError, ValueError) as exc:
                 # Never repeat model-completion text or sensitive source fragments
                 # in terminal logs or remote repair prompts.
-                last_error = (f"model output was truncated at max_tokens={self.settings.ollama_num_predict}; "
+                last_error = (f"model output was truncated at max_tokens={self.settings.openrouter_output_tokens}; "
                               "increase the output token budget"
                               if str(exc) == "truncated response (max_tokens reached)"
                               else f"{type(exc).__name__}: structured JSON did not validate")
@@ -447,10 +550,7 @@ class OpenRouterStructuredLLM(StructuredLLM):
                     # *strategy*, not the number of permitted HTTP attempts.
                     if response_mode == "json_schema":
                         response_mode = "json_object"
-                    correction = (
-                        "\n\nCORRECTION: Return exactly one JSON object matching "
-                        "the required response schema; no markdown or additional prose."
-                    )
+                    correction = "\n\n" + pf.OPENROUTER_STRUCTURAL_CORRECTION_SUFFIX
         error = (f"OpenRouter structured call failed after at most {attempts} "
                  f"attempt(s): {last_error}")
         if structured_failure and not self.disabled_reason:

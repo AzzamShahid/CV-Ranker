@@ -30,6 +30,28 @@ class JDValidationResponse(StrictModel):
     requirements: list[JDRequirement]
 
 
+class JDConditionNode(StrictModel):
+    """Human-approved Boolean structure with original, position-bound JD leaves.
+
+    A repeated printed phrase at two different positions remains two distinct
+    leaves. The node never contributes an additional scoring criterion.
+    """
+    op: Literal["leaf", "all_of", "any_of"]
+    text: str | None = None
+    start: int | None = Field(default=None, ge=0)
+    end: int | None = Field(default=None, ge=0)
+    children: list["JDConditionNode"] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def valid_structure(self):
+        if self.op == "leaf":
+            if not self.text or self.start is None or self.end is None or self.end <= self.start or self.children:
+                raise ValueError("JD condition leaf requires nonempty original source span and no children")
+        elif len(self.children) < 2 or self.text is not None or self.start is not None or self.end is not None:
+            raise ValueError("JD AND/OR conditions require two or more children and no invented text")
+        return self
+
+
 RequirementKind = Literal["skill", "experience", "education", "certification", "license", "responsibility", "eligibility", "other"]
 LogicalOperator = Literal["single", "any_of", "all_of", "complex"]
 TypingOrigin = Literal["source_rules", "llm_suggestion", "manual_review_pending", "unclassified"]
@@ -44,15 +66,37 @@ class RequirementConstraint(StrictModel):
     # This discriminator is derived from the frozen JD's numeric threshold;
     # its classification does not depend on the section heading.
     experience_mode: Literal["tenure", "qualitative"] | None = None
+    # The kind is a description of the JD; evidence modality is an
+    # independent, source-derived question. No scoring multiplier.
+    evidence_modality: Literal[
+        "knowledge_claim", "performed_work", "dated_professional_tenure",
+        "completed_qualification", "credential_claim", "eligibility_condition",
+        "employer_review_required",
+    ] | None = None
+    duration_subject: Literal[
+        "candidate_tenure", "non_tenure_timeframe_review", "none",
+    ] | None = None
     subject: str | None = None
     degree_level: Literal["associate", "diploma", "bachelor", "master", "doctorate"] | None = None
     field_of_study: str | None = None
     source_line_numbers: list[int] = Field(default_factory=list)
+    # Optional explicit HR-reviewed JD facets. These are verbatim substrings
+    # of jd_evidence, never generated skills, extra scored criteria, or an
+    # occupational dictionary. Each mandatory part must be supported; for
+    # each alternative group, at least one approved option must be supported.
+    approved_mandatory_parts: list[str] = Field(default_factory=list)
+    approved_alternative_groups: list[list[str]] = Field(default_factory=list)
+    approved_expression: JDConditionNode | None = None
     origin: TypingOrigin = "unclassified"
     requires_review: bool = True
 
     @model_validator(mode="after")
     def check_consistency(self):
+        if self.duration_subject == "candidate_tenure" and self.kind != "experience":
+            raise ValueError("candidate_tenure requires an experience requirement")
+        if (self.evidence_modality == "dated_professional_tenure"
+                and self.kind != "experience"):
+            raise ValueError("dated professional tenure evidence requires experience kind")
         if self.minimum_years is not None and self.kind != "experience":
             raise ValueError("minimum_years may appear only on experience criteria")
         if self.kind == "experience":
@@ -70,6 +114,14 @@ class RequirementConstraint(StrictModel):
             raise ValueError("single requirement must not invent alternatives")
         if len(self.source_line_numbers) != len(set(self.source_line_numbers)):
             raise ValueError("source line numbers must be unique")
+        if any(not part.strip() for part in self.approved_mandatory_parts):
+            raise ValueError("approved mandatory parts must be nonempty")
+        if len(set(self.approved_mandatory_parts)) != len(self.approved_mandatory_parts):
+            raise ValueError("approved mandatory parts must be unique")
+        if any(len(group) < 2 or len(set(group)) != len(group)
+               or any(not option.strip() for option in group)
+               for group in self.approved_alternative_groups):
+            raise ValueError("approved alternative groups need 2+ unique source options")
         return self
 
 
@@ -115,6 +167,13 @@ class CompoundComponent(StrictModel):
     status: AssessmentStatus
     evidence: list[EvidenceCitation] = Field(default_factory=list)
     reason: str = ""
+    # Optional v52 source-bound condition provenance. Historical components
+    # deserialize with None; old evidence must not be newly certified.
+    jd_start: int | None = None
+    jd_end: int | None = None
+    group_role: Literal["mandatory", "alternative", "unresolved"] | None = None
+    group_id: str | None = None
+    relation: Literal["satisfied", "missing", "uncertain"] | None = None
 
 
 class CompoundCheck(StrictModel):
@@ -129,6 +188,19 @@ class EligibilityCheck(StrictModel):
     gated_requirement_ids: list[str] = Field(default_factory=list)
     issues: list[str] = Field(default_factory=list)
     reviewed_by: str | None = None
+
+
+class DecisionTransition(StrictModel):
+    """Sanitized per-criterion decision handoff; never contains CV text.
+
+    Retains the *fact and reason* of a source-checked status change. Earlier
+    v43 reports deserialize with an empty trace for backward readability.
+    """
+    stage: str = Field(min_length=1)
+    from_status: str = Field(min_length=1)
+    to_status: str = Field(min_length=1)
+    reason_code: str = Field(min_length=1)
+    evidence_ids: list[str] = Field(default_factory=list)
 
 
 class RequirementAssessment(StrictModel):
@@ -146,14 +218,41 @@ class RequirementAssessment(StrictModel):
     # Technical LLM/schema/citation failures must never be mistaken for an
     # actual CV nonmatch. Old reports default to verified for compatibility.
     assessment_state: Literal["verified", "unverified"] = "verified"
+    # v55 migration field. The legacy fields above remain readable for old
+    # reports and intermediate stage adapters, but this record is authoritative
+    # when present. It is assigned by application code, NEVER by a model schema.
+    current_decision: "DecisionRecord | None" = None
     review_recommended: bool = False
     # Provenance metadata for technical audit, not candidate-facing reasoning.
     review_checkpoint_origin: Literal["model", "retrieval"] | None = None
+    # A condition review using identical frozen JD/CV/source/model context
+    # cannot be silently repeated on Resume after a failed semantic verdict.
+    # Digest only: no candidate source text is serialized into this field.
+    condition_review_attempt_signature: str | None = None
     reviewed_alias_by: str | None = None
     # Phase 7B: source-backed numeric experience diagnostic, when applicable.
     experience_check: "ExperienceCheck | None" = None
     qualification_check: "QualificationCheck | None" = None
     compound_check: CompoundCheck | None = None
+    decision_trace: list[DecisionTransition] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def current_decision_consistency(self):
+        # Historical rows without current_decision retain their old labels.
+        # For new rows, a processing failure cannot also be a candidate
+        # negative or an awarded positive. The application owns this state.
+        record = self.current_decision
+        if record is None:
+            return self
+        if record.processing_state == "completed":
+            if (self.assessment_state != "verified" or
+                    self.unified_status != record.verdict or
+                    (record.verdict == "Found") != (self.status == "matched")):
+                raise ValueError("Current completed verdict contradicts assessment status")
+        else:
+            if self.assessment_state != "unverified" or self.unified_status is not None:
+                raise ValueError("Unfinished current assessment must have no final verdict")
+        return self
 
 
 class CandidateAssessmentResponse(StrictModel):
@@ -171,6 +270,19 @@ class LLMAssessmentItem(StrictModel):
 
 class LLMCandidateAssessmentResponse(StrictModel):
     assessments: list[LLMAssessmentItem]
+
+
+class LLMLiveThreeVerdictItem(StrictModel):
+    """Current provider wire contract. Historical LLMAssessmentItem is read-only."""
+    requirement_id: str = Field(min_length=1)
+    status: Literal["matched", "transferable", "not_matched"]
+    evidence_ids: list[str] = Field(default_factory=list)
+    matched_term: str | None = None
+    reason: str = Field(min_length=8)
+
+
+class LLMLiveThreeVerdictResponse(StrictModel):
+    assessments: list[LLMLiveThreeVerdictItem]
 
 
 class CandidateResult(StrictModel):
@@ -205,6 +317,9 @@ class RankingReport(StrictModel):
     # Exact submitted JD text. Required for a self-contained downloadable audit.
     # Older reports without this field remain readable, but cannot reconstruct it.
     original_jd_text: str | None = None
+    # Frozen calendar reference for Present/Current tenure and LLM judgments.
+    # An older report without this field remains readable as historical only.
+    assessment_as_of_date: str | None = None
     jd_validation_mode: str
     yake_candidates: list[YakeCandidate]
     requirements: list[ValidatedRequirement]
@@ -227,4 +342,5 @@ class RankingReport(StrictModel):
 # Phase 7B type imported after model declarations to avoid import cycles.
 from .experience_validation import ExperienceCheck
 from .qualification_validation import QualificationCheck
+from .decision_contract import DecisionRecord  # noqa: E402
 RequirementAssessment.model_rebuild()

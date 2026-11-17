@@ -203,12 +203,12 @@ def test_openrouter_respects_retry_after_and_preserves_local_schema_validation(m
         if len(calls) == 1:
             raise OpenRouterHTTPError(429, retry_after_seconds=11)
         return {'choices': [{'finish_reason': 'stop', 'message': {
-            'content': json.dumps({'result': 'uncertain', 'explanation': 'Needs cited source review.', 'source_ids': []})}}]}
+            'content': json.dumps({'result': 'not_evidenced', 'explanation': 'No direct source proof was established.', 'source_ids': []})}}]}
 
     monkeypatch.setattr(llm, '_post_chat', mock_post)
     monkeypatch.setattr('cv_ranker.llm.time.sleep', sleeps.append)
     result = llm.invoke_structured(system_prompt='JSON', user_prompt='Check', schema=CompactFocusedJudgment)
-    assert result.result == 'uncertain'
+    assert result.result == 'not_evidenced'
     assert sleeps == [11] and len(calls) == 2
     assert llm.disabled_reason is None
 

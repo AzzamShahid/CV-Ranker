@@ -1,0 +1,294 @@
+{
+  "baseline_source": "/mnt/data/textilehr_v4968_work/baseline/CV_Ranker_Supervisor_Edition",
+  "candidate_source": "/mnt/data/textilehr_v4968_work/candidate/CV_Ranker_Supervisor_Edition",
+  "old_prompts": 13,
+  "new_prompts": 13,
+  "changed": 6,
+  "retained": 7,
+  "prompt_ledger": [
+    {
+      "prompt": "jd.py:SYSTEM_PROMPT",
+      "status": "experimental_wording_changed",
+      "diagnosis_or_reason": "Inherited Required/Preferred heading and source-grounded narrative coverage",
+      "baseline_source_expression_sha256": "4ef3b76bc4a0b4e10b0d118f9cba1d2ca261618abbe3cc19b659f71a9fe7bac8",
+      "candidate_source_expression_sha256": "e0aa64b84e42a4f7ae6a1bed7bf1a661992ae2d0bf12887d7304f5a6a9e6b2c3",
+      "baseline_assignment_bytes": 3197,
+      "candidate_assignment_bytes": 3427,
+      "baseline_prompt_characters": null,
+      "candidate_prompt_characters": null,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "jd.py:CORRECTION_PROMPT",
+      "status": "experimental_wording_changed",
+      "diagnosis_or_reason": "Target only rejected/omitted JD clauses; preserve valid siblings and source denominator",
+      "baseline_source_expression_sha256": "c0ba561923424315bb59372aae15add29a44f223cd85367526deb295dcfef099",
+      "candidate_source_expression_sha256": "1f4bd3dd976ef6dfb33e74d758c4a8b0d263961d477fa4a22e9c3d362ea17fa5",
+      "baseline_assignment_bytes": 748,
+      "candidate_assignment_bytes": 1053,
+      "baseline_prompt_characters": null,
+      "candidate_prompt_characters": null,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "requirement_typing.py:TYPE_SYSTEM_PROMPT",
+      "status": "experimental_wording_changed",
+      "diagnosis_or_reason": "Distinguish candidate professional tenure from operational duration and skills from completed duty",
+      "baseline_source_expression_sha256": "4f62acbf4cf7a8bff12adf86cd123138ae1c46e1aa796a72d7439dd42a188030",
+      "candidate_source_expression_sha256": "8411de3266d2f4a2f484c4fb2f1c608927f2ece8c5075d08cea5361aaf10f40d",
+      "baseline_assignment_bytes": 593,
+      "candidate_assignment_bytes": 1025,
+      "baseline_prompt_characters": null,
+      "candidate_prompt_characters": null,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "unified.py:UNIFIED_PROMPT",
+      "status": "experimental_wording_changed",
+      "diagnosis_or_reason": "Explicit selected-source incompleteness, actor, duties, material scope, wrong-source reasoning; no wire/schema change",
+      "baseline_source_expression_sha256": "0b64b070f94402dd02e1d1bb11cbd8c4355a614b35479e9e4edbd6bda1912e78",
+      "candidate_source_expression_sha256": "4c657ca76193f763d1a1a271911871b590b9635ce2226a175c6313ff5831df25",
+      "baseline_assignment_bytes": 12616,
+      "candidate_assignment_bytes": 13223,
+      "baseline_prompt_characters": 12585,
+      "candidate_prompt_characters": 13192,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "unified.py:FINAL_ADJUDICATION_PROMPT",
+      "status": "experimental_wording_changed",
+      "diagnosis_or_reason": "Independent check can reverse unsupported positive as well as missed equivalent; previous model rationale is not source proof",
+      "baseline_source_expression_sha256": "8cc2465069e300302eaaf6b8d8626010df2a99422cad750f108a045f30b5e072",
+      "candidate_source_expression_sha256": "dd890eb88899a20e1af7e7afc27a80a0ea8c3f220cdd5b6aa6e941549b60e277",
+      "baseline_assignment_bytes": 9810,
+      "candidate_assignment_bytes": 10337,
+      "baseline_prompt_characters": 9772,
+      "candidate_prompt_characters": 10299,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "assessor.py:SYSTEM_PROMPT",
+      "status": "retained",
+      "diagnosis_or_reason": "Existing legacy gate has extensive positive/negative tests; no isolated first prompt defect established",
+      "baseline_source_expression_sha256": "51c842dda7b32fb7a369fcaf0d2c62b8855833c2f4b0f4089fcc5e852098d584",
+      "candidate_source_expression_sha256": "51c842dda7b32fb7a369fcaf0d2c62b8855833c2f4b0f4089fcc5e852098d584",
+      "baseline_assignment_bytes": 6653,
+      "candidate_assignment_bytes": 6653,
+      "baseline_prompt_characters": null,
+      "candidate_prompt_characters": null,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "assessor.py:CORRECTION_PROMPT",
+      "status": "retained",
+      "diagnosis_or_reason": "Bounded repair schema retained; no external A/B evidence to justify risk",
+      "baseline_source_expression_sha256": "c99fe78fa21462826c39d93b181f6c1c22a0c8e12a9ec73a8aecabb802da0f18",
+      "candidate_source_expression_sha256": "c99fe78fa21462826c39d93b181f6c1c22a0c8e12a9ec73a8aecabb802da0f18",
+      "baseline_assignment_bytes": 3484,
+      "candidate_assignment_bytes": 3484,
+      "baseline_prompt_characters": null,
+      "candidate_prompt_characters": null,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "semantic/decomposition.py:SYSTEM_PROMPT",
+      "status": "retained",
+      "diagnosis_or_reason": "Retrieval prompts can change evidence inputs; needs separate end-to-end experiment",
+      "baseline_source_expression_sha256": "46c6026a5c85e843c5f04e8e098e0f7852fc9254408051f07b0be924ac12cbf0",
+      "candidate_source_expression_sha256": "46c6026a5c85e843c5f04e8e098e0f7852fc9254408051f07b0be924ac12cbf0",
+      "baseline_assignment_bytes": 1663,
+      "candidate_assignment_bytes": 1663,
+      "baseline_prompt_characters": 1641,
+      "candidate_prompt_characters": 1641,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "semantic/transferability.py:SYSTEM_PROMPT",
+      "status": "retained",
+      "diagnosis_or_reason": "Existing source-bound transfer relation and ownership contract protected",
+      "baseline_source_expression_sha256": "21a079fec97bfaaef5756aff22c3ac11cc950fe731860b37579633f9da5bd4e1",
+      "candidate_source_expression_sha256": "21a079fec97bfaaef5756aff22c3ac11cc950fe731860b37579633f9da5bd4e1",
+      "baseline_assignment_bytes": 1695,
+      "candidate_assignment_bytes": 1695,
+      "baseline_prompt_characters": 1673,
+      "candidate_prompt_characters": 1673,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "semantic/transferability.py:COMPACT_SYSTEM_PROMPT",
+      "status": "retained",
+      "diagnosis_or_reason": "Compact capabilities schema is versioned and protected by regression tests",
+      "baseline_source_expression_sha256": "dd183f527bb452baa26e44743079b0459179169e83cef347d4e1a0b8afe54c3a",
+      "candidate_source_expression_sha256": "dd183f527bb452baa26e44743079b0459179169e83cef347d4e1a0b8afe54c3a",
+      "baseline_assignment_bytes": 867,
+      "candidate_assignment_bytes": 867,
+      "baseline_prompt_characters": null,
+      "candidate_prompt_characters": null,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "semantic/transferability.py:BATCH_SYSTEM_PROMPT",
+      "status": "retained",
+      "diagnosis_or_reason": "Separate requirements/capabilities wrapper; preserve multi-row schema",
+      "baseline_source_expression_sha256": "19165cf351f76da0c3946e0f7b25223781278dee5031eba5667196e881413a8d",
+      "candidate_source_expression_sha256": "19165cf351f76da0c3946e0f7b25223781278dee5031eba5667196e881413a8d",
+      "baseline_assignment_bytes": 931,
+      "candidate_assignment_bytes": 931,
+      "baseline_prompt_characters": null,
+      "candidate_prompt_characters": null,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "ui/final_decisions.py:_JUDGE_PROMPT",
+      "status": "retained",
+      "diagnosis_or_reason": "Optional Streamlit judge not live-UI tested in current environment; defer language edit",
+      "baseline_source_expression_sha256": "ce873d09570e70bf0a559d60e0e77b2f91e253923afd9e8c9dfa53a3a2ef69e6",
+      "candidate_source_expression_sha256": "ce873d09570e70bf0a559d60e0e77b2f91e253923afd9e8c9dfa53a3a2ef69e6",
+      "baseline_assignment_bytes": 4435,
+      "candidate_assignment_bytes": 4435,
+      "baseline_prompt_characters": 4413,
+      "candidate_prompt_characters": 4413,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    },
+    {
+      "prompt": "condition_review.py:REVIEW_PROMPT",
+      "status": "experimental_wording_changed",
+      "diagnosis_or_reason": "Correct schema field names, exact quotes/offsets and approved all_of/any_of leaf coverage",
+      "baseline_source_expression_sha256": "f5d63ca216794cac7cb26c48e579630e60f204618980cd701a917c10dbd5c17c",
+      "candidate_source_expression_sha256": "ed2a6a1d81f21df251c2abc9127f67ca567339e8970df45220f7de9cd6f6ccaf",
+      "baseline_assignment_bytes": 2517,
+      "candidate_assignment_bytes": 3225,
+      "baseline_prompt_characters": 2495,
+      "candidate_prompt_characters": 3203,
+      "response_schema": "unchanged by this release",
+      "real_model_quality": "unmeasured; requires paired local/cloud calls and independent labels"
+    }
+  ],
+  "builder_coverage": [
+    {
+      "builder": "jd.py:_user_prompt",
+      "source_line": 406,
+      "route_and_response": "jd.SYSTEM_PROMPT / jd.CORRECTION_PROMPT",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "jd.py:validate_jd_requirements",
+      "source_line": 430,
+      "route_and_response": "jd.SYSTEM_PROMPT / jd.CORRECTION_PROMPT \u2192 JDValidationResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "requirement_typing.py:enrich_ambiguous_types",
+      "source_line": 308,
+      "route_and_response": "requirement_typing.TYPE_SYSTEM_PROMPT \u2192 LLMTypeResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "source JSON input packet replaces text delimiters"
+    },
+    {
+      "builder": "assessor.py:_build_user_prompt",
+      "source_line": 114,
+      "route_and_response": "assessor.SYSTEM_PROMPT / assessor.CORRECTION_PROMPT",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "assessor.py:_correct_invalid_rows",
+      "source_line": 974,
+      "route_and_response": "assessor.CORRECTION_PROMPT \u2192 LLMCandidateAssessmentResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "assessor.py:_focused_abbreviation_recheck",
+      "source_line": 1103,
+      "route_and_response": "assessor.CORRECTION_PROMPT \u2192 LLMCandidateAssessmentResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "unified.py:_payload",
+      "source_line": 678,
+      "route_and_response": "unified.UNIFIED_PROMPT / FINAL_ADJUDICATION_PROMPT",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "unified.py:_correction_payload",
+      "source_line": 868,
+      "route_and_response": "unified.UNIFIED_PROMPT \u2192 dynamic ID keyed schema",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "unified.py:plan_evidence_batches",
+      "source_line": 724,
+      "route_and_response": "unified.UNIFIED_PROMPT \u2192 bounded grouped packet",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "unified.py:_independently_adjudicate",
+      "source_line": 1432,
+      "route_and_response": "unified.FINAL_ADJUDICATION_PROMPT \u2192 independent ID-keyed schema",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "semantic/decomposition.py:create_shadow_search_plan",
+      "source_line": 153,
+      "route_and_response": "semantic/decomposition.SYSTEM_PROMPT \u2192 JDSearchPlan",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "source JSON input packet replaces text delimiters"
+    },
+    {
+      "builder": "semantic/transferability.py:assess_transferability_shadow",
+      "source_line": 636,
+      "route_and_response": "semantic/transferability.SYSTEM_PROMPT \u2192 TransferabilityResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "semantic/transferability.py:_assess_single_compact",
+      "source_line": 531,
+      "route_and_response": "semantic/transferability.COMPACT_SYSTEM_PROMPT \u2192 CompactTransferabilityResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "semantic/transferability.py:_assess_compact_jobs",
+      "source_line": 556,
+      "route_and_response": "semantic/transferability.BATCH_SYSTEM_PROMPT \u2192 CompactBatchResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "ui/final_decisions.py:_judge_requirement",
+      "source_line": 277,
+      "route_and_response": "ui/final_decisions._JUDGE_PROMPT \u2192 FocusedJudgment",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    },
+    {
+      "builder": "condition_review.py:review_compound_uncertainty",
+      "source_line": 188,
+      "route_and_response": "condition_review.REVIEW_PROMPT \u2192 ConditionReviewResponse",
+      "coverage": "source/callsite inventoried; eight fictional source packets; other callsites inventoried but not all end-to-end executed",
+      "schema_change": "none in this release"
+    }
+  ],
+  "test_level": "deterministic source and packet contract; live quality not measured"
+}

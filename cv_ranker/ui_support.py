@@ -107,13 +107,20 @@ def review_label_for_candidate(candidate: CandidateResult, final: dict | None) -
     never used to withhold or create a candidate's scored qualification.
     """
     if candidate.primary_score is None:
-        return (f"Ranking withheld · {final.get('Unverified', 0)} unverified"
-                if final is not None and candidate.assessments else
-                "Assessment unavailable · rerun")
+        if final is not None and candidate.assessments:
+            current = int(final.get("Processing incomplete") or 0)
+            historical = int(final.get("Unverified") or 0)
+            if current:
+                return f"Assessment incomplete ({current}) · recover affected work"
+            if historical:
+                return f"Historical Unverified ({historical}) · reassessment required"
+        return "Assessment unavailable · rerun"
     if final is None:
         return "Earlier run · rerun"
+    if final.get("Processing incomplete"):
+        return f"Assessment incomplete ({int(final['Processing incomplete'])})"
     if final.get("Unverified"):
-        return f"Unverified ({int(final['Unverified'])}) · rerun"
+        return f"Historical Unverified ({int(final['Unverified'])}) · reassessment required"
     criteria = final.get("Criteria")
     if isinstance(criteria, list) and all(
             isinstance(row, dict) and "Review recommended" in row for row in criteria):

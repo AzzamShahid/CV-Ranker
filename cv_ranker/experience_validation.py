@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import re
 from datetime import date
+from .assessment_clock import assessment_date
 from itertools import combinations
 from typing import Literal
 
@@ -99,13 +100,13 @@ _TENURE_AFTER_DURATION = re.compile(
     # and punctuation within compound field names (e.g., quality/operations,
     # UI/UX, research & design). Dropping these tokens misclassifies a direct
     # statement of professional tenure as an unsupported dated-role guess.
-    r"(?:of\s+(?:(?:[\w/&+-]+)\s+){0,5}"
+    r"(?:of\s+(?:(?:[\w/&+-]+)\s+){0,16}"
     r"(?:experience|employment|service|practice|work|tenure)\b|"
     # E.g. '3 years of professional language research'. Research is work
     # tenure here because it is explicitly qualified as professional, not
     # because the CV's section happens to be named Experience.
     r"of\s+(?:professional|paid|full-time)\s+"
-    r"(?:[\w/&+-]+\s+){0,5}"
+    r"(?:[\w/&+-]+\s+){0,16}"
     r"(?:research|operations|development|delivery|management|analysis)\b|"
     r"(?:professional\s+)?experience\b|"
     r"as\s+(?:an?\s+)?[\w-]+\b|"
@@ -241,7 +242,7 @@ def _role_tenure(segments: list[ResumeSegment]) -> list[RoleTenureClaim]:
                 continue
         headers.append((index, segment, match))
     claims: list[RoleTenureClaim] = []
-    today = date.today()
+    today = assessment_date()
     for position, (index, segment, match) in enumerate(headers):
         start_year = int(match.group("start_year"))
         # Bare YYYY - YYYY periods are bounded conservatively: start in
@@ -635,6 +636,22 @@ def check_experience(
                                explanation='Negated, learning-only, or conflicting experience statements require review.')
     sufficient = [x for x in positive if x.lower_years >= minimum]
     inadequate = [x for x in positive if x.upper_years is not None and x.upper_years < minimum]
+    # A general years claim can substantiate work duration but cannot assert
+    # full-time employment when the employer explicitly requires full-time.
+    # The word 'full-time' must govern the reported source claim, not appear
+    # incidentally in another unconnected CV line.
+    if sufficient and _jd_requires_full_time(requirement):
+        full_time_sufficient = [x for x in sufficient
+                                if _FULL_TIME.search(x.quote)
+                                and not _PART_TIME.search(x.quote)]
+        if not full_time_sufficient:
+            return ExperienceCheck(
+                outcome='ambiguous', minimum_years=minimum,
+                subject=c.subject, claims=claims,
+                explanation='The cited experience duration meets the numeric minimum, '
+                            'but the CV does not establish the JD-required full-time status '
+                            'for that experience.')
+        sufficient = full_time_sufficient
     if sufficient and inadequate:
         outcome = 'ambiguous'
         note = 'Different explicit experience durations conflict; manual clarification required.'
@@ -703,6 +720,87 @@ def _successful_experience_reason(check: ExperienceCheck,
             'not independently confirmed employment.')
 
 
+# Full-time is a separate JD condition: dates and duties cannot silently
+# establish employment status. A CV summary can describe a single dated role,
+# but not certify the full-time status of several distinct employers at once.
+_FULL_TIME = re.compile(r"\bfull[\s-]?time\b", re.I)
+_PART_TIME = re.compile(r"\bpart[\s-]?time\b|\bnot\s+full[\s-]?time\b", re.I)
+
+
+def _jd_requires_full_time(requirement: ValidatedRequirement) -> bool:
+    return bool(_FULL_TIME.search(requirement.jd_evidence))
+
+
+def _role_states_full_time(role: RoleTenureClaim,
+                           segments_by_id: dict[str, ResumeSegment]) -> bool:
+    source = segments_by_id.get(role.role_segment_id)
+    return bool(source and _FULL_TIME.search(source.text)
+                and not _PART_TIME.search(source.text))
+
+
+def _group_has_full_time_evidence(requirement: ValidatedRequirement,
+                                  row: RequirementAssessment,
+                                  group: list[RoleTenureClaim],
+                                  segments_by_id: dict[str, ResumeSegment],
+                                  summary: ResumeSegment | None = None) -> bool:
+    if not _jd_requires_full_time(requirement):
+        return True
+    if all(_role_states_full_time(role, segments_by_id) for role in group):
+        return True
+    # For a single cited employer, a same-subject full-time career summary is
+    # corroborating source context. It is not a blanket assertion about each
+    # of multiple dated positions with unspecified employment type.
+    return bool(len(group) == 1 and summary is not None
+                and summary.segment_id in row.evidence_ids
+                and _FULL_TIME.search(summary.text)
+                and not _PART_TIME.search(summary.text)
+                and not any(_PART_TIME.search(
+                    segments_by_id[role.role_segment_id].text)
+                    for role in group if role.role_segment_id in segments_by_id))
+
+
+def _corroborating_full_time_summary(
+        requirement: ValidatedRequirement, group: list[RoleTenureClaim],
+        segments_by_id: dict[str, ResumeSegment]) -> ResumeSegment | None:
+    """Use an original summary to corroborate one dated role, never invent FT.
+
+    The role's source-backed duties are checked by the caller. Here the
+    duration, JD work subject, explicit employment type and dated interval
+    must independently agree. This is a source-ledger bridge, not an
+    occupation-specific synonym table or a dated-title-only score.
+    """
+    subject = requirement.constraint.subject
+    minimum = requirement.constraint.minimum_years
+    if not subject or minimum is None or len(group) != 1:
+        return None
+    topic = {word for word in re.findall(r'[a-z][a-z0-9]*', subject.casefold())
+             if word not in _SCOPE_CONNECTORS and word not in _GENERIC_WORK_NOUNS}
+    if not topic:
+        return None
+    overlap = len(topic) if len(topic) <= 2 else len(topic) - 1
+    months = _role_months_without_double_counting(tuple(group))
+    if months < minimum * 12:
+        return None
+    for source in segments_by_id.values():
+        if (source.section != 'summary' or len(source.text) > 500
+                or not _FULL_TIME.search(source.text)
+                or _PART_TIME.search(source.text)
+                or _JD_COPY.search(source.text)
+                or _LEARNING.search(source.text)
+                or _CONTRADICTION.search(source.text)
+                or instruction_like_evidence(source.text)):
+            continue
+        words = set(re.findall(r'[a-z][a-z0-9]*', source.text.casefold()))
+        if len(words.intersection(topic)) < overlap:
+            continue
+        if any(minimum <= _duration_interval(source.text, claim)[0] <=
+               months / 12 + 0.5 and
+               _TENURE_AFTER_DURATION.search(source.text[claim.end():])
+               for claim in _DURATION.finditer(source.text)):
+            return source
+    return None
+
+
 def _cited_summary_role_scope(*, requirement: ValidatedRequirement,
                               row: RequirementAssessment,
                               group: list[RoleTenureClaim],
@@ -731,6 +829,14 @@ def _cited_summary_role_scope(*, requirement: ValidatedRequirement,
              if word not in _SCOPE_CONNECTORS and word not in _GENERIC_WORK_NOUNS}
     if not topic:
         return None
+    # Requiring *every* subject word in one CV summary wrongly rejects e.g.
+    # "textile weaving production" versus a self-reported summary describing
+    # "weaving ... loom production". Accept a clear majority of the JD's own
+    # named scope words only where there are 3+ such words; for one or two
+    # specific words require them all. The model must already have claimed a
+    # direct match and the dated employer's performed duties must corroborate
+    # the same scoped profession below. This is not a fuzzy technology alias.
+    min_topic_overlap = len(topic) if len(topic) <= 2 else len(topic) - 1
     role_months = _role_months_without_double_counting(tuple(group))
     if role_months < minimum * 12:
         return None
@@ -745,7 +851,8 @@ def _cited_summary_role_scope(*, requirement: ValidatedRequirement,
                 or _CONTRADICTION.search(source.text)
                 or instruction_like_evidence(source.text)):
             continue
-        if not topic.issubset(set(re.findall(r'[a-z][a-z0-9]*', source.text.casefold()))):
+        summary_words = set(re.findall(r'[a-z][a-z0-9]*', source.text.casefold()))
+        if len(topic.intersection(summary_words)) < min_topic_overlap:
             continue
         for claim in _DURATION.finditer(source.text):
             low, high = _duration_interval(source.text, claim)
@@ -760,6 +867,9 @@ def _cited_summary_role_scope(*, requirement: ValidatedRequirement,
         if summary is not None:
             break
     if summary is None or duration is None:
+        return None
+    if not _group_has_full_time_evidence(requirement, row, group,
+                                         segments_by_id, summary=summary):
         return None
     # Every credited employer's OWN affirmative duties need a direct lexical
     # link to the JD topic. This step confirms provenance but does not replace
@@ -841,6 +951,26 @@ def apply_experience_checks(*, requirements: list[ValidatedRequirement],
                         credited = group
                         check = check.model_copy(update={'explanation': summary_proof[1]})
                         break
+            full_time_summary = None
+            if credited is not None and _jd_requires_full_time(req):
+                full_time_summary = _corroborating_full_time_summary(
+                    req, credited, source_by_id)
+            provenance_row = row
+            if full_time_summary is not None and full_time_summary.segment_id not in row.evidence_ids:
+                provenance_row = row.model_copy(update={
+                    'evidence_ids': list(row.evidence_ids) + [full_time_summary.segment_id]
+                })
+            if credited is not None and not _group_has_full_time_evidence(
+                    req, provenance_row, credited, source_by_id,
+                    summary=full_time_summary):
+                credited = None
+                summary_proof = None
+                full_time_summary = None
+                check = check.model_copy(update={
+                    'explanation': check.explanation +
+                    ' The JD explicitly requires full-time work, but the cited'
+                    ' dated role and related source do not establish full-time status.'
+                })
             supported = credited is not None
             if credited:
                 dated_heading_ids = [role.role_segment_id for role in credited
@@ -848,8 +978,24 @@ def apply_experience_checks(*, requirements: list[ValidatedRequirement],
                 if summary_proof is not None:
                     dated_heading_ids.extend(sid for sid in summary_proof[0]
                                              if sid not in cited and sid not in dated_heading_ids)
+                if full_time_summary is not None and full_time_summary.segment_id not in cited:
+                    dated_heading_ids.append(full_time_summary.segment_id)
             status = ('matched' if supported else
                       'uncertain' if row.status == 'matched' else row.status)
+            if supported and credited is not None and summary_proof is None:
+                check = check.model_copy(update={
+                    'explanation': (
+                        'The cited dated employment and source-linked affirmative duties '
+                        f'establish at least {check.minimum_years:g} years in the required '
+                        'professional work scope without overlapping-month double counting. '
+                        + ('The original, scope-matched professional summary supports '
+                           'the full-time employment condition. '
+                           if full_time_summary is not None else
+                           'Full-time status is supported by the dated role. '
+                           if _jd_requires_full_time(req) else '')
+                        + 'These are CV-reported claims, not independently verified employment.'
+                    )
+                })
         elif check.outcome == 'not_evidenced' and row.status in {'matched', 'uncertain'}:
             # Model confidence cannot turn an explicitly unrelated career
             # history into evidence of subject-specific tenure. Retain review
@@ -927,6 +1073,8 @@ def apply_experience_checks(*, requirements: list[ValidatedRequirement],
             reason = _successful_experience_reason(check, source_by_id) or row.reason
         elif status == 'matched' and check.outcome == 'role_semantic' and summary_proof is not None:
             reason = summary_proof[1]
+        elif status == 'matched' and check.outcome == 'role_semantic':
+            reason = check.explanation
         elif status != row.status:
             reason = ('The cited experience does not establish the complete '
                       f'JD minimum: {check.explanation}')

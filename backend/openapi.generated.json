@@ -1,0 +1,4599 @@
+{
+  "components": {
+    "schemas": {
+      "Body_import_historical_report_api_v1_workspaces__workspace_id__historical_reports_post": {
+        "properties": {
+          "file": {
+            "format": "binary",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_historical_report_api_v1_workspaces__workspace_id__historical_reports_post",
+        "type": "object"
+      },
+      "Body_upload_api_v1_workspaces__workspace_id__documents_post": {
+        "properties": {
+          "file": {
+            "format": "binary",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_api_v1_workspaces__workspace_id__documents_post",
+        "type": "object"
+      },
+      "CandidateDetailDTO": {
+        "properties": {
+          "candidate": {
+            "$ref": "#/components/schemas/CandidateSummaryDTO"
+          },
+          "final": {
+            "$ref": "#/components/schemas/FinalCandidateDTO"
+          },
+          "original_segments": {
+            "items": {
+              "$ref": "#/components/schemas/SourceSegmentDTO"
+            },
+            "title": "Original Segments",
+            "type": "array"
+          },
+          "ranking_reasoning": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CandidateRankingReasoningDTO"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/FrozenRequirementDTO"
+            },
+            "title": "Requirements",
+            "type": "array"
+          },
+          "result_revision": {
+            "title": "Result Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "result_revision",
+          "candidate",
+          "final",
+          "original_segments",
+          "requirements"
+        ],
+        "title": "CandidateDetailDTO",
+        "type": "object"
+      },
+      "CandidateRankingReasoningDTO": {
+        "properties": {
+          "all_comparisons": {
+            "items": {
+              "$ref": "#/components/schemas/HeadToHeadComparisonDTO"
+            },
+            "title": "All Comparisons",
+            "type": "array"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/components/schemas/ReasoningItemDTO"
+            },
+            "title": "Gaps",
+            "type": "array"
+          },
+          "head_to_head_summary": {
+            "default": "",
+            "title": "Head To Head Summary",
+            "type": "string"
+          },
+          "other_candidate_advantages": {
+            "items": {
+              "$ref": "#/components/schemas/ReasoningItemDTO"
+            },
+            "title": "Other Candidate Advantages",
+            "type": "array"
+          },
+          "placement_reason": {
+            "default": "",
+            "title": "Placement Reason",
+            "type": "string"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "score_gap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Gap"
+          },
+          "strengths": {
+            "items": {
+              "$ref": "#/components/schemas/ReasoningItemDTO"
+            },
+            "title": "Strengths",
+            "type": "array"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          },
+          "top_candidate_advantages": {
+            "items": {
+              "$ref": "#/components/schemas/ReasoningItemDTO"
+            },
+            "title": "Top Candidate Advantages",
+            "type": "array"
+          },
+          "transferable": {
+            "items": {
+              "$ref": "#/components/schemas/ReasoningItemDTO"
+            },
+            "title": "Transferable",
+            "type": "array"
+          }
+        },
+        "title": "CandidateRankingReasoningDTO",
+        "type": "object"
+      },
+      "CandidateSummaryDTO": {
+        "properties": {
+          "candidate_name": {
+            "title": "Candidate Name",
+            "type": "string"
+          },
+          "candidate_source": {
+            "title": "Candidate Source",
+            "type": "string"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "evaluation_mode": {
+            "title": "Evaluation Mode",
+            "type": "string"
+          },
+          "matched_preferred": {
+            "title": "Matched Preferred",
+            "type": "integer"
+          },
+          "matched_required": {
+            "title": "Matched Required",
+            "type": "integer"
+          },
+          "primary_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Score"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "total_preferred": {
+            "title": "Total Preferred",
+            "type": "integer"
+          },
+          "total_required": {
+            "title": "Total Required",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "candidate_name",
+          "candidate_source",
+          "primary_score",
+          "matched_required",
+          "total_required",
+          "matched_preferred",
+          "total_preferred",
+          "evaluation_mode"
+        ],
+        "title": "CandidateSummaryDTO",
+        "type": "object"
+      },
+      "CandidateWeightedDTO": {
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "result": {
+            "$ref": "#/components/schemas/RankingDTO"
+          },
+          "result_revision": {
+            "title": "Result Revision",
+            "type": "integer"
+          },
+          "weight_revision": {
+            "title": "Weight Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "result_revision",
+          "weight_revision",
+          "result"
+        ],
+        "title": "CandidateWeightedDTO",
+        "type": "object"
+      },
+      "CheckpointDTO": {
+        "properties": {
+          "Highlight terms": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Highlight Terms",
+            "type": "array"
+          },
+          "Section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "Segment": {
+            "title": "Segment",
+            "type": "string"
+          },
+          "Sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "Text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "Validated against CV": {
+            "title": "Validated Against Cv",
+            "type": "boolean"
+          },
+          "Why": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Why",
+            "type": "array"
+          }
+        },
+        "required": [
+          "Segment",
+          "Section",
+          "Text",
+          "Validated against CV"
+        ],
+        "title": "CheckpointDTO",
+        "type": "object"
+      },
+      "ConfirmDeletion": {
+        "properties": {
+          "confirmation": {
+            "const": "DELETE",
+            "title": "Confirmation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmation"
+        ],
+        "title": "ConfirmDeletion",
+        "type": "object"
+      },
+      "CriterionDTO": {
+        "properties": {
+          "Checkpoints": {
+            "items": {
+              "$ref": "#/components/schemas/CheckpointDTO"
+            },
+            "title": "Checkpoints",
+            "type": "array"
+          },
+          "Display checkpoints": {
+            "items": {
+              "$ref": "#/components/schemas/CheckpointDTO"
+            },
+            "title": "Display Checkpoints",
+            "type": "array"
+          },
+          "Evidence level": {
+            "title": "Evidence Level",
+            "type": "string"
+          },
+          "Failure code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Failure Code"
+          },
+          "ID": {
+            "title": "Id",
+            "type": "string"
+          },
+          "JD source": {
+            "title": "Jd Source",
+            "type": "string"
+          },
+          "Kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "Priority": {
+            "title": "Priority",
+            "type": "string"
+          },
+          "Processing state": {
+            "title": "Processing State",
+            "type": "string"
+          },
+          "Requirement": {
+            "title": "Requirement",
+            "type": "string"
+          },
+          "Result": {
+            "enum": [
+              "Found",
+              "Transferable",
+              "Not Found",
+              "Assessment incomplete",
+              "Unverified"
+            ],
+            "title": "Result",
+            "type": "string"
+          },
+          "Review recommended": {
+            "title": "Review Recommended",
+            "type": "boolean"
+          },
+          "Why": {
+            "title": "Why",
+            "type": "string"
+          }
+        },
+        "required": [
+          "ID",
+          "Requirement",
+          "Priority",
+          "Result",
+          "Why",
+          "JD source",
+          "Kind",
+          "Evidence level",
+          "Checkpoints",
+          "Display checkpoints",
+          "Review recommended",
+          "Processing state",
+          "Failure code"
+        ],
+        "title": "CriterionDTO",
+        "type": "object"
+      },
+      "DeleteResultDTO": {
+        "properties": {
+          "deleted": {
+            "title": "Deleted",
+            "type": "string"
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "title": "DeleteResultDTO",
+        "type": "object"
+      },
+      "DocumentDTO": {
+        "properties": {
+          "byte_size": {
+            "title": "Byte Size",
+            "type": "integer"
+          },
+          "created": {
+            "title": "Created",
+            "type": "string"
+          },
+          "extraction_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraction Error"
+          },
+          "extraction_state": {
+            "title": "Extraction State",
+            "type": "string"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "jd",
+              "cv"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "workspace_id": {
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "kind",
+          "filename",
+          "sha256",
+          "byte_size",
+          "extraction_state",
+          "created"
+        ],
+        "title": "DocumentDTO",
+        "type": "object"
+      },
+      "DocumentsDTO": {
+        "properties": {
+          "formats": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Formats",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "max_upload_bytes": {
+            "title": "Max Upload Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "formats",
+          "max_upload_bytes"
+        ],
+        "title": "DocumentsDTO",
+        "type": "object"
+      },
+      "ExportDTO": {
+        "properties": {
+          "created": {
+            "title": "Created",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "result_revision": {
+            "title": "Result Revision",
+            "type": "integer"
+          },
+          "size": {
+            "title": "Size",
+            "type": "integer"
+          },
+          "weight_revision": {
+            "title": "Weight Revision",
+            "type": "integer"
+          },
+          "workspace_id": {
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "job_id",
+          "workspace_id",
+          "weight_revision",
+          "result_revision",
+          "size",
+          "created"
+        ],
+        "title": "ExportDTO",
+        "type": "object"
+      },
+      "ExportRequest": {
+        "properties": {
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "weight_revision": {
+            "title": "Weight Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revision",
+          "weight_revision"
+        ],
+        "title": "ExportRequest",
+        "type": "object"
+      },
+      "ExportsDTO": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExportDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ExportsDTO",
+        "type": "object"
+      },
+      "ExtractionRequest": {
+        "properties": {
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "openrouter_context_tokens": {
+            "anyOf": [
+              {
+                "maximum": 262144.0,
+                "minimum": 2048.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openrouter Context Tokens"
+          },
+          "openrouter_max_requests_per_assessment": {
+            "anyOf": [
+              {
+                "maximum": 1000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openrouter Max Requests Per Assessment"
+          },
+          "openrouter_output_tokens": {
+            "anyOf": [
+              {
+                "maximum": 65535.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openrouter Output Tokens"
+          },
+          "provider": {
+            "default": "ollama",
+            "title": "Provider",
+            "type": "string"
+          },
+          "use_llm": {
+            "default": true,
+            "title": "Use Llm",
+            "type": "boolean"
+          },
+          "yake_top_k": {
+            "default": 40,
+            "maximum": 150.0,
+            "minimum": 1.0,
+            "title": "Yake Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "document_id"
+        ],
+        "title": "ExtractionRequest",
+        "type": "object"
+      },
+      "FinalCandidateDTO": {
+        "properties": {
+          "Candidate": {
+            "title": "Candidate",
+            "type": "string"
+          },
+          "Criteria": {
+            "items": {
+              "$ref": "#/components/schemas/CriterionDTO"
+            },
+            "title": "Criteria",
+            "type": "array"
+          },
+          "Notices": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notices",
+            "type": "array"
+          },
+          "Preferred matched": {
+            "title": "Preferred Matched",
+            "type": "integer"
+          },
+          "Preferred total": {
+            "title": "Preferred Total",
+            "type": "integer"
+          },
+          "Processing incomplete": {
+            "title": "Processing Incomplete",
+            "type": "integer"
+          },
+          "Provisional": {
+            "title": "Provisional",
+            "type": "boolean"
+          },
+          "Required matched": {
+            "title": "Required Matched",
+            "type": "integer"
+          },
+          "Required total": {
+            "title": "Required Total",
+            "type": "integer"
+          },
+          "Run warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Run Warnings",
+            "type": "array"
+          },
+          "Transferable": {
+            "title": "Transferable",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "Candidate",
+          "Criteria",
+          "Notices",
+          "Run warnings",
+          "Provisional",
+          "Required matched",
+          "Required total",
+          "Preferred matched",
+          "Preferred total",
+          "Transferable",
+          "Processing incomplete"
+        ],
+        "title": "FinalCandidateDTO",
+        "type": "object"
+      },
+      "FocusedReviewDTO": {
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "citations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "new_verdict": {
+            "title": "New Verdict",
+            "type": "string"
+          },
+          "prior_verdict": {
+            "title": "Prior Verdict",
+            "type": "string"
+          },
+          "requirement_id": {
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "result_revision": {
+            "title": "Result Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "requirement_id",
+          "prior_verdict",
+          "new_verdict",
+          "explanation",
+          "result_revision"
+        ],
+        "title": "FocusedReviewDTO",
+        "type": "object"
+      },
+      "FocusedReviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "expected_result_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Result Revision"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "requirement_id": {
+            "minLength": 1,
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "use_llm": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Use Llm"
+          }
+        },
+        "required": [
+          "requirement_id"
+        ],
+        "title": "FocusedReviewRequest",
+        "type": "object"
+      },
+      "FrozenRequirementDTO": {
+        "properties": {
+          "constraint": {
+            "additionalProperties": true,
+            "title": "Constraint",
+            "type": "object"
+          },
+          "jd_evidence": {
+            "title": "Jd Evidence",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "string"
+          },
+          "requirement_id": {
+            "title": "Requirement Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "requirement_id",
+          "name",
+          "priority",
+          "jd_evidence",
+          "constraint"
+        ],
+        "title": "FrozenRequirementDTO",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HeadToHeadComparisonDTO": {
+        "properties": {
+          "against": {
+            "title": "Against",
+            "type": "string"
+          },
+          "against_candidate_index": {
+            "title": "Against Candidate Index",
+            "type": "integer"
+          },
+          "is_tie": {
+            "default": false,
+            "title": "Is Tie",
+            "type": "boolean"
+          },
+          "other_candidate_advantages": {
+            "items": {
+              "$ref": "#/components/schemas/ReasoningItemDTO"
+            },
+            "title": "Other Candidate Advantages",
+            "type": "array"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "score_gap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Gap"
+          },
+          "top_candidate_advantages": {
+            "items": {
+              "$ref": "#/components/schemas/ReasoningItemDTO"
+            },
+            "title": "Top Candidate Advantages",
+            "type": "array"
+          }
+        },
+        "required": [
+          "against_candidate_index",
+          "against"
+        ],
+        "title": "HeadToHeadComparisonDTO",
+        "type": "object"
+      },
+      "HistoricalDTO": {
+        "properties": {
+          "created": {
+            "title": "Created",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "source_build": {
+            "title": "Source Build",
+            "type": "string"
+          },
+          "source_name": {
+            "title": "Source Name",
+            "type": "string"
+          },
+          "workspace_id": {
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "source_name",
+          "source_build",
+          "created"
+        ],
+        "title": "HistoricalDTO",
+        "type": "object"
+      },
+      "HistoricalListDTO": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "HistoricalListDTO",
+        "type": "object"
+      },
+      "JDDraftDTO": {
+        "properties": {
+          "body": {
+            "additionalProperties": true,
+            "title": "Body",
+            "type": "object"
+          },
+          "document_id": {
+            "title": "Document Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/JDRowDTO"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "workspace_id": {
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "document_id",
+          "revision",
+          "body",
+          "rows"
+        ],
+        "title": "JDDraftDTO",
+        "type": "object"
+      },
+      "JDReviewEdit": {
+        "properties": {
+          "draft_id": {
+            "title": "Draft Id",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/JDRowDTO"
+            },
+            "minItems": 1,
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "draft_id",
+          "revision",
+          "rows"
+        ],
+        "title": "JDReviewEdit",
+        "type": "object"
+      },
+      "JDRowDTO": {
+        "additionalProperties": false,
+        "properties": {
+          "Alternative groups JSON": {
+            "default": "",
+            "title": "Alternative Groups Json",
+            "type": "string"
+          },
+          "Complete JD expression JSON": {
+            "default": "",
+            "title": "Complete Jd Expression Json",
+            "type": "string"
+          },
+          "Degree level": {
+            "default": "",
+            "title": "Degree Level",
+            "type": "string"
+          },
+          "Duration subject": {
+            "default": "",
+            "title": "Duration Subject",
+            "type": "string"
+          },
+          "Evidence standard": {
+            "default": "",
+            "title": "Evidence Standard",
+            "type": "string"
+          },
+          "Field of study": {
+            "default": "",
+            "title": "Field Of Study",
+            "type": "string"
+          },
+          "ID": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "JD source": {
+            "title": "Jd Source",
+            "type": "string"
+          },
+          "Mandatory JD parts": {
+            "default": "",
+            "title": "Mandatory Jd Parts",
+            "type": "string"
+          },
+          "Minimum years": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minimum Years"
+          },
+          "Priority": {
+            "enum": [
+              "required",
+              "preferred",
+              "unknown"
+            ],
+            "title": "Priority",
+            "type": "string"
+          },
+          "Requirement": {
+            "title": "Requirement",
+            "type": "string"
+          },
+          "Type": {
+            "enum": [
+              "skill",
+              "experience",
+              "education",
+              "certification",
+              "license",
+              "responsibility",
+              "eligibility",
+              "other"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "Requirement",
+          "Priority",
+          "Type",
+          "JD source"
+        ],
+        "title": "JDRowDTO",
+        "type": "object"
+      },
+      "JobEventDTO": {
+        "properties": {
+          "created": {
+            "title": "Created",
+            "type": "string"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "seq": {
+            "title": "Seq",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "job_id",
+          "seq",
+          "kind",
+          "payload",
+          "created"
+        ],
+        "title": "JobEventDTO",
+        "type": "object"
+      },
+      "JobEventsDTO": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/JobEventDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/JobSnapshotDTO"
+          }
+        },
+        "required": [
+          "items",
+          "snapshot"
+        ],
+        "title": "JobEventsDTO",
+        "type": "object"
+      },
+      "JobSnapshotDTO": {
+        "properties": {
+          "cancel_requested": {
+            "title": "Cancel Requested",
+            "type": "boolean"
+          },
+          "created": {
+            "title": "Created",
+            "type": "string"
+          },
+          "eligible_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Eligible At"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "error_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Message"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "jd_extract",
+              "assess"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "integer"
+          },
+          "request": {
+            "additionalProperties": true,
+            "title": "Request",
+            "type": "object"
+          },
+          "result_revision": {
+            "title": "Result Revision",
+            "type": "integer"
+          },
+          "sequence": {
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "state": {
+            "enum": [
+              "queued",
+              "running",
+              "paused",
+              "completed",
+              "completed_with_errors",
+              "failed",
+              "cancelling",
+              "cancelled"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "updated": {
+            "title": "Updated",
+            "type": "string"
+          },
+          "workspace_id": {
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "kind",
+          "state",
+          "request",
+          "progress",
+          "total",
+          "sequence",
+          "result_revision",
+          "cancel_requested",
+          "created",
+          "updated"
+        ],
+        "title": "JobSnapshotDTO",
+        "type": "object"
+      },
+      "JobUsageDTO": {
+        "properties": {
+          "actual_model_request_attempts": {
+            "default": 0,
+            "title": "Actual Model Request Attempts",
+            "type": "integer"
+          },
+          "cost_label": {
+            "title": "Cost Label",
+            "type": "string"
+          },
+          "estimated_cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimated Cost Usd"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "logical_model_calls": {
+            "default": 0,
+            "title": "Logical Model Calls",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "preserved_unknown": {
+            "default": false,
+            "title": "Preserved Unknown",
+            "type": "boolean"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "reused_prompt_calls": {
+            "default": 0,
+            "title": "Reused Prompt Calls",
+            "type": "integer"
+          },
+          "token_usage": {
+            "$ref": "#/components/schemas/TokenUsageDTO"
+          }
+        },
+        "required": [
+          "job_id",
+          "provider",
+          "model",
+          "token_usage",
+          "cost_label"
+        ],
+        "title": "JobUsageDTO",
+        "type": "object"
+      },
+      "JobsDTO": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/JobSnapshotDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "JobsDTO",
+        "type": "object"
+      },
+      "RankingDTO": {
+        "properties": {
+          "breakdown": {
+            "additionalProperties": true,
+            "title": "Breakdown",
+            "type": "object"
+          },
+          "candidate": {
+            "title": "Candidate",
+            "type": "string"
+          },
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "candidate_index": {
+            "title": "Candidate Index",
+            "type": "integer"
+          },
+          "education": {
+            "title": "Education",
+            "type": "string"
+          },
+          "experience": {
+            "title": "Experience",
+            "type": "string"
+          },
+          "jd_overall": {
+            "title": "Jd Overall",
+            "type": "string"
+          },
+          "placement_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placement Reason"
+          },
+          "preferred": {
+            "title": "Preferred",
+            "type": "string"
+          },
+          "provisional": {
+            "title": "Provisional",
+            "type": "boolean"
+          },
+          "rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rank"
+          },
+          "required": {
+            "title": "Required",
+            "type": "string"
+          },
+          "review": {
+            "title": "Review",
+            "type": "string"
+          },
+          "score_gap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Gap"
+          },
+          "score_status": {
+            "title": "Score Status",
+            "type": "string"
+          },
+          "unverified_count": {
+            "title": "Unverified Count",
+            "type": "integer"
+          },
+          "verified_floor": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified Floor"
+          },
+          "weighted_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weighted Score"
+          }
+        },
+        "required": [
+          "candidate_index",
+          "candidate_id",
+          "candidate",
+          "weighted_score",
+          "verified_floor",
+          "provisional",
+          "score_status",
+          "unverified_count",
+          "jd_overall",
+          "required",
+          "preferred",
+          "experience",
+          "education",
+          "review",
+          "rank",
+          "breakdown"
+        ],
+        "title": "RankingDTO",
+        "type": "object"
+      },
+      "RankingsDTO": {
+        "properties": {
+          "comparative_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparative Summary"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RankingDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "default": 50,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "official_count": {
+            "default": 0,
+            "title": "Official Count",
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "title": "Offset",
+            "type": "integer"
+          },
+          "ready": {
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "result_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Revision"
+          },
+          "search": {
+            "default": "",
+            "title": "Search",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "unfinished_count": {
+            "default": 0,
+            "title": "Unfinished Count",
+            "type": "integer"
+          },
+          "weight_revision": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Revision"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "ready"
+        ],
+        "title": "RankingsDTO",
+        "type": "object"
+      },
+      "ReasoningItemDTO": {
+        "properties": {
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "decision": {
+            "default": "",
+            "title": "Decision",
+            "type": "string"
+          },
+          "points": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Points"
+          },
+          "priority": {
+            "default": "",
+            "title": "Priority",
+            "type": "string"
+          },
+          "requirement": {
+            "default": "",
+            "title": "Requirement",
+            "type": "string"
+          },
+          "requirement_id": {
+            "default": "",
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "why": {
+            "default": "",
+            "title": "Why",
+            "type": "string"
+          }
+        },
+        "title": "ReasoningItemDTO",
+        "type": "object"
+      },
+      "RetentionPurgeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "retention_days": {
+            "default": 30,
+            "maximum": 3650.0,
+            "minimum": 1.0,
+            "title": "Retention Days",
+            "type": "integer"
+          }
+        },
+        "title": "RetentionPurgeRequest",
+        "type": "object"
+      },
+      "RetentionPurgeResultDTO": {
+        "properties": {
+          "purged_documents": {
+            "title": "Purged Documents",
+            "type": "integer"
+          },
+          "purged_exports": {
+            "title": "Purged Exports",
+            "type": "integer"
+          },
+          "purged_jobs": {
+            "title": "Purged Jobs",
+            "type": "integer"
+          },
+          "retention_days": {
+            "title": "Retention Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "purged_jobs",
+          "purged_exports",
+          "purged_documents",
+          "retention_days"
+        ],
+        "title": "RetentionPurgeResultDTO",
+        "type": "object"
+      },
+      "RetentionSummaryDTO": {
+        "properties": {
+          "default_retention_days": {
+            "title": "Default Retention Days",
+            "type": "integer"
+          },
+          "eligible_documents": {
+            "title": "Eligible Documents",
+            "type": "integer"
+          },
+          "eligible_exports": {
+            "title": "Eligible Exports",
+            "type": "integer"
+          },
+          "eligible_jobs": {
+            "title": "Eligible Jobs",
+            "type": "integer"
+          },
+          "protected_active_jobs": {
+            "title": "Protected Active Jobs",
+            "type": "integer"
+          },
+          "protected_unknown_delivery_jobs": {
+            "title": "Protected Unknown Delivery Jobs",
+            "type": "integer"
+          },
+          "workspace_id": {
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "workspace_id",
+          "eligible_jobs",
+          "eligible_exports",
+          "eligible_documents",
+          "protected_active_jobs",
+          "protected_unknown_delivery_jobs",
+          "default_retention_days"
+        ],
+        "title": "RetentionSummaryDTO",
+        "type": "object"
+      },
+      "ReviewHistoryDTO": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewHistoryItemDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "ReviewHistoryDTO",
+        "type": "object"
+      },
+      "ReviewHistoryItemDTO": {
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "created": {
+            "title": "Created",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "job_id": {
+            "title": "Job Id",
+            "type": "string"
+          },
+          "new_verdict": {
+            "title": "New Verdict",
+            "type": "string"
+          },
+          "prior_verdict": {
+            "title": "Prior Verdict",
+            "type": "string"
+          },
+          "requirement_id": {
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "sources": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Sources",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "job_id",
+          "candidate_id",
+          "requirement_id",
+          "prior_verdict",
+          "new_verdict",
+          "explanation",
+          "created"
+        ],
+        "title": "ReviewHistoryItemDTO",
+        "type": "object"
+      },
+      "SemanticShadowDTO": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SemanticShadowItemDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "notice": {
+            "title": "Notice",
+            "type": "string"
+          },
+          "ready": {
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "scoring_unchanged": {
+            "default": true,
+            "title": "Scoring Unchanged",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ready",
+          "notice"
+        ],
+        "title": "SemanticShadowDTO",
+        "type": "object"
+      },
+      "SemanticShadowItemDTO": {
+        "properties": {
+          "candidate_id": {
+            "title": "Candidate Id",
+            "type": "string"
+          },
+          "finding": {
+            "title": "Finding",
+            "type": "string"
+          },
+          "requirement_id": {
+            "title": "Requirement Id",
+            "type": "string"
+          },
+          "similarity": {
+            "title": "Similarity",
+            "type": "number"
+          },
+          "source_segments": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Source Segments",
+            "type": "array"
+          }
+        },
+        "required": [
+          "requirement_id",
+          "candidate_id",
+          "similarity",
+          "finding"
+        ],
+        "title": "SemanticShadowItemDTO",
+        "type": "object"
+      },
+      "SemanticShadowRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "embedding_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Model"
+          },
+          "top_k": {
+            "default": 5,
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Top K",
+            "type": "integer"
+          }
+        },
+        "title": "SemanticShadowRequest",
+        "type": "object"
+      },
+      "SourceSegmentDTO": {
+        "properties": {
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "segment_id": {
+            "title": "Segment Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "segment_id",
+          "section",
+          "text"
+        ],
+        "title": "SourceSegmentDTO",
+        "type": "object"
+      },
+      "SubmitJob": {
+        "additionalProperties": false,
+        "properties": {
+          "approved_revision_id": {
+            "title": "Approved Revision Id",
+            "type": "string"
+          },
+          "candidate_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Candidate Ids",
+            "type": "array"
+          },
+          "openrouter_context_tokens": {
+            "anyOf": [
+              {
+                "maximum": 262144.0,
+                "minimum": 2048.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openrouter Context Tokens"
+          },
+          "openrouter_max_requests_per_assessment": {
+            "anyOf": [
+              {
+                "maximum": 1000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openrouter Max Requests Per Assessment"
+          },
+          "openrouter_output_tokens": {
+            "anyOf": [
+              {
+                "maximum": 65535.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openrouter Output Tokens"
+          },
+          "provider": {
+            "default": "ollama",
+            "title": "Provider",
+            "type": "string"
+          },
+          "unified": {
+            "default": true,
+            "title": "Unified",
+            "type": "boolean"
+          },
+          "use_llm": {
+            "default": true,
+            "title": "Use Llm",
+            "type": "boolean"
+          },
+          "yake_top_k": {
+            "default": 40,
+            "maximum": 150.0,
+            "minimum": 1.0,
+            "title": "Yake Top K",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "candidate_ids",
+          "approved_revision_id"
+        ],
+        "title": "SubmitJob",
+        "type": "object"
+      },
+      "TokenUsageDTO": {
+        "properties": {
+          "completion_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completion Tokens"
+          },
+          "prompt_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Tokens"
+          },
+          "total_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Tokens"
+          }
+        },
+        "title": "TokenUsageDTO",
+        "type": "object"
+      },
+      "UnknownRecoveryRequest": {
+        "properties": {
+          "acknowledgement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledgement"
+          },
+          "resolution": {
+            "enum": [
+              "inspect",
+              "accept_duplicate_risk"
+            ],
+            "title": "Resolution",
+            "type": "string"
+          }
+        },
+        "required": [
+          "resolution"
+        ],
+        "title": "UnknownRecoveryRequest",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "WeightPolicyDTO": {
+        "properties": {
+          "default_requirement_allocation": {
+            "enum": [
+              "equal",
+              "custom"
+            ],
+            "title": "Default Requirement Allocation",
+            "type": "string"
+          },
+          "education": {
+            "title": "Education",
+            "type": "integer"
+          },
+          "experience": {
+            "title": "Experience",
+            "type": "integer"
+          },
+          "jd": {
+            "title": "Jd",
+            "type": "integer"
+          },
+          "jd_allocation": {
+            "enum": [
+              "pooled",
+              "weighted_split"
+            ],
+            "title": "Jd Allocation",
+            "type": "string"
+          },
+          "jd_preferred_share": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jd Preferred Share"
+          },
+          "jd_required_share": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jd Required Share"
+          },
+          "jd_view": {
+            "title": "Jd View",
+            "type": "string"
+          },
+          "requirement_shares_percent_of_category": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Requirement Shares Percent Of Category",
+            "type": "object"
+          },
+          "split_jd": {
+            "title": "Split Jd",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "experience",
+          "education",
+          "jd",
+          "split_jd",
+          "jd_view",
+          "jd_allocation",
+          "jd_required_share",
+          "jd_preferred_share",
+          "requirement_shares_percent_of_category",
+          "default_requirement_allocation"
+        ],
+        "title": "WeightPolicyDTO",
+        "type": "object"
+      },
+      "WeightsDTO": {
+        "properties": {
+          "body": {
+            "$ref": "#/components/schemas/WeightPolicyDTO"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revision",
+          "body"
+        ],
+        "title": "WeightsDTO",
+        "type": "object"
+      },
+      "WeightsUpdate": {
+        "properties": {
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "weights": {
+            "additionalProperties": true,
+            "title": "Weights",
+            "type": "object"
+          }
+        },
+        "required": [
+          "revision",
+          "weights"
+        ],
+        "title": "WeightsUpdate",
+        "type": "object"
+      },
+      "WorkspaceCreate": {
+        "properties": {
+          "title": {
+            "maxLength": 120,
+            "minLength": 2,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "WorkspaceCreate",
+        "type": "object"
+      },
+      "WorkspaceDTO": {
+        "properties": {
+          "created": {
+            "title": "Created",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "updated": {
+            "title": "Updated",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "revision",
+          "created",
+          "updated"
+        ],
+        "title": "WorkspaceDTO",
+        "type": "object"
+      },
+      "WorkspaceDelete": {
+        "properties": {
+          "confirmation": {
+            "const": "DELETE WORKSPACE",
+            "title": "Confirmation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirmation"
+        ],
+        "title": "WorkspaceDelete",
+        "type": "object"
+      },
+      "WorkspacesDTO": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceDTO"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "WorkspacesDTO",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "TextileHR AI Local API",
+    "version": "0.2.1-migration-checkpoint"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/api/v1/session": {
+      "get": {
+        "operationId": "bootstrap_api_v1_session_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Bootstrap"
+      }
+    },
+    "/api/v1/settings": {
+      "get": {
+        "operationId": "settings_api_v1_settings_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Settings"
+      }
+    },
+    "/api/v1/workspaces": {
+      "get": {
+        "operationId": "workspaces_api_v1_workspaces_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspacesDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Workspaces"
+      },
+      "post": {
+        "operationId": "create_workspace_api_v1_workspaces_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Workspace"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}": {
+      "delete": {
+        "operationId": "delete_workspace_api_v1_workspaces__workspace_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceDelete"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResultDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Workspace"
+      },
+      "get": {
+        "operationId": "workspace_api_v1_workspaces__workspace_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Workspace"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/assessment-jobs": {
+      "post": {
+        "operationId": "start_assessment_api_v1_workspaces__workspace_id__assessment_jobs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitJob"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSnapshotDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Assessment"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/documents": {
+      "get": {
+        "operationId": "documents_api_v1_workspaces__workspace_id__documents_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentsDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Documents"
+      },
+      "post": {
+        "operationId": "upload_api_v1_workspaces__workspace_id__documents_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": true,
+            "schema": {
+              "title": "Kind",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_api_v1_workspaces__workspace_id__documents_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/documents/{document_id}": {
+      "delete": {
+        "operationId": "delete_document_api_v1_workspaces__workspace_id__documents__document_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "title": "Document Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmDeletion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResultDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Document"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/documents/{document_id}/download": {
+      "get": {
+        "operationId": "download_document_api_v1_workspaces__workspace_id__documents__document_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "document_id",
+            "required": true,
+            "schema": {
+              "title": "Document Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Document"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/exports": {
+      "get": {
+        "operationId": "exports_api_v1_workspaces__workspace_id__exports_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportsDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Exports"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/exports/{export_id}": {
+      "delete": {
+        "operationId": "delete_export_api_v1_workspaces__workspace_id__exports__export_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "title": "Export Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmDeletion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResultDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Export"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/exports/{export_id}/download": {
+      "get": {
+        "operationId": "download_api_v1_workspaces__workspace_id__exports__export_id__download_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "export_id",
+            "required": true,
+            "schema": {
+              "title": "Export Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/historical-reports": {
+      "get": {
+        "operationId": "historical_reports_api_v1_workspaces__workspace_id__historical_reports_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoricalListDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Historical Reports"
+      },
+      "post": {
+        "operationId": "import_historical_report_api_v1_workspaces__workspace_id__historical_reports_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_historical_report_api_v1_workspaces__workspace_id__historical_reports_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Import Historical Report"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/historical-reports/{report_id}": {
+      "get": {
+        "operationId": "historical_report_api_v1_workspaces__workspace_id__historical_reports__report_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "report_id",
+            "required": true,
+            "schema": {
+              "title": "Report Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Historical Report"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jd": {
+      "get": {
+        "operationId": "jd_api_v1_workspaces__workspace_id__jd_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Jd"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jd/approve": {
+      "post": {
+        "operationId": "approve_api_v1_workspaces__workspace_id__jd_approve_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JDReviewEdit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Approve"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jd/drafts/{draft_id}": {
+      "get": {
+        "operationId": "jd_draft_api_v1_workspaces__workspace_id__jd_drafts__draft_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "draft_id",
+            "required": true,
+            "schema": {
+              "title": "Draft Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JDDraftDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Jd Draft"
+      },
+      "put": {
+        "operationId": "revise_api_v1_workspaces__workspace_id__jd_drafts__draft_id__put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "draft_id",
+            "required": true,
+            "schema": {
+              "title": "Draft Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JDReviewEdit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Revise"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jd/extraction-jobs": {
+      "post": {
+        "operationId": "start_extract_api_v1_workspaces__workspace_id__jd_extraction_jobs_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSnapshotDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Start Extract"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs": {
+      "get": {
+        "operationId": "jobs_api_v1_workspaces__workspace_id__jobs_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobsDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Jobs"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}": {
+      "delete": {
+        "operationId": "delete_assessment_api_v1_workspaces__workspace_id__jobs__job_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmDeletion"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteResultDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Assessment"
+      },
+      "get": {
+        "operationId": "job_api_v1_workspaces__workspace_id__jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSnapshotDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/cancel": {
+      "post": {
+        "operationId": "cancel_job_api_v1_workspaces__workspace_id__jobs__job_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSnapshotDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Job"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/candidates/{doc_id}": {
+      "get": {
+        "operationId": "candidate_detail_api_v1_workspaces__workspace_id__jobs__job_id__candidates__doc_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "doc_id",
+            "required": true,
+            "schema": {
+              "title": "Doc Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateDetailDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Candidate Detail"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/candidates/{doc_id}/focused-review": {
+      "post": {
+        "operationId": "run_focused_review_api_v1_workspaces__workspace_id__jobs__job_id__candidates__doc_id__focused_review_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "doc_id",
+            "required": true,
+            "schema": {
+              "title": "Doc Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FocusedReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FocusedReviewDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Focused Review"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/candidates/{doc_id}/review-history": {
+      "get": {
+        "operationId": "review_history_api_v1_workspaces__workspace_id__jobs__job_id__candidates__doc_id__review_history_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "doc_id",
+            "required": true,
+            "schema": {
+              "title": "Doc Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewHistoryDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Review History"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/candidates/{doc_id}/weighted": {
+      "get": {
+        "operationId": "weighted_candidate_api_v1_workspaces__workspace_id__jobs__job_id__candidates__doc_id__weighted_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "doc_id",
+            "required": true,
+            "schema": {
+              "title": "Doc Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateWeightedDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Weighted Candidate"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/event-history": {
+      "get": {
+        "operationId": "event_history_api_v1_workspaces__workspace_id__jobs__job_id__event_history_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobEventsDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Event History"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/events": {
+      "get": {
+        "operationId": "events_api_v1_workspaces__workspace_id__jobs__job_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "After",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Events"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/exports": {
+      "post": {
+        "operationId": "make_export_api_v1_workspaces__workspace_id__jobs__job_id__exports_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Make Export"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/rankings": {
+      "get": {
+        "operationId": "rankings_api_v1_workspaces__workspace_id__jobs__job_id__rankings_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Search",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expected_result_revision",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expected Result Revision"
+            }
+          },
+          {
+            "in": "query",
+            "name": "expected_weight_revision",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Expected Weight Revision"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RankingsDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rankings"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/resolve-unknown": {
+      "post": {
+        "operationId": "resolve_unknown_api_v1_workspaces__workspace_id__jobs__job_id__resolve_unknown_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnknownRecoveryRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resolve Unknown"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/resume": {
+      "post": {
+        "operationId": "resume_job_api_v1_workspaces__workspace_id__jobs__job_id__resume_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSnapshotDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Resume Job"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/semantic-shadow": {
+      "get": {
+        "operationId": "get_semantic_shadow_endpoint_api_v1_workspaces__workspace_id__jobs__job_id__semantic_shadow_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SemanticShadowDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Semantic Shadow Endpoint"
+      },
+      "post": {
+        "operationId": "run_semantic_shadow_endpoint_api_v1_workspaces__workspace_id__jobs__job_id__semantic_shadow_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SemanticShadowRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SemanticShadowDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Run Semantic Shadow Endpoint"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/jobs/{job_id}/usage": {
+      "get": {
+        "operationId": "job_usage_api_v1_workspaces__workspace_id__jobs__job_id__usage_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobUsageDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job Usage"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/retention": {
+      "get": {
+        "operationId": "retention_summary_api_v1_workspaces__workspace_id__retention_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "title": "Days",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetentionSummaryDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retention Summary"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/retention/purge": {
+      "post": {
+        "operationId": "retention_purge_api_v1_workspaces__workspace_id__retention_purge_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetentionPurgeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetentionPurgeResultDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Retention Purge"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/submissions/{intent_key}": {
+      "get": {
+        "operationId": "submission_recovery_api_v1_workspaces__workspace_id__submissions__intent_key__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "intent_key",
+            "required": true,
+            "schema": {
+              "title": "Intent Key",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobSnapshotDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Submission Recovery"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/weights": {
+      "get": {
+        "operationId": "weights_api_v1_workspaces__workspace_id__weights_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Weights"
+      },
+      "put": {
+        "operationId": "update_weights_api_v1_workspaces__workspace_id__weights_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeightsUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightsDTO"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Weights"
+      }
+    },
+    "/api/v1/workspaces/{workspace_id}/weights/rebalance": {
+      "post": {
+        "operationId": "rebalance_api_v1_workspaces__workspace_id__weights_rebalance_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspace_id",
+            "required": true,
+            "schema": {
+              "title": "Workspace Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Body",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Rebalance"
+      }
+    }
+  }
+}

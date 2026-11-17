@@ -160,10 +160,10 @@ def test_unresolved_model_row_does_not_discard_verified_peer(tmp_path):
     assert metrics.unresolved_criteria == 1
     assert metrics.exact_source_recoveries == 0
     assert assessments[0].status == "matched" and assessments[0].unified_status == "Found"
-    assert assessments[1].status == "uncertain" and assessments[1].unified_status == "Unverified"
+    assert assessments[1].status == "uncertain" and assessments[1].unified_status is None
     assert assessments[1].assessment_state == "unverified"
+    assert assessments[1].current_decision.verdict is None
     assert assessments[1].review_recommended
-    assert "UNVERIFIED" in assessments[1].reason
     assert assessments[1].evidence_ids and "S999" not in assessments[1].evidence_ids
 
 
@@ -301,7 +301,7 @@ def test_context_refusal_needs_no_initialized_request_counter():
         (StructuredLLM, Settings(ollama_num_ctx=2048, ollama_num_predict=1024)),
         (OpenRouterStructuredLLM,
          Settings(llm_provider="openrouter", openrouter_api_key="dummy-test-only",
-                  ollama_num_ctx=2048, ollama_num_predict=1024)),
+                  openrouter_context_tokens=2048, openrouter_output_tokens=1024)),
     ):
         client = cls.__new__(cls)
         client.settings = settings

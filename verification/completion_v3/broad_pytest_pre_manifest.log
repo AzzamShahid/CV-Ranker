@@ -1,0 +1,756 @@
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+.......FF............................................................... [ 39%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 52%]
+...........F............................................................ [ 56%]
+.........................F........................F.F................... [ 60%]
+........................FFFF....FFF.................................F... [ 65%]
+.............................FF......................................... [ 69%]
+.......................................................FFFF............. [ 73%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................FFF............................................. [ 91%]
+........................................................................ [ 95%]
+..............................................F......................... [ 99%]
+.                                                                        [100%]
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_v4912_auto_resume.py _______________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4912_auto_resume.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4912_auto_resume.py:13: in <module>
+    from cv_ranker.ui import dashboard
+cv_ranker/ui/dashboard.py:21: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+______ ERROR collecting tests/test_v4914_batch_resume_and_skill_recall.py ______
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4914_batch_resume_and_skill_recall.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4914_batch_resume_and_skill_recall.py:8: in <module>
+    from cv_ranker.ui import dashboard
+cv_ranker/ui/dashboard.py:21: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+___________ ERROR collecting tests/test_v4929_background_recovery.py ___________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4929_background_recovery.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4929_background_recovery.py:7: in <module>
+    from cv_ranker.ui import dashboard
+cv_ranker/ui/dashboard.py:21: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+___________ ERROR collecting tests/test_v4930_reliability_repairs.py ___________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4930_reliability_repairs.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4930_reliability_repairs.py:20: in <module>
+    from cv_ranker.ui.dashboard import _advance_recovery_state, _rank_core
+cv_ranker/ui/dashboard.py:21: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_________ ERROR collecting tests/test_v493_broad_semantic_contract.py __________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v493_broad_semantic_contract.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v493_broad_semantic_contract.py:22: in <module>
+    from cv_ranker.ui.dashboard import _archive_current_run, _restore_archived_run
+cv_ranker/ui/dashboard.py:21: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_v4940_visual_refresh.py ______________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4940_visual_refresh.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4940_visual_refresh.py:3: in <module>
+    from streamlit.testing.v1 import AppTest
+E   ModuleNotFoundError: No module named 'streamlit'
+_________ ERROR collecting tests/test_v4941_supervisor_readability.py __________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4941_supervisor_readability.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4941_supervisor_readability.py:3: in <module>
+    from streamlit.testing.v1 import AppTest
+E   ModuleNotFoundError: No module named 'streamlit'
+________ ERROR collecting tests/test_v4944_portable_recovery_and_e2e.py ________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4944_portable_recovery_and_e2e.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4944_portable_recovery_and_e2e.py:22: in <module>
+    from cv_ranker.ui.dashboard import _restore_portable_run
+cv_ranker/ui/dashboard.py:21: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+______ ERROR collecting tests/test_v4946_bounded_independent_recovery.py _______
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4946_bounded_independent_recovery.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4946_bounded_independent_recovery.py:16: in <module>
+    from cv_ranker.ui.dashboard import _advance_recovery_state
+cv_ranker/ui/dashboard.py:21: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+___________ ERROR collecting tests/test_v4949_reliance_safe_theme.py ___________
+ImportError while importing test module '/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition/tests/test_v4949_reliance_safe_theme.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.13/importlib/__init__.py:88: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_v4949_reliance_safe_theme.py:6: in <module>
+    from streamlit.testing.v1 import AppTest
+E   ModuleNotFoundError: No module named 'streamlit'
+=================================== FAILURES ===================================
+____________ test_local_dispatch_uses_ollama_model_and_url_from_env ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f13ff4e5b50>
+
+    def test_local_dispatch_uses_ollama_model_and_url_from_env(monkeypatch):
+        _configure_models(monkeypatch)
+        captured = {}
+>       from langchain_core.runnables import RunnableLambda
+E       ModuleNotFoundError: No module named 'langchain_core'
+
+tests/test_phase7g_v45_provider_switch.py:44: ModuleNotFoundError
+___ test_cloud_dispatch_uses_openrouter_model_and_does_not_initialize_ollama ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f13ff4d8bd0>
+
+    def test_cloud_dispatch_uses_openrouter_model_and_does_not_initialize_ollama(monkeypatch):
+        _configure_models(monkeypatch)
+    
+        def forbid_local_model(**kwargs):
+            raise AssertionError("Cloud selection must not initialize a local assessment LLM")
+    
+>       monkeypatch.setattr("langchain_ollama.ChatOllama", forbid_local_model)
+
+tests/test_phase7g_v45_provider_switch.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/opt/pyvenv/lib/python3.13/site-packages/_pytest/monkeypatch.py:104: in derive_importpath
+    target = resolve(module)
+             ^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+name = 'langchain_ollama'
+
+    def resolve(name: str) -> object:
+        # Simplified from zope.dottedname.
+        parts = name.split(".")
+    
+        used = parts.pop(0)
+>       found: object = __import__(used)
+                        ^^^^^^^^^^^^^^^^
+E       ModuleNotFoundError: No module named 'langchain_ollama'
+
+/opt/pyvenv/lib/python3.13/site-packages/_pytest/monkeypatch.py:67: ModuleNotFoundError
+__ test_dashboard_resume_checkpoint_tracks_source_hash_not_leaderboard_order ___
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1400439b70>
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-9/test_dashboard_resume_checkpoi0')
+
+    def test_dashboard_resume_checkpoint_tracks_source_hash_not_leaderboard_order(
+            monkeypatch, tmp_path):
+>       from cv_ranker.ui import dashboard
+
+tests/test_v4911_resume_rate_limit.py:261: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+__________ test_streamlit_jd_editor_renders_and_freezes_approved_rows __________
+
+    def test_streamlit_jd_editor_renders_and_freezes_approved_rows():
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4920_jd_review_gate.py:116: ModuleNotFoundError
+__________ test_yake_display_is_ranked_by_raw_lower_is_better_scores ___________
+
+    def test_yake_display_is_ranked_by_raw_lower_is_better_scores():
+        from cv_ranker.schemas import YakeCandidate
+>       from cv_ranker.ui.dashboard import _yake_display_rows
+
+tests/test_v4922_weighted_scoring_and_bundle.py:263: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+_____________ test_results_button_switches_stateful_streamlit_tab ______________
+
+    def test_results_button_switches_stateful_streamlit_tab():
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4922_weighted_scoring_and_bundle.py:299: ModuleNotFoundError
+___ test_actual_streamlit_editor_rebalances_after_one_requirement_is_changed ___
+
+    def test_actual_streamlit_editor_rebalances_after_one_requirement_is_changed():
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4931_dynamic_allocation_and_reasoning.py:266: ModuleNotFoundError
+_ test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[complete] _
+
+review_case = 'complete'
+
+    @pytest.mark.parametrize("review_case", ["complete", "first_withheld", "all_withheld"])
+    def test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates(review_case):
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4931_dynamic_allocation_and_reasoning.py:295: ModuleNotFoundError
+_ test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[first_withheld] _
+
+review_case = 'first_withheld'
+
+    @pytest.mark.parametrize("review_case", ["complete", "first_withheld", "all_withheld"])
+    def test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates(review_case):
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4931_dynamic_allocation_and_reasoning.py:295: ModuleNotFoundError
+_ test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[all_withheld] _
+
+review_case = 'all_withheld'
+
+    @pytest.mark.parametrize("review_case", ["complete", "first_withheld", "all_withheld"])
+    def test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates(review_case):
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4931_dynamic_allocation_and_reasoning.py:295: ModuleNotFoundError
+_ test_background_progress_caption_updates_without_streamlit_calls_from_worker _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f13ff750ad0>
+
+    def test_background_progress_caption_updates_without_streamlit_calls_from_worker(monkeypatch):
+        import time
+        from queue import SimpleQueue
+>       from cv_ranker.ui import dashboard
+
+tests/test_v4933_partial_batch_survival.py:162: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+_____ test_identical_invalid_model_rows_pause_without_another_cloud_retry ______
+
+    def test_identical_invalid_model_rows_pause_without_another_cloud_retry():
+        from cv_ranker.schemas import CandidateResult, RankingReport, RequirementAssessment
+>       from cv_ranker.ui import dashboard
+
+tests/test_v4933_partial_batch_survival.py:177: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+__ test_provider_rate_limit_keeps_cooldown_instead_of_blind_validation_pause ___
+
+    def test_provider_rate_limit_keeps_cooldown_instead_of_blind_validation_pause():
+        from cv_ranker.schemas import CandidateResult, RankingReport
+>       from cv_ranker.ui import dashboard
+
+tests/test_v4933_partial_batch_survival.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+____ test_streamlit_individual_requirements_show_why_in_table_and_expander _____
+
+    def test_streamlit_individual_requirements_show_why_in_table_and_expander():
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4939_individual_decision_why.py:69: ModuleNotFoundError
+______ test_local_access_gate_runs_in_streamlit_without_external_identity ______
+
+    def test_local_access_gate_runs_in_streamlit_without_external_identity():
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4945_security_and_concurrency.py:76: ModuleNotFoundError
+___________ test_supervisor_full_app_renders_under_safe_local_policy ___________
+
+    def test_supervisor_full_app_renders_under_safe_local_policy():
+>       from streamlit.testing.v1 import AppTest
+E       ModuleNotFoundError: No module named 'streamlit'
+
+tests/test_v4945_security_and_concurrency.py:91: ModuleNotFoundError
+_ test_custom_result_cards_follow_selected_streamlit_theme[light-#183025-#EFF5EF] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f13ffe29470>
+mode = 'light', ink = '#183025', card = '#EFF5EF'
+
+    @pytest.mark.parametrize('mode,ink,card', [
+        ('light', '#183025', '#EFF5EF'),
+        ('dark', '#EDF7EF', '#1B2D23'),
+    ])
+    def test_custom_result_cards_follow_selected_streamlit_theme(monkeypatch, mode, ink, card):
+>       import cv_ranker.ui.dashboard as dashboard
+
+tests/test_v4951_contrast_and_prompt_budget.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+_ test_custom_result_cards_follow_selected_streamlit_theme[dark-#EDF7EF-#1B2D23] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f13fd3a2120>
+mode = 'dark', ink = '#EDF7EF', card = '#1B2D23'
+
+    @pytest.mark.parametrize('mode,ink,card', [
+        ('light', '#183025', '#EFF5EF'),
+        ('dark', '#EDF7EF', '#1B2D23'),
+    ])
+    def test_custom_result_cards_follow_selected_streamlit_theme(monkeypatch, mode, ink, card):
+>       import cv_ranker.ui.dashboard as dashboard
+
+tests/test_v4951_contrast_and_prompt_budget.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+_ test_all_primary_buttons_get_explicit_high_contrast_palette[light-#12613C-#FFFFFF] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f13fd3a3a80>
+mode = 'light', bg = '#12613C', ink = '#FFFFFF'
+
+    @pytest.mark.parametrize('mode,bg,ink', [
+        ('light', '#12613C', '#FFFFFF'),
+        ('dark', '#6FDEAA', '#092017'),
+    ])
+    def test_all_primary_buttons_get_explicit_high_contrast_palette(monkeypatch, mode, bg, ink):
+>       import cv_ranker.ui.dashboard as dashboard
+
+tests/test_v4951_contrast_and_prompt_budget.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+_ test_all_primary_buttons_get_explicit_high_contrast_palette[dark-#6FDEAA-#092017] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f13fce02580>
+mode = 'dark', bg = '#6FDEAA', ink = '#092017'
+
+    @pytest.mark.parametrize('mode,bg,ink', [
+        ('light', '#12613C', '#FFFFFF'),
+        ('dark', '#6FDEAA', '#092017'),
+    ])
+    def test_all_primary_buttons_get_explicit_high_contrast_palette(monkeypatch, mode, bg, ink):
+>       import cv_ranker.ui.dashboard as dashboard
+
+tests/test_v4951_contrast_and_prompt_budget.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    """Streamlit interface for evidence-grounded candidate assessments.
+    
+    UI is presentation-only: no additional candidate eligibility or ranking rules.
+    """
+    from __future__ import annotations
+    
+    import json
+    import os
+    import hashlib
+    import tempfile
+    import csv
+    from html import escape
+    from copy import deepcopy
+    import io
+    import time
+    from concurrent.futures import Future, ThreadPoolExecutor
+    from dataclasses import replace
+    from pathlib import Path
+    from queue import Empty, SimpleQueue
+    
+>   import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+
+cv_ranker/ui/dashboard.py:21: ModuleNotFoundError
+_________ test_missing_probe_and_mutated_score_fail_independent_oracle _________
+
+    def test_missing_probe_and_mutated_score_fail_independent_oracle():
+>       m=verifier.load_manifest(ROOT,verifier.digest(ROOT/'cv_ranker/build_manifest.json'))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v4967_differential_oracle.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition')
+expected_sha = 'c895a6e5df9285a8f92cc20f7789d271fe1d3e9e0739456c4cb696e24e947ac2'
+
+    def load_manifest(root: Path, expected_sha: str | None) -> dict:
+        path = root / 'cv_ranker' / 'build_manifest.json'
+        if not path.is_file():
+            raise DifferentialFailure(f'No build manifest at {root}')
+        actual = digest(path)
+        if expected_sha is not None and actual != expected_sha:
+            raise DifferentialFailure('Manifest identity mismatch with independently supplied digest')
+        try:
+            manifest = json.loads(path.read_text(encoding='utf-8'))
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise DifferentialFailure('Invalid or unreadable source manifest') from exc
+        if not isinstance(manifest.get('files'), dict):
+            raise DifferentialFailure('Source manifest has no files dictionary')
+        # A valid manifest is not enough if executable Python files were added
+        # without rebuilding it. Enforce complete coverage of all runtime and
+        # verification Python files in the source checkout (not cached bytecode).
+        listed = set(manifest['files'])
+        discovered = {str(p.relative_to(root)) for folder in
+                      ('cv_ranker','scripts','verification','evaluation','tests')
+                      for p in (root/folder).rglob('*.py') if '__pycache__' not in p.parts}
+        if discovered - listed:
+>           raise DifferentialFailure('Unhashed executable Python files exist in the source tree')
+E           scripts.verify_differential_v4966.DifferentialFailure: Unhashed executable Python files exist in the source tree
+
+scripts/verify_differential_v4966.py:57: DifferentialFailure
+_____________ test_wrong_import_root_and_wrong_child_identity_fail _____________
+
+    def test_wrong_import_root_and_wrong_child_identity_fail():
+>       m=verifier.load_manifest(ROOT,verifier.digest(ROOT/'cv_ranker/build_manifest.json'))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v4967_differential_oracle.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition')
+expected_sha = 'c895a6e5df9285a8f92cc20f7789d271fe1d3e9e0739456c4cb696e24e947ac2'
+
+    def load_manifest(root: Path, expected_sha: str | None) -> dict:
+        path = root / 'cv_ranker' / 'build_manifest.json'
+        if not path.is_file():
+            raise DifferentialFailure(f'No build manifest at {root}')
+        actual = digest(path)
+        if expected_sha is not None and actual != expected_sha:
+            raise DifferentialFailure('Manifest identity mismatch with independently supplied digest')
+        try:
+            manifest = json.loads(path.read_text(encoding='utf-8'))
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise DifferentialFailure('Invalid or unreadable source manifest') from exc
+        if not isinstance(manifest.get('files'), dict):
+            raise DifferentialFailure('Source manifest has no files dictionary')
+        # A valid manifest is not enough if executable Python files were added
+        # without rebuilding it. Enforce complete coverage of all runtime and
+        # verification Python files in the source checkout (not cached bytecode).
+        listed = set(manifest['files'])
+        discovered = {str(p.relative_to(root)) for folder in
+                      ('cv_ranker','scripts','verification','evaluation','tests')
+                      for p in (root/folder).rglob('*.py') if '__pycache__' not in p.parts}
+        if discovered - listed:
+>           raise DifferentialFailure('Unhashed executable Python files exist in the source tree')
+E           scripts.verify_differential_v4966.DifferentialFailure: Unhashed executable Python files exist in the source tree
+
+scripts/verify_differential_v4966.py:57: DifferentialFailure
+__________ test_child_invalid_json_crash_and_timeout_are_not_success ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-9/test_child_invalid_json_crash_0')
+
+    def test_child_invalid_json_crash_and_timeout_are_not_success(tmp_path):
+        bad=tmp_path/'bad.py';bad.write_text("print('not json')")
+        failed=verifier.run_tree(ROOT,bad)
+        assert failed['exit']==0 and failed['error']=='invalid_json_output'
+        bad.write_text('raise RuntimeError("intentional test fault")')
+        crashed=verifier.run_tree(ROOT,bad)
+        assert crashed['exit']!=0 and crashed['error']=='child_nonzero_exit'
+        bad.write_text('import time;time.sleep(4)')
+        expired=verifier.run_tree(ROOT,bad,timeout_seconds=1)
+        assert expired['exit'] is None and expired['error']=='probe_timeout'
+>       m=verifier.load_manifest(ROOT,verifier.digest(ROOT/'cv_ranker/build_manifest.json'))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_v4967_differential_oracle.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/mnt/data/textilehr_completion_v2/CV_Ranker_Supervisor_Edition')
+expected_sha = 'c895a6e5df9285a8f92cc20f7789d271fe1d3e9e0739456c4cb696e24e947ac2'
+
+    def load_manifest(root: Path, expected_sha: str | None) -> dict:
+        path = root / 'cv_ranker' / 'build_manifest.json'
+        if not path.is_file():
+            raise DifferentialFailure(f'No build manifest at {root}')
+        actual = digest(path)
+        if expected_sha is not None and actual != expected_sha:
+            raise DifferentialFailure('Manifest identity mismatch with independently supplied digest')
+        try:
+            manifest = json.loads(path.read_text(encoding='utf-8'))
+        except (ValueError, UnicodeDecodeError) as exc:
+            raise DifferentialFailure('Invalid or unreadable source manifest') from exc
+        if not isinstance(manifest.get('files'), dict):
+            raise DifferentialFailure('Source manifest has no files dictionary')
+        # A valid manifest is not enough if executable Python files were added
+        # without rebuilding it. Enforce complete coverage of all runtime and
+        # verification Python files in the source checkout (not cached bytecode).
+        listed = set(manifest['files'])
+        discovered = {str(p.relative_to(root)) for folder in
+                      ('cv_ranker','scripts','verification','evaluation','tests')
+                      for p in (root/folder).rglob('*.py') if '__pycache__' not in p.parts}
+        if discovered - listed:
+>           raise DifferentialFailure('Unhashed executable Python files exist in the source tree')
+E           scripts.verify_differential_v4966.DifferentialFailure: Unhashed executable Python files exist in the source tree
+
+scripts/verify_differential_v4966.py:57: DifferentialFailure
+______________________ test_static_routes_and_unknown_api ______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-9/test_static_routes_and_unknown0')
+
+    def test_static_routes_and_unknown_api(tmp_path):
+        store=Store(tmp_path/'data')
+        client=TestClient(create_app(store,serve_frontend=True),base_url='http://testserver')
+>       assert client.get('/w/abc123/overview').status_code==200
+E       AssertionError: assert 503 == 200
+E        +  where 503 = <Response [503 Service Unavailable]>.status_code
+E        +    where <Response [503 Service Unavailable]> = get('/w/abc123/overview')
+E        +      where get = <starlette.testclient.TestClient object at 0x7f13fced7650>.get
+
+tests/web/test_api_worker.py:251: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_phase7g_v45_provider_switch.py::test_local_dispatch_uses_ollama_model_and_url_from_env - ModuleNotFoundError: No module named 'langchain_core'
+FAILED tests/test_phase7g_v45_provider_switch.py::test_cloud_dispatch_uses_openrouter_model_and_does_not_initialize_ollama - ModuleNotFoundError: No module named 'langchain_ollama'
+FAILED tests/test_v4911_resume_rate_limit.py::test_dashboard_resume_checkpoint_tracks_source_hash_not_leaderboard_order - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4920_jd_review_gate.py::test_streamlit_jd_editor_renders_and_freezes_approved_rows - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4922_weighted_scoring_and_bundle.py::test_yake_display_is_ranked_by_raw_lower_is_better_scores - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4922_weighted_scoring_and_bundle.py::test_results_button_switches_stateful_streamlit_tab - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_editor_rebalances_after_one_requirement_is_changed - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[complete] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[first_withheld] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[all_withheld] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4933_partial_batch_survival.py::test_background_progress_caption_updates_without_streamlit_calls_from_worker - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4933_partial_batch_survival.py::test_identical_invalid_model_rows_pause_without_another_cloud_retry - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4933_partial_batch_survival.py::test_provider_rate_limit_keeps_cooldown_instead_of_blind_validation_pause - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4939_individual_decision_why.py::test_streamlit_individual_requirements_show_why_in_table_and_expander - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4945_security_and_concurrency.py::test_local_access_gate_runs_in_streamlit_without_external_identity - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4945_security_and_concurrency.py::test_supervisor_full_app_renders_under_safe_local_policy - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_custom_result_cards_follow_selected_streamlit_theme[light-#183025-#EFF5EF] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_custom_result_cards_follow_selected_streamlit_theme[dark-#EDF7EF-#1B2D23] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_all_primary_buttons_get_explicit_high_contrast_palette[light-#12613C-#FFFFFF] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_all_primary_buttons_get_explicit_high_contrast_palette[dark-#6FDEAA-#092017] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4967_differential_oracle.py::test_missing_probe_and_mutated_score_fail_independent_oracle - scripts.verify_differential_v4966.DifferentialFailure: Unhashed executable Python files exist in the source tree
+FAILED tests/test_v4967_differential_oracle.py::test_wrong_import_root_and_wrong_child_identity_fail - scripts.verify_differential_v4966.DifferentialFailure: Unhashed executable Python files exist in the source tree
+FAILED tests/test_v4967_differential_oracle.py::test_child_invalid_json_crash_and_timeout_are_not_success - scripts.verify_differential_v4966.DifferentialFailure: Unhashed executable Python files exist in the source tree
+FAILED tests/web/test_api_worker.py::test_static_routes_and_unknown_api - AssertionError: assert 503 == 200
+ +  where 503 = <Response [503 Service Unavailable]>.status_code
+ +    where <Response [503 Service Unavailable]> = get('/w/abc123/overview')
+ +      where get = <starlette.testclient.TestClient object at 0x7f13fced7650>.get
+ERROR tests/test_v4912_auto_resume.py
+ERROR tests/test_v4914_batch_resume_and_skill_recall.py
+ERROR tests/test_v4929_background_recovery.py
+ERROR tests/test_v4930_reliability_repairs.py
+ERROR tests/test_v493_broad_semantic_contract.py
+ERROR tests/test_v4940_visual_refresh.py
+ERROR tests/test_v4941_supervisor_readability.py
+ERROR tests/test_v4944_portable_recovery_and_e2e.py
+ERROR tests/test_v4946_bounded_independent_recovery.py
+ERROR tests/test_v4949_reliance_safe_theme.py
+24 failed, 1633 passed, 10 errors in 23.45s

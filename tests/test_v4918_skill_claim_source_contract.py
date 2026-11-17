@@ -80,7 +80,7 @@ class SkillClaimProvider:
         self.calls += 1
         sources = json.loads(user_prompt)["sources"]
         ids = [source["id"] for source in sources]
-        if "second, independent" in system_prompt:
+        if "INDEPENDENT REVIEW:" in system_prompt:
             self.review_source_ids = ids
             if self.confirmed:
                 return schema.model_validate({"R001": {

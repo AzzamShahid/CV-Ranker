@@ -1,0 +1,185 @@
+{
+  "type": "source-expression prompt diff only, not live A/B accuracy",
+  "baseline": "v51",
+  "candidate": "v52",
+  "runtime_prompt_count": 13,
+  "builder_function_count": 16,
+  "prompts": [
+    {
+      "symbol": "jd.py:SYSTEM_PROMPT",
+      "v51_sha256": "4ef3b76bc4a0b4e10b0d118f9cba1d2ca261618abbe3cc19b659f71a9fe7bac8",
+      "v52_sha256": "4ef3b76bc4a0b4e10b0d118f9cba1d2ca261618abbe3cc19b659f71a9fe7bac8",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "jd.py:CORRECTION_PROMPT",
+      "v51_sha256": "c0ba561923424315bb59372aae15add29a44f223cd85367526deb295dcfef099",
+      "v52_sha256": "c0ba561923424315bb59372aae15add29a44f223cd85367526deb295dcfef099",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "requirement_typing.py:TYPE_SYSTEM_PROMPT",
+      "v51_sha256": "4f62acbf4cf7a8bff12adf86cd123138ae1c46e1aa796a72d7439dd42a188030",
+      "v52_sha256": "4f62acbf4cf7a8bff12adf86cd123138ae1c46e1aa796a72d7439dd42a188030",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "unified.py:FINAL_ADJUDICATION_PROMPT",
+      "v51_sha256": "8cc2465069e300302eaaf6b8d8626010df2a99422cad750f108a045f30b5e072",
+      "v52_sha256": "8cc2465069e300302eaaf6b8d8626010df2a99422cad750f108a045f30b5e072",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "unified.py:UNIFIED_PROMPT",
+      "v51_sha256": "0b64b070f94402dd02e1d1bb11cbd8c4355a614b35479e9e4edbd6bda1912e78",
+      "v52_sha256": "0b64b070f94402dd02e1d1bb11cbd8c4355a614b35479e9e4edbd6bda1912e78",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "assessor.py:SYSTEM_PROMPT",
+      "v51_sha256": "51c842dda7b32fb7a369fcaf0d2c62b8855833c2f4b0f4089fcc5e852098d584",
+      "v52_sha256": "51c842dda7b32fb7a369fcaf0d2c62b8855833c2f4b0f4089fcc5e852098d584",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "assessor.py:CORRECTION_PROMPT",
+      "v51_sha256": "c99fe78fa21462826c39d93b181f6c1c22a0c8e12a9ec73a8aecabb802da0f18",
+      "v52_sha256": "c99fe78fa21462826c39d93b181f6c1c22a0c8e12a9ec73a8aecabb802da0f18",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/decomposition.py:SYSTEM_PROMPT",
+      "v51_sha256": "46c6026a5c85e843c5f04e8e098e0f7852fc9254408051f07b0be924ac12cbf0",
+      "v52_sha256": "46c6026a5c85e843c5f04e8e098e0f7852fc9254408051f07b0be924ac12cbf0",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/transferability.py:COMPACT_SYSTEM_PROMPT",
+      "v51_sha256": "dd183f527bb452baa26e44743079b0459179169e83cef347d4e1a0b8afe54c3a",
+      "v52_sha256": "dd183f527bb452baa26e44743079b0459179169e83cef347d4e1a0b8afe54c3a",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/transferability.py:BATCH_SYSTEM_PROMPT",
+      "v51_sha256": "19165cf351f76da0c3946e0f7b25223781278dee5031eba5667196e881413a8d",
+      "v52_sha256": "19165cf351f76da0c3946e0f7b25223781278dee5031eba5667196e881413a8d",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/transferability.py:SYSTEM_PROMPT",
+      "v51_sha256": "21a079fec97bfaaef5756aff22c3ac11cc950fe731860b37579633f9da5bd4e1",
+      "v52_sha256": "21a079fec97bfaaef5756aff22c3ac11cc950fe731860b37579633f9da5bd4e1",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "ui/final_decisions.py:_JUDGE_PROMPT",
+      "v51_sha256": "ce873d09570e70bf0a559d60e0e77b2f91e253923afd9e8c9dfa53a3a2ef69e6",
+      "v52_sha256": "ce873d09570e70bf0a559d60e0e77b2f91e253923afd9e8c9dfa53a3a2ef69e6",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "condition_review.py:REVIEW_PROMPT",
+      "v51_sha256": "0df66a5005fe1eeb4efb1b4cb19a8a37dd18d16cc6ff3dc81c7df321a12227e4",
+      "v52_sha256": "f5d63ca216794cac7cb26c48e579630e60f204618980cd701a917c10dbd5c17c",
+      "status": "changed"
+    }
+  ],
+  "builders": [
+    {
+      "symbol": "jd.py:_user_prompt",
+      "v51_sha256": "56fafad5138a54e0f51ee34d10ec4ef9b8e5c504edc5327a12b5b11e20dca5ed",
+      "v52_sha256": "56fafad5138a54e0f51ee34d10ec4ef9b8e5c504edc5327a12b5b11e20dca5ed",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "jd.py:validate_jd_requirements",
+      "v51_sha256": "883c9d13421980b346eac54e09fda400c0928720ca4fc0184f2884e8c8aae29c",
+      "v52_sha256": "883c9d13421980b346eac54e09fda400c0928720ca4fc0184f2884e8c8aae29c",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "requirement_typing.py:enrich_ambiguous_types",
+      "v51_sha256": "5effa4e359308fc82ecdcaa78092e871991a347ef1c3fd1abfdbbe4d3ca09fc9",
+      "v52_sha256": "5effa4e359308fc82ecdcaa78092e871991a347ef1c3fd1abfdbbe4d3ca09fc9",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "assessor.py:_build_user_prompt",
+      "v51_sha256": "f99ac5fcb3808c1f0f75ef2d6c4c83126e2d2d0ec1cc7992a1546f354e1b4497",
+      "v52_sha256": "f99ac5fcb3808c1f0f75ef2d6c4c83126e2d2d0ec1cc7992a1546f354e1b4497",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "assessor.py:_correct_invalid_rows",
+      "v51_sha256": "e9a297dcbfb8e96e266ae2e28eae72465862aedd0f1942c75895637b9f248bd0",
+      "v52_sha256": "e9a297dcbfb8e96e266ae2e28eae72465862aedd0f1942c75895637b9f248bd0",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "assessor.py:_focused_abbreviation_recheck",
+      "v51_sha256": "ca3449604f95bf3f227af12b54dae5a1055da0fef7a537a2416382c5a8c8dc70",
+      "v52_sha256": "ca3449604f95bf3f227af12b54dae5a1055da0fef7a537a2416382c5a8c8dc70",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "unified.py:_payload",
+      "v51_sha256": "32403762f73540610b979959358dc369ca153a6c37575dad67e79bb133c92979",
+      "v52_sha256": "32403762f73540610b979959358dc369ca153a6c37575dad67e79bb133c92979",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "unified.py:plan_evidence_batches",
+      "v51_sha256": "307a48c0470ef7aaaa93383bfcf076d90028d83a66979dde717fa1154ac2d790",
+      "v52_sha256": "307a48c0470ef7aaaa93383bfcf076d90028d83a66979dde717fa1154ac2d790",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "unified.py:_correction_payload",
+      "v51_sha256": "91bdb4581b67e651232a51959e608754c38e5763772cfd9e65271177c41450bb",
+      "v52_sha256": "91bdb4581b67e651232a51959e608754c38e5763772cfd9e65271177c41450bb",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "unified.py:_independently_adjudicate",
+      "v51_sha256": "42b137b1f62bf656e2b4d5ad38d9a2f45e8561f16746b3f8a715d790aba0695d",
+      "v52_sha256": "42b137b1f62bf656e2b4d5ad38d9a2f45e8561f16746b3f8a715d790aba0695d",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/decomposition.py:create_shadow_search_plan",
+      "v51_sha256": "568afa3e7bd5863e8a7dc11ccff735412a6dda8971a9ff7586668215f3c6acb7",
+      "v52_sha256": "568afa3e7bd5863e8a7dc11ccff735412a6dda8971a9ff7586668215f3c6acb7",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/transferability.py:_assess_single_compact",
+      "v51_sha256": "ae8667aa7130b458fc1223780d47ee69b18af1ea9eb77af46195e67b4f592acd",
+      "v52_sha256": "ae8667aa7130b458fc1223780d47ee69b18af1ea9eb77af46195e67b4f592acd",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/transferability.py:_assess_compact_jobs",
+      "v51_sha256": "5cd7d34085b8c472233705b2f082fb0e6d06ef74f38add8c99e65c1c24249449",
+      "v52_sha256": "5cd7d34085b8c472233705b2f082fb0e6d06ef74f38add8c99e65c1c24249449",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "semantic/transferability.py:assess_transferability_shadow",
+      "v51_sha256": "15161dde2e8c5c8e95f79b544bbb864b23a5e592979a5671eeaff1a1c4177103",
+      "v52_sha256": "15161dde2e8c5c8e95f79b544bbb864b23a5e592979a5671eeaff1a1c4177103",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "ui/final_decisions.py:_judge_requirement",
+      "v51_sha256": "62e2f91a9a12c8b9b4076c75eb0c3481443681ac4bc272f1398bae50ca11c410",
+      "v52_sha256": "62e2f91a9a12c8b9b4076c75eb0c3481443681ac4bc272f1398bae50ca11c410",
+      "status": "unchanged"
+    },
+    {
+      "symbol": "condition_review.py:review_compound_uncertainty",
+      "v51_sha256": "5d1be3806ea713249a95b84eefb06fc94493ae27bf31ce24db3576204aee26a6",
+      "v52_sha256": "8c3d4d08c0d570550c9f9331d577f1c9813c83f010cf3a00c3c686c805277f4c",
+      "status": "changed"
+    }
+  ]
+}

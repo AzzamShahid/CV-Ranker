@@ -164,5 +164,7 @@ def test_ui_keeps_full_audit_export_and_caps_nonmatches_at_render():
     # V4.9.42 intentionally separates a completed CV's human review flags from
     # genuinely unfinished judgments, removing the blanket provisional banner.
     assert 'if final.get("Provisional")' not in source
-    assert 'if item["Review recommended"] and item["Result"] != "Unverified"' in source
+    assert 'item["Result"] not in {"Unverified", "Assessment incomplete"}' in source
+    assert '"Assessment incomplete": "⚠️"' in source
+    assert '"Assessment incomplete", "Unverified"' in source
     assert 'if candidate.primary_score is None:' in source

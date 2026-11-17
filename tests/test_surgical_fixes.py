@@ -160,9 +160,11 @@ def test_llm_technical_failure_is_visibly_fallback():
     items, mode, warnings = assess_resume(
         resume_text="Built services using Python.", requirements=[req("Python")], llm=llm
     )
-    assert items[0].status == "matched"
-    assert mode == "fallback_exact"
-    assert warnings
+    assert items[0].status == "uncertain"
+    assert mode == "failed" and warnings
+    assert items[0].current_decision.verdict is None
+    assert items[0].current_decision.failure.code == "provider_timeout"
+    assert items[0].current_decision.processing_state == "paused"
 
 
 def test_equal_primary_scores_share_rank_but_name_orders_display():
@@ -283,11 +285,21 @@ def test_pipeline_warns_when_candidate_evaluation_modes_differ(tmp_path, monkeyp
         lambda **kwargs: ([req("Python")], "llm_validated", []),
     )
     calls = iter(["llm_assessed", "fallback_exact"])
-    monkeypatch.setattr(
-        pipeline_module,
-        "assess_resume",
-        lambda **kwargs: ([RequirementAssessment(requirement_id="R001", status="matched", evidence="Python")], next(calls), []),
-    )
+    # Mock a valid source-grounded response, not a positive without IDs.
+    # The current finalizer correctly rejects the latter, so it cannot test
+    # evaluation-mode differences between two otherwise valid candidates.
+    from cv_ranker.schemas import EvidenceCitation
+    from cv_ranker.segments import segment_resume
+    def assessment_with_source(**kwargs):
+        source = next(seg for seg in segment_resume(kwargs["resume_text"])
+                      if "Python" in seg.text)
+        citation = EvidenceCitation(segment_id=source.segment_id,
+                                    section=source.section, text=source.text)
+        return ([RequirementAssessment(requirement_id="R001", status="matched",
+                  unified_status="Found", evidence="Python",
+                  evidence_ids=[source.segment_id], evidence_segments=[citation])],
+                next(calls), [])
+    monkeypatch.setattr(pipeline_module, "assess_resume", assessment_with_source)
     from cv_ranker.pipeline import CVRanker
     report = CVRanker(Settings(), use_llm=False).run(jd, [a, b])
     assert {c.evaluation_mode for c in report.candidates} == {"llm_assessed", "fallback_exact"}

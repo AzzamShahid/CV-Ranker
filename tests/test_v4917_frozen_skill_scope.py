@@ -97,8 +97,9 @@ def test_admitted_but_semantically_ambiguous_claim_is_unverified_not_wrongly_rej
         requirement_id="R001", status="not_matched", unified_status="Not Found",
         reason="GCP Cloud Run is listed under skills, but not demonstrated in professional experience.")
     audited = _enforce_frozen_skill_scope(requirement, row, {"S011": source})
-    assert audited.unified_status == "Unverified"
+    assert audited.unified_status is None
     assert audited.assessment_state == "unverified"
+    assert audited.current_decision.processing_state == "pending"
     assert audited.evidence_ids == ["S011"]
     assert audited.review_recommended
     assert "review leads" in audited.reason
@@ -138,7 +139,7 @@ class PersistentlyWrongProvider:
 
     def invoke_structured(self, *, system_prompt, user_prompt, schema):
         self.calls += 1
-        if "second, independent" in system_prompt:
+        if "INDEPENDENT REVIEW:" in system_prompt:
             return schema.model_validate({"R001": {
                 "decision": "not_found", "relation": "absent", "evidence_ids": [],
                 "proof_excerpt": None,
@@ -162,7 +163,9 @@ def test_repeated_same_invalid_reason_never_becomes_verified_negative(tmp_path):
                                       source.text, candidate_id="scope-contradiction")
     assert provider.calls == 2
     assert metrics.final_verification_calls == 1
-    assert rows[0].unified_status == "Unverified"
+    assert rows[0].unified_status is None
     assert rows[0].assessment_state == "unverified"
+    assert rows[0].current_decision.processing_state == "input_required"
+    assert rows[0].current_decision.failure.code == "semantic_adjudication_required"
     assert rows[0].evidence_ids == ["S011"]
     assert metrics.unresolved_criteria == 1

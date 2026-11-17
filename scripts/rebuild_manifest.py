@@ -16,11 +16,13 @@ MANIFEST = ROOT / "cv_ranker" / "build_manifest.json"
 EXCLUDED_DIRS = {
     ".git", ".venv", ".pytest_cache", "__pycache__", "outputs",
     ".cv_ranker_cache", ".mypy_cache", ".ruff_cache",
+    "node_modules", ".route-test", ".observation-test", ".submission-test", ".jdyears-test", ".jdrows-test", ".test-dist", ".vite",
 }
 EXCLUDED_FILES = {
     ".env", "secrets.toml", ".DS_Store", "Thumbs.db",
+    "REPAIR_PLAN.md", "da021_to_qualified.patch", "RELEASE_IDENTITY.json",
 }
-EXCLUDED_SECRET_SUFFIXES = {".key", ".pem", ".p12", ".pfx"}
+EXCLUDED_SECRET_SUFFIXES = {".key", ".pem", ".p12", ".pfx", ".zip", ".sha256"}
 
 
 def rebuild() -> int:

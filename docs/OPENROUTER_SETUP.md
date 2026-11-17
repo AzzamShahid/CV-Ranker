@@ -28,6 +28,8 @@ upload real applicants to a third-party service without authorization.
        CVR_LLM_PROVIDER=openrouter
        OPENROUTER_API_KEY=YOUR_PRIVATE_API_KEY
        OPENROUTER_MODEL=google/gemini-2.5-flash-lite
+       OPENROUTER_CONTEXT_TOKENS=32768
+       OPENROUTER_OUTPUT_TOKENS=4096
        OLLAMA_MODEL=qwen2.5:3b
        OLLAMA_BASE_URL=http://127.0.0.1:11434
 

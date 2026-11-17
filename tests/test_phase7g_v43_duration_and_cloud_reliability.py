@@ -152,13 +152,13 @@ def test_openrouter_strict_schema_rejection_uses_locally_validated_json(monkeypa
             from cv_ranker.llm import OpenRouterHTTPError
             raise OpenRouterHTTPError(422)
         return {"choices": [{"finish_reason": "stop", "message": {
-            "content": json.dumps({"result": "uncertain", "explanation":
-                                   "Sources disagree about the requested capability.", "source_ids": []})
+            "content": json.dumps({"result": "not_evidenced", "explanation":
+                                   "Sources disagree; direct capability is not established.", "source_ids": []})
         }}]}
 
     monkeypatch.setattr(llm, "_post_chat", post)
     response = llm.invoke_structured(system_prompt="Return JSON", user_prompt="Judge", schema=CompactFocusedJudgment)
-    assert response.result == "uncertain"
+    assert response.result == "not_evidenced"
     assert modes == ["json_schema", "json_object"]
 
 

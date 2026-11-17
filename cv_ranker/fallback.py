@@ -285,6 +285,11 @@ def structural_hints(jd_text: str) -> list[StructuralHint]:
             # future-tense prose rather than a qualification. This rule is
             # grammatical and applies to every profession, not named tools.
             and not _NARRATIVE_FUTURE_RE.search(cleaned)
+            # A generic "The role ..." description is employer context, not
+            # automatically a candidate qualification in Preferred/Required.
+            # Explicit mandatory language still enters via other source rules.
+            and not (re.match(r"(?i)^(?:the|this|our)\s+(?:role|position|team|company)\b", cleaned)
+                     and not source_declares_mandatory)
         )
         if (after_blank and not has_list_marker and inline_content is None
                 and (len(cleaned) > 120 or word_count > 16 or cleaned.endswith("."))

@@ -1,0 +1,101 @@
+{
+  "release": "v4.9.66",
+  "protocol": 52,
+  "build": "phase7g-v4-9-66-differential-integrity-repair-2026-11-13",
+  "baseline_zip_sha256": "3f15f08d9d28b5bf21c43d34043de781114ac81713878cc60bc9b1c93ad1c3cd",
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "packages": {
+    "pytest": "9.0.2",
+    "pydantic": "2.13.5",
+    "streamlit": "not_installed",
+    "langchain-core": "not_installed",
+    "langchain-ollama": "not_installed",
+    "numpy": "2.3.5",
+    "pymupdf": "1.26.7",
+    "python-docx": "1.2.0"
+  },
+  "focused_tests": {
+    "passed": 148,
+    "command": "pytest -q tests/test_runtime_identity.py tests/test_v4966_current_defects.py tests/test_v4966_operation_ledger.py tests/test_v4965_compound_semantic_resolution.py tests/test_v4965_independent_compound_review.py tests/test_v4965_supervisor_end_to_end.py tests/test_v4964_coverage_semantics_diagnostics.py tests/test_v4962_forensic_release.py tests/test_v4963_execution_repairs.py tests/test_v4961_experience_education_hierarchy.py"
+  },
+  "full_tests": {
+    "passed": 1470,
+    "failed": 22,
+    "collection_errors": 10,
+    "skips": 0,
+    "failure_categories": {
+      "missing_dependency": 20,
+      "unconfigured_llm": 2
+    },
+    "failed_nodes": [
+      "tests/test_phase7g_v45_provider_switch.py::test_local_dispatch_uses_ollama_model_and_url_from_env",
+      "tests/test_phase7g_v45_provider_switch.py::test_cloud_dispatch_uses_openrouter_model_and_does_not_initialize_ollama",
+      "tests/test_v4911_resume_rate_limit.py::test_dashboard_resume_checkpoint_tracks_source_hash_not_leaderboard_order",
+      "tests/test_v4920_jd_review_gate.py::test_streamlit_jd_editor_renders_and_freezes_approved_rows",
+      "tests/test_v4922_weighted_scoring_and_bundle.py::test_yake_display_is_ranked_by_raw_lower_is_better_scores",
+      "tests/test_v4922_weighted_scoring_and_bundle.py::test_results_button_switches_stateful_streamlit_tab",
+      "tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_editor_rebalances_after_one_requirement_is_changed",
+      "tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[complete]",
+      "tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[first_withheld]",
+      "tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[all_withheld]",
+      "tests/test_v4933_partial_batch_survival.py::test_background_progress_caption_updates_without_streamlit_calls_from_worker",
+      "tests/test_v4933_partial_batch_survival.py::test_identical_invalid_model_rows_pause_without_another_cloud_retry",
+      "tests/test_v4933_partial_batch_survival.py::test_provider_rate_limit_keeps_cooldown_instead_of_blind_validation_pause",
+      "tests/test_v4939_individual_decision_why.py::test_streamlit_individual_requirements_show_why_in_table_and_expander",
+      "tests/test_v4945_security_and_concurrency.py::test_local_access_gate_runs_in_streamlit_without_external_identity",
+      "tests/test_v4945_security_and_concurrency.py::test_supervisor_full_app_renders_under_safe_local_policy",
+      "tests/test_v494_transferable_root_contract.py::test_complete_pipeline_and_display_keep_related_degree_as_unscored_transfer",
+      "tests/test_v494_transferable_root_contract.py::test_full_pipeline_higher_level_degree_is_unscored_transfer",
+      "tests/test_v4951_contrast_and_prompt_budget.py::test_custom_result_cards_follow_selected_streamlit_theme[light-#183025-#EFF5EF]",
+      "tests/test_v4951_contrast_and_prompt_budget.py::test_custom_result_cards_follow_selected_streamlit_theme[dark-#EDF7EF-#1B2D23]",
+      "tests/test_v4951_contrast_and_prompt_budget.py::test_all_primary_buttons_get_explicit_high_contrast_palette[light-#12613C-#FFFFFF]",
+      "tests/test_v4951_contrast_and_prompt_budget.py::test_all_primary_buttons_get_explicit_high_contrast_palette[dark-#6FDEAA-#092017]"
+    ],
+    "uncollected_modules": [
+      "tests/test_v4912_auto_resume.py",
+      "tests/test_v4914_batch_resume_and_skill_recall.py",
+      "tests/test_v4929_background_recovery.py",
+      "tests/test_v4930_reliability_repairs.py",
+      "tests/test_v493_broad_semantic_contract.py",
+      "tests/test_v4940_visual_refresh.py",
+      "tests/test_v4941_supervisor_readability.py",
+      "tests/test_v4944_portable_recovery_and_e2e.py",
+      "tests/test_v4946_bounded_independent_recovery.py",
+      "tests/test_v4949_reliance_safe_theme.py"
+    ],
+    "full_green": false,
+    "command": "python -m pytest -q --continue-on-collection-errors"
+  },
+  "v51_baseline_full_tests": {
+    "passed": 1449,
+    "failed": 22,
+    "collection_errors": 10
+  },
+  "offline_supervisor_cases": [
+    {
+      "runner": "original7",
+      "passed": 7,
+      "total": 7,
+      "synthetic_model_calls": 8,
+      "actual_provider_tokens": null,
+      "live_accuracy": null
+    },
+    {
+      "runner": "cross15",
+      "passed": 15,
+      "total": 15,
+      "synthetic_model_calls": 23,
+      "actual_provider_tokens": null,
+      "live_accuracy": null
+    }
+  ],
+  "real_provider_calls": 0,
+  "real_provider_tokens": null,
+  "independent_human_label_accuracy": null,
+  "windows_streamlit_qualification": null,
+  "dependency_install_attempt": "streamlit==1.65.0; configured index returned no matching distribution; pip exit=1",
+  "status": "OFFLINE_ENGINEERING_PARTIAL_NOT_PRODUCTION_ACCEPTED",
+  "source_differential": "verification/v4966_differential_results.json",
+  "native_windows_and_remote": "OPEN/BLOCKED; see dossier"
+}

@@ -115,8 +115,9 @@ def test_grouped_correction_does_not_erase_highlight_only_unverified_row(indepen
         assert rows[0].assessment_state == "verified"
         assert metrics.unresolved_ids == []
     else:
-        assert rows[0].unified_status == "Unverified"
+        assert rows[0].unified_status is None
         assert rows[0].assessment_state == "unverified"
+        assert rows[0].current_decision.verdict is None
         assert metrics.unresolved_ids == ["R001"]
     assert metrics.correction_calls == 1
     assert metrics.final_verification_calls == 1

@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reliance Weaving Mills AI — Official Theme & Brand Logos System</title>
+  <link rel="icon" href="./assets/RWML-Logo-Small.svg" type="image/svg+xml">
+  <!-- Tailwind CSS (approved CDN) -->
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      /* Phase 18 TextileHR Production Design Tokens */
+      --brand-green: #008B42;
+      --brand-green-alt: #008B40;
+      
+      --bg-page: #f4f1eb;
+      --bg-soft: #f8f6f1;
+      --bg-subtle: #eeebe4;
+      --surface: #fcfbf8;
+      --surface-strong: #ffffff;
+      --surface-muted: #f7f5f0;
+      --text-primary: #25231f;
+      --text-secondary: #625f58;
+      --text-muted: #858078;
+      --text-inverse: #ffffff;
+      --border-soft: #e5e0d7;
+      --border: #d9d3c8;
+      --border-strong: #c9c1b5;
+      
+      --accent: #2f6f64;
+      --accent-strong: #24584f;
+      --accent-soft: #e2eeea;
+      --accent-faint: #f0f6f4;
+      
+      --warm: #a96042;
+      --warm-soft: #f3e8e1;
+      --success: #3f7150;
+      --success-soft: #e8f2eb;
+      --warning: #806228;
+      --warning-soft: #fff4d9;
+      --danger: #9a453b;
+      --danger-soft: #f9e8e5;
+      
+      --shadow-sm: 0 1px 3px rgba(37, 35, 31, 0.05);
+      --shadow-md: 0 4px 14px -2px rgba(37, 35, 31, 0.08);
+      --shadow-lg: 0 12px 30px -4px rgba(37, 35, 31, 0.12);
+      
+      --font-display: 'Newsreader', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      /* Production Dark Mode Tokens from style.css */
+      --bg-page: #1e2025;
+      --bg-soft: #24272f;
+      --bg-subtle: #2b2f38;
+      --surface: #272a32;
+      --surface-strong: #2e323c;
+      --surface-muted: #282c35;
+      --text-primary: #f5f3ef;
+      --text-secondary: #b6b2aa;
+      --text-muted: #8b877f;
+      --text-inverse: #17191d;
+      --border-soft: #383c47;
+      --border: #444956;
+      --border-strong: #545b6b;
+      
+      --accent: #43b5a3;
+      --accent-strong: #5ec7b6;
+      --accent-soft: #20413a;
+      --accent-faint: #1a3530;
+      
+      --warm: #e38e69;
+      --warm-soft: #3d2922;
+      --success: #52b376;
+      --success-soft: #1d3b28;
+      --warning: #e0b04a;
+      --warning-soft: #3f331a;
+      --danger: #e2635a;
+      --danger-soft: #3e2220;
+      
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 14px 34px -4px rgba(0, 0, 0, 0.55);
+    }
+
+    body {
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      transition: background-color 0.25s ease, color 0.25s ease;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(circle at 10% 12%, rgba(47, 111, 100, 0.12), transparent 32%),
+        radial-gradient(circle at 88% 85%, rgba(169, 96, 66, 0.10), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(47, 111, 100, 0.04), transparent 45%);
+      background-attachment: fixed;
+    }
+
+    [data-theme="dark"] body {
+      background-image:
+        radial-gradient(circle at 10% 12%, rgba(67, 181, 163, 0.14), transparent 30%),
+        radial-gradient(circle at 88% 85%, rgba(227, 142, 105, 0.09), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(67, 181, 163, 0.04), transparent 45%);
+    }
+
+    .font-serif { font-family: var(--font-display); }
+    .font-mono { font-family: var(--font-mono); }
+
+    /* Logo switching exact logic from style.css */
+    .logo--dark { display: none !important; }
+    .logo--light { display: block !important; }
+    [data-theme="dark"] .logo--dark { display: block !important; }
+    [data-theme="dark"] .logo--light { display: none !important; }
+
+    /* Tab Switcher */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen text-sm leading-relaxed antialiased">
+
+  <!-- ========================================================================= -->
+  <!-- TOP TOOLBAR & TEMPLATE CONTROLLER                                         -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur-md px-4 lg:px-8 py-3 transition-colors duration-200">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand & Official Logo in Header -->
+      <div class="flex items-center gap-3.5">
+        <div class="h-9 w-9 p-1 rounded-xl bg-[var(--surface-strong)] border border-[var(--border)] shadow-sm flex items-center justify-center flex-shrink-0">
+          <img src="./assets/RWML-Logo-Small.svg" alt="RWML Emblem" class="h-7 w-auto object-contain">
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <!-- Dynamic Logo Wordmark -->
+            <img src="./assets/RWML-Logo.svg" alt="Reliance Weaving Mills" class="logo--light h-5 w-auto object-contain">
+            <img src="./assets/RWML-Logo-Dark.svg" alt="Reliance Weaving Mills" class="logo--dark h-5 w-auto object-contain">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[var(--accent-soft)] text-[var(--accent)] border border-[var(--accent)]/30">Workforce AI</span>
+          </div>
+          <p class="text-[11px] text-[var(--text-muted)] font-mono">Official Brand Identity & Design System Kit</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center bg-[var(--bg-page)] p-1 rounded-xl border border-[var(--border-soft)] text-[13px] font-medium overflow-x-auto shadow-inner">
+        <button onclick="switchTab('logos')" id="nav-logos" class="tab-btn active px-3.5 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1.5 bg-[var(--surface)] text-[var(--text-primary)] shadow-sm">
+          <svg class="w-4 h-4 text-[#008B42]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          Brand Logos
+        </button>
+        <button onclick="switchTab('theme')" id="nav-theme" class="tab-btn px-3.5 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+          <svg class="w-4 h-4 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+          Theme Tokens (CSS/Tailwind)
+        </button>
+        <button onclick="switchTab('chat')" id="nav-chat" class="tab-btn px-3.5 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+          <svg class="w-4 h-4 text-[var(--warm)]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+          Live App Template
+        </button>
+      </nav>
+
+      <!-- Theme Switcher & Actions -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleTheme()" id="theme-toggle-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] hover:bg-[var(--surface-muted)] text-[var(--text-primary)] text-xs font-semibold transition shadow-sm" title="Toggle Theme">
+          <span id="theme-icon">🌙</span>
+          <span id="theme-label">Dark Carbon</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WORKSPACE CONTAINER                                                  -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl mx-auto w-full p-4 lg:p-6 space-y-6">
+
+    <!-- ======================================================================= -->
+    <!-- TAB 1: BRAND LOGOS SHOWCASE                                             -->
+    <!-- ======================================================================= -->
+    <div id="tab-logos" class="tab-content active space-y-6">
+      
+      <!-- Overview Card -->
+      <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--accent)]">Official Assets</span>
+          <h2 class="font-serif font-bold text-2xl text-[var(--text-primary)] mt-1">Reliance Weaving Mills Brand Logos</h2>
+          <p class="text-xs text-[var(--text-secondary)] mt-1">
+            Authoritative vector SVG files stored in <code class="px-1.5 py-0.5 rounded bg-[var(--bg-page)] border border-[var(--border-soft)] font-mono text-[11px]">app/static/assets/</code>.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-mono text-xs font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-[#008B42]"></span> Primary Brand: #008B42
+          </span>
+        </div>
+      </div>
+
+      <!-- 3 Logo Cards Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1: RWML-Logo.svg (Light Brand Mark) -->
+        <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-[var(--bg-page)] border border-[var(--border-soft)] text-[var(--text-secondary)]">Light Mode Mark</span>
+              <span class="text-[11px] font-mono text-[var(--text-muted)]">4560 &times; 860 px</span>
+            </div>
+            
+            <h3 class="font-serif font-bold text-base text-[var(--text-primary)] mt-3">RWML-Logo.svg</h3>
+            <p class="text-xs text-[var(--text-secondary)] mt-1">
+              Primary horizontal logo for light backgrounds (linen, ivory, white). Features the green textile loom emblem paired with black serif wordmark.
+            </p>
+
+            <!-- Preview Container with light paper background -->
+            <div class="mt-4 p-8 rounded-2xl bg-[#fcfbf8] border border-stone-200 shadow-inner flex items-center justify-center min-h-[140px]">
+              <img src="./assets/RWML-Logo.svg" alt="RWML Logo Light" class="max-h-16 w-auto object-contain">
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-[var(--border-soft)] space-y-2">
+            <div class="text-[11px] font-mono text-[var(--text-muted)] flex justify-between">
+              <span>Path:</span>
+              <code class="text-[var(--text-primary)]">app/static/assets/RWML-Logo.svg</code>
+            </div>
+            <a href="./assets/RWML-Logo.svg" download class="w-full py-2 px-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Download Vector SVG</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2: RWML-Logo-Dark.svg (Dark Brand Mark) -->
+        <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-[var(--bg-page)] border border-[var(--border-soft)] text-[var(--text-secondary)]">Dark Mode Mark</span>
+              <span class="text-[11px] font-mono text-[var(--text-muted)]">4560 &times; 860 px</span>
+            </div>
+            
+            <h3 class="font-serif font-bold text-base text-[var(--text-primary)] mt-3">RWML-Logo-Dark.svg</h3>
+            <p class="text-xs text-[var(--text-secondary)] mt-1">
+              High-contrast horizontal logo for dark surfaces (carbon, slate). Features the green textile loom emblem paired with crisp white wordmark.
+            </p>
+
+            <!-- Preview Container with dark carbon background -->
+            <div class="mt-4 p-8 rounded-2xl bg-[#1e2025] border border-stone-800 shadow-inner flex items-center justify-center min-h-[140px]">
+              <img src="./assets/RWML-Logo-Dark.svg" alt="RWML Logo Dark" class="max-h-16 w-auto object-contain">
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-[var(--border-soft)] space-y-2">
+            <div class="text-[11px] font-mono text-[var(--text-muted)] flex justify-between">
+              <span>Path:</span>
+              <code class="text-[var(--text-primary)]">app/static/assets/RWML-Logo-Dark.svg</code>
+            </div>
+            <a href="./assets/RWML-Logo-Dark.svg" download class="w-full py-2 px-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Download Vector SVG</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: RWML-Logo-Small.svg (Icon Emblem / Favicon) -->
+        <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-[var(--bg-page)] border border-[var(--border-soft)] text-[var(--text-secondary)]">Emblem / Icon</span>
+              <span class="text-[11px] font-mono text-[var(--text-muted)]">1473 &times; 810 px</span>
+            </div>
+            
+            <h3 class="font-serif font-bold text-base text-[var(--text-primary)] mt-3">RWML-Logo-Small.svg</h3>
+            <p class="text-xs text-[var(--text-secondary)] mt-1">
+              Standalone geometric loom weave emblem. Used for browser favicons, compact navigation bars, mobile headers, and circular avatar badges.
+            </p>
+
+            <!-- Preview Container with split dual preview -->
+            <div class="mt-4 grid grid-cols-2 gap-2">
+              <div class="p-4 rounded-2xl bg-[#fcfbf8] border border-stone-200 shadow-inner flex items-center justify-center min-h-[140px]" title="On Light Surface">
+                <img src="./assets/RWML-Logo-Small.svg" alt="RWML Emblem" class="h-16 w-auto object-contain">
+              </div>
+              <div class="p-4 rounded-2xl bg-[#1e2025] border border-stone-800 shadow-inner flex items-center justify-center min-h-[140px]" title="On Dark Surface">
+                <img src="./assets/RWML-Logo-Small.svg" alt="RWML Emblem" class="h-16 w-auto object-contain">
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-[var(--border-soft)] space-y-2">
+            <div class="text-[11px] font-mono text-[var(--text-muted)] flex justify-between">
+              <span>Path:</span>
+              <code class="text-[var(--text-primary)]">app/static/assets/RWML-Logo-Small.svg</code>
+            </div>
+            <a href="./assets/RWML-Logo-Small.svg" download class="w-full py-2 px-3 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-strong)] text-white font-medium text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Download Vector SVG</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Implementation Snippet in Templates -->
+      <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] space-y-4">
+        <h3 class="font-serif font-bold text-base text-[var(--text-primary)]">Production Logo Implementation Syntax</h3>
+        <p class="text-xs text-[var(--text-secondary)]">
+          The application uses the <code class="font-mono text-xs px-1.5 py-0.5 rounded bg-[var(--bg-page)]">.logo--light</code> and <code class="font-mono text-xs px-1.5 py-0.5 rounded bg-[var(--bg-page)]">.logo--dark</code> CSS classes to automatically switch logo variants when toggling between light and dark themes:
+        </p>
+
+        <div class="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border)] font-mono text-xs text-[var(--text-primary)] overflow-x-auto space-y-2">
+          <div class="text-[var(--text-muted)]">&lt;!-- Automatic Theme-Aware Brand Logo --&gt;</div>
+          <div>&lt;img class="<span class="text-[var(--accent)]">logo--light</span>" src="<span class="text-[var(--warm)]">{{ url_for('static', path='assets/RWML-Logo.svg') }}</span>" alt="Reliance Weaving Mills" style="height: 38px; width: auto;"&gt;</div>
+          <div>&lt;img class="<span class="text-[var(--accent)]">logo--dark</span>" src="<span class="text-[var(--warm)]">{{ url_for('static', path='assets/RWML-Logo-Dark.svg') }}</span>" alt="Reliance Weaving Mills" style="height: 38px; width: auto;"&gt;</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 2: THEME TOKENS (CSS & TAILWIND)                                    -->
+    <!-- ======================================================================= -->
+    <div id="tab-theme" class="tab-content space-y-6">
+
+      <!-- Color Swatches Overview -->
+      <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] space-y-6">
+        <div>
+          <span class="text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--accent)]">Design Tokens</span>
+          <h2 class="font-serif font-bold text-2xl text-[var(--text-primary)] mt-1">Official Palette & Semantic Token Architecture</h2>
+          <p class="text-xs text-[var(--text-secondary)] mt-1">
+            Exact CSS variables from <code class="px-1.5 py-0.5 rounded bg-[var(--bg-page)] border border-[var(--border-soft)] font-mono text-[11px]">app/static/css/style.css</code>.
+          </p>
+        </div>
+
+        <!-- 8 Core Swatches -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 text-center">
+          
+          <!-- Swatch 1: Brand Green -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#008B42] shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Brand Green</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#008B42</div>
+              <div class="text-[9px] text-[var(--accent)] font-semibold">Mill Identity</div>
+            </div>
+          </div>
+
+          <!-- Swatch 2: Deep Teal Accent -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#2f6f64] shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Accent Teal</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#2f6f64</div>
+              <div class="text-[9px] text-[var(--text-muted)]">Light Primary</div>
+            </div>
+          </div>
+
+          <!-- Swatch 3: Dark Teal Accent -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#43b5a3] shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Jade Accent</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#43b5a3</div>
+              <div class="text-[9px] text-[var(--text-muted)]">Dark Primary</div>
+            </div>
+          </div>
+
+          <!-- Swatch 4: Terracotta Warm -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#a96042] shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Terracotta</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#a96042</div>
+              <div class="text-[9px] text-[var(--text-muted)]">Warm Callout</div>
+            </div>
+          </div>
+
+          <!-- Swatch 5: Linen Page -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#f4f1eb] border border-stone-300 shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Linen Page</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#f4f1eb</div>
+              <div class="text-[9px] text-[var(--text-muted)]">Light Canvas</div>
+            </div>
+          </div>
+
+          <!-- Swatch 6: Ivory Surface -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#fcfbf8] border border-stone-300 shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Ivory Card</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#fcfbf8</div>
+              <div class="text-[9px] text-[var(--text-muted)]">Light Surface</div>
+            </div>
+          </div>
+
+          <!-- Swatch 7: Carbon Page -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#1e2025] shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Carbon Page</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#1e2025</div>
+              <div class="text-[9px] text-[var(--text-muted)]">Dark Canvas</div>
+            </div>
+          </div>
+
+          <!-- Swatch 8: Slate Surface -->
+          <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border)] space-y-2 shadow-sm">
+            <div class="h-12 rounded-xl bg-[#272a32] shadow-inner"></div>
+            <div>
+              <div class="font-bold text-xs text-[var(--text-primary)]">Slate Card</div>
+              <div class="font-mono text-[10px] text-[var(--text-muted)]">#272a32</div>
+              <div class="text-[9px] text-[var(--text-muted)]">Dark Surface</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Ready-to-copy CSS Variables Block -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Light Mode Tokens -->
+        <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-serif font-bold text-base text-[var(--text-primary)]">Light Mode CSS Variables (:root)</h3>
+            <button onclick="copyCode('css-light')" class="text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] hover:bg-[var(--surface-muted)] text-[var(--text-secondary)] font-mono">Copy CSS</button>
+          </div>
+          <pre id="css-light" class="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border)] font-mono text-[11px] text-[var(--text-primary)] overflow-x-auto leading-relaxed">
+:root {
+  /* Brand Primary */
+  --brand-green: #008B42;
+  --accent: #2f6f64;
+  --accent-strong: #24584f;
+  --accent-soft: #e2eeea;
+  --warm: #a96042;
+  --warm-soft: #f3e8e1;
+
+  /* Surfaces & Backgrounds */
+  --bg-page: #f4f1eb;
+  --bg-soft: #f8f6f1;
+  --surface: #fcfbf8;
+  --surface-strong: #ffffff;
+  --surface-muted: #f7f5f0;
+
+  /* Typography */
+  --text-primary: #25231f;
+  --text-secondary: #625f58;
+  --text-muted: #858078;
+  --text-inverse: #ffffff;
+
+  /* Borders & Highlights */
+  --border-soft: #e5e0d7;
+  --border: #d9d3c8;
+  --border-strong: #c9c1b5;
+  --focus-ring: rgba(47, 111, 100, 0.34);
+}</pre>
+        </div>
+
+        <!-- Dark Mode Tokens -->
+        <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-serif font-bold text-base text-[var(--text-primary)]">Dark Mode CSS Variables ([data-theme="dark"])</h3>
+            <button onclick="copyCode('css-dark')" class="text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] hover:bg-[var(--surface-muted)] text-[var(--text-secondary)] font-mono">Copy CSS</button>
+          </div>
+          <pre id="css-dark" class="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border)] font-mono text-[11px] text-[var(--text-primary)] overflow-x-auto leading-relaxed">
+[data-theme="dark"] {
+  /* Brand Primary */
+  --brand-green: #008B42;
+  --accent: #43b5a3;
+  --accent-strong: #5ec7b6;
+  --accent-soft: #20413a;
+  --warm: #e38e69;
+  --warm-soft: #3d2922;
+
+  /* Surfaces & Backgrounds */
+  --bg-page: #1e2025;
+  --bg-soft: #24272f;
+  --surface: #272a32;
+  --surface-strong: #2e323c;
+  --surface-muted: #282c35;
+
+  /* Typography */
+  --text-primary: #f5f3ef;
+  --text-secondary: #b6b2aa;
+  --text-muted: #8b877f;
+  --text-inverse: #17191d;
+
+  /* Borders & Highlights */
+  --border-soft: #383c47;
+  --border: #444956;
+  --border-strong: #545b6b;
+  --focus-ring: rgba(67, 181, 163, 0.34);
+}</pre>
+        </div>
+
+      </div>
+
+      <!-- Tailwind Config File -->
+      <div class="p-6 rounded-3xl bg-[var(--surface)] border border-[var(--border)] shadow-[var(--shadow-sm)] space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-serif font-bold text-base text-[var(--text-primary)]">Tailwind CSS Preset Configuration (tailwind.config.js)</h3>
+            <p class="text-xs text-[var(--text-secondary)]">Drop directly into your project's Tailwind config:</p>
+          </div>
+          <button onclick="copyCode('tailwind-code')" class="text-xs px-2.5 py-1 rounded-lg border border-[var(--border)] hover:bg-[var(--surface-muted)] text-[var(--text-secondary)] font-mono">Copy Config</button>
+        </div>
+        <pre id="tailwind-code" class="p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border)] font-mono text-[11px] text-[var(--text-primary)] overflow-x-auto leading-relaxed">
+module.exports = {
+  darkMode: ['class', '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          green: '#008B42',
+        },
+        rwml: {
+          bg: 'var(--bg-page)',
+          surface: 'var(--surface)',
+          surfaceStrong: 'var(--surface-strong)',
+          accent: 'var(--accent)',
+          accentSoft: 'var(--accent-soft)',
+          warm: 'var(--warm)',
+          text: 'var(--text-primary)',
+          muted: 'var(--text-muted)',
+          border: 'var(--border)',
+        }
+      },
+      fontFamily: {
+        display: ['Newsreader', 'Georgia', 'serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
+      }
+    }
+  }
+};</pre>
+      </div>
+
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- TAB 3: LIVE APP TEMPLATE                                                -->
+    <!-- ======================================================================= -->
+    <div id="tab-chat" class="tab-content space-y-6">
+
+      <!-- Chat Shell -->
+      <div class="rounded-3xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-md)] overflow-hidden flex flex-col lg:flex-row h-[780px] transition-colors">
+        
+        <!-- Chat Left Sidebar -->
+        <aside class="w-full lg:w-72 border-b lg:border-b-0 lg:border-r border-[var(--border)] bg-[var(--surface-muted)] p-4 flex flex-col justify-between flex-shrink-0">
+          
+          <div class="space-y-4">
+            
+            <!-- Employee Card -->
+            <div class="p-3 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border-soft)] shadow-sm flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-[var(--accent)] text-white font-semibold flex items-center justify-center font-serif text-base ring-2 ring-[var(--accent-soft)]">
+                AS
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-bold text-xs truncate text-[var(--text-primary)]">Azzam Shahid</h4>
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--warm-soft)] text-[var(--warm)] font-bold">M-8</span>
+                </div>
+                <p class="text-[11px] text-[var(--text-muted)] truncate">Head of Transformation</p>
+              </div>
+            </div>
+
+            <!-- Attendance Snapshot -->
+            <div class="p-3.5 rounded-2xl bg-[var(--surface-strong)] border border-[var(--border-soft)] shadow-sm space-y-2.5">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-bold tracking-wider uppercase text-[var(--text-muted)] font-mono">Entitlements 2024</span>
+                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1 font-mono">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#008B42] animate-pulse"></span> Sync: 100%
+                </span>
+              </div>
+              
+              <div class="grid grid-cols-3 gap-2 pt-1 text-center">
+                <div class="p-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-soft)]">
+                  <div class="text-[10px] text-[var(--text-muted)]">Annual</div>
+                  <div class="text-sm font-bold font-serif text-[var(--text-primary)]">10.0</div>
+                  <div class="text-[9px] text-[var(--text-muted)]">of 15d</div>
+                </div>
+                <div class="p-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-soft)]">
+                  <div class="text-[10px] text-[var(--text-muted)]">Casual</div>
+                  <div class="text-sm font-bold font-serif text-[var(--accent)]">7.0</div>
+                  <div class="text-[9px] text-[var(--text-muted)]">of 10d</div>
+                </div>
+                <div class="p-2 rounded-xl bg-[var(--bg-page)] border border-[var(--border-soft)]">
+                  <div class="text-[10px] text-[var(--text-muted)]">Sick</div>
+                  <div class="text-sm font-bold font-serif text-[var(--text-primary)]">6.0</div>
+                  <div class="text-[9px] text-[var(--text-muted)]">of 8d</div>
+                </div>
+              </div>
+
+              <!-- Lateness Meter -->
+              <div class="mt-2 pt-2 border-t border-[var(--border-soft)]">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="text-[var(--text-muted)]">Monthly Late Count:</span>
+                  <span class="font-mono font-bold text-[var(--warm)]">2 / 5</span>
+                </div>
+                <div class="w-full bg-[var(--border-soft)] rounded-full h-1.5 mt-1.5 overflow-hidden">
+                  <div class="bg-[var(--warm)] h-1.5 rounded-full" style="width: 40%"></div>
+                </div>
+                <p class="text-[10px] text-[var(--text-muted)] mt-1 italic">5 late arrivals in month = 0.5 Half Leave.</p>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="space-y-1">
+              <span class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider px-1 font-mono">Recent Topics</span>
+              <button class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-[var(--text-primary)] bg-[var(--surface-strong)] hover:bg-[var(--accent-soft)] transition border border-[var(--border-soft)] truncate flex items-center gap-2">
+                <span class="text-[var(--accent)]">●</span> Travel Allowances M-8 vs E-grade
+              </button>
+              <button class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-strong)] transition truncate flex items-center gap-2">
+                <span>○</span> Pro-rata leave joining in October
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Bottom: Token Quota & Brand Footer -->
+          <div class="pt-4 border-t border-[var(--border)] space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-[var(--text-muted)] font-mono">Monthly Quota</span>
+              <span class="font-mono font-semibold text-[var(--accent)]">14,800 / 20k</span>
+            </div>
+            <div class="w-full bg-[var(--border-soft)] rounded-full h-1.5 overflow-hidden">
+              <div class="bg-[var(--accent)] h-1.5 rounded-full" style="width: 74%"></div>
+            </div>
+            <div class="flex items-center justify-between text-[10px] text-[var(--text-muted)] pt-1">
+              <span>RWML AI v2.4</span>
+              <span class="font-mono text-[#008B42] font-bold">#008B42</span>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- Chat Feed Area -->
+        <div class="flex-1 flex flex-col justify-between bg-[var(--surface)]">
+          
+          <!-- Header with Authentic Logo -->
+          <div class="px-6 py-3.5 border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <img src="./assets/RWML-Logo.svg" alt="Reliance Weaving Mills" class="logo--light h-7 w-auto object-contain">
+              <img src="./assets/RWML-Logo-Dark.svg" alt="Reliance Weaving Mills" class="logo--dark h-7 w-auto object-contain">
+              <span class="text-xs text-[var(--text-muted)] font-mono pl-2 border-l border-[var(--border)]">HR Assistant</span>
+            </div>
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-[var(--accent-soft)] text-[var(--accent)] font-semibold">Gemini 1.5 Pro</span>
+          </div>
+
+          <!-- Messages -->
+          <div class="flex-1 overflow-y-auto p-6 space-y-6">
+
+            <!-- User Bubble -->
+            <div class="flex items-start justify-end gap-3 max-w-2xl ml-auto">
+              <div class="space-y-1">
+                <div class="bg-[var(--accent)] text-white px-4 py-3 rounded-2xl rounded-tr-sm shadow-sm text-xs leading-relaxed">
+                  Compare the travel allowances, daily per diems, and hotel room entitlements between E-grade and M-grade employees.
+                </div>
+                <div class="text-[10px] text-[var(--text-muted)] text-right font-mono">10:42 AM</div>
+              </div>
+              <div class="w-8 h-8 rounded-full bg-[var(--accent)] text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                AS
+              </div>
+            </div>
+
+            <!-- Assistant Bubble with Authentic Emblem -->
+            <div class="flex items-start gap-3 max-w-3xl">
+              <div class="w-8 h-8 rounded-xl bg-[var(--surface-strong)] border border-[var(--border)] p-1 flex items-center justify-center shadow-sm flex-shrink-0">
+                <img src="./assets/RWML-Logo-Small.svg" alt="RWML" class="h-6 w-auto object-contain">
+              </div>
+              <div class="flex-1 space-y-3">
+                <div class="bg-[var(--surface-strong)] border border-[var(--border)] rounded-2xl rounded-tl-sm p-5 shadow-[var(--shadow-sm)] space-y-3">
+                  
+                  <div class="flex items-center justify-between pb-2 border-b border-[var(--border-soft)]">
+                    <span class="text-xs font-bold text-[var(--accent)] uppercase font-mono flex items-center gap-1.5">
+                      <span class="w-2 h-2 rounded-full bg-[#008B42]"></span> Authoritative Policy Record
+                    </span>
+                    <span class="text-[11px] text-[var(--text-muted)] font-mono">Travel Policy §4.2</span>
+                  </div>
+
+                  <p class="text-xs text-[var(--text-primary)]">
+                    Here is the verified comparative breakdown of Daily Allowances (DA) between <strong>M-grade (Management)</strong> and <strong>E-grade (Executive/Staff)</strong>:
+                  </p>
+
+                  <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+                    <table class="w-full text-left text-xs">
+                      <thead class="bg-[var(--bg-page)] border-b border-[var(--border)] text-[var(--text-muted)] font-mono uppercase text-[10px]">
+                        <tr>
+                          <th class="py-2 px-3">Grade</th>
+                          <th class="py-2 px-3">Domestic DA</th>
+                          <th class="py-2 px-3">Europe</th>
+                          <th class="py-2 px-3">Rest of World</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-[var(--border-soft)] text-[var(--text-primary)]">
+                        <tr class="bg-[var(--accent-soft)]/50 font-semibold">
+                          <td class="py-2 px-3 text-[var(--accent)] font-mono">M-7 & M-8</td>
+                          <td class="py-2 px-3">Rs. 4,000 / day</td>
+                          <td class="py-2 px-3">€300 / day</td>
+                          <td class="py-2 px-3">$300 / day</td>
+                        </tr>
+                        <tr>
+                          <td class="py-2 px-3 font-mono text-[var(--text-secondary)]">M-4 to M-6</td>
+                          <td class="py-2 px-3">Rs. 3,000 / day</td>
+                          <td class="py-2 px-3">€200 / day</td>
+                          <td class="py-2 px-3">$200 / day</td>
+                        </tr>
+                        <tr>
+                          <td class="py-2 px-3 font-mono text-[var(--text-secondary)]">M-1 to M-3</td>
+                          <td class="py-2 px-3">Rs. 2,400 / day</td>
+                          <td class="py-2 px-3">€200 / day</td>
+                          <td class="py-2 px-3">$200 / day</td>
+                        </tr>
+                        <tr class="bg-[var(--bg-page)] text-[var(--warm)] font-medium">
+                          <td class="py-2 px-3 font-mono">E-1 to E-4</td>
+                          <td class="py-2 px-3 font-bold">Rs. 1,400 / day</td>
+                          <td class="py-2 px-3">Special approval</td>
+                          <td class="py-2 px-3">Special approval</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Composer -->
+          <div class="p-4 border-t border-[var(--border)] bg-[var(--surface)]">
+            <div class="relative rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] shadow-sm focus-within:ring-2 focus-within:ring-[var(--accent)]">
+              <input type="text" placeholder="Ask Reliance Weaving Mills AI anything about HR policies..." class="w-full bg-transparent px-4 py-3 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none">
+              <div class="flex items-center justify-between px-3 py-2 border-t border-[var(--border-soft)] bg-[var(--bg-page)]/50 rounded-b-2xl">
+                <span class="text-[11px] text-[var(--text-muted)] font-mono">Model: Gemini 1.5 Pro</span>
+                <button class="px-3.5 py-1.5 rounded-xl bg-[var(--accent)] text-white text-xs font-semibold shadow-sm transition">Send</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER                                                                    -->
+  <!-- ========================================================================= -->
+  <footer class="border-t border-[var(--border)] bg-[var(--surface)] py-4 px-6 text-center text-xs text-[var(--text-secondary)]">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2 font-mono text-[11px]">
+        <img src="./assets/RWML-Logo-Small.svg" alt="RWML" class="h-4 w-auto">
+        <span>Reliance Weaving Mills Ltd.</span>
+        <span>•</span>
+        <span>Brand Identity System</span>
+      </div>
+      <div class="text-[11px] font-mono text-[var(--text-muted)]">
+        Official Brand Green: <span class="text-[#008B42] font-bold">#008B42</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-[var(--surface)]', 'text-[var(--text-primary)]', 'shadow-sm');
+        btn.classList.add('text-[var(--text-muted)]');
+      });
+
+      const targetTab = document.getElementById('tab-' + tabId);
+      const targetNav = document.getElementById('nav-' + tabId);
+      
+      if (targetTab) targetTab.classList.add('active');
+      if (targetNav) {
+        targetNav.classList.add('active', 'bg-[var(--surface)]', 'text-[var(--text-primary)]', 'shadow-sm');
+        targetNav.classList.remove('text-[var(--text-muted)]');
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      const newTheme = isDark ? 'light' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+
+      document.getElementById('theme-icon').textContent = isDark ? '🌙' : '☀️';
+      document.getElementById('theme-label').textContent = isDark ? 'Dark Carbon' : 'Linen Light';
+    }
+
+    function copyCode(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        navigator.clipboard.writeText(el.innerText).then(() => {
+          alert('Copied to clipboard!');
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>

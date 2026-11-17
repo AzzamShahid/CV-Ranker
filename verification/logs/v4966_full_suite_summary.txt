@@ -1,0 +1,34 @@
+# Sanitized pytest full suite result
+FAILED tests/test_phase7g_v45_provider_switch.py::test_local_dispatch_uses_ollama_model_and_url_from_env - ModuleNotFoundError: No module named 'langchain_core'
+FAILED tests/test_phase7g_v45_provider_switch.py::test_cloud_dispatch_uses_openrouter_model_and_does_not_initialize_ollama - ModuleNotFoundError: No module named 'langchain_ollama'
+FAILED tests/test_v4911_resume_rate_limit.py::test_dashboard_resume_checkpoint_tracks_source_hash_not_leaderboard_order - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4920_jd_review_gate.py::test_streamlit_jd_editor_renders_and_freezes_approved_rows - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4922_weighted_scoring_and_bundle.py::test_yake_display_is_ranked_by_raw_lower_is_better_scores - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4922_weighted_scoring_and_bundle.py::test_results_button_switches_stateful_streamlit_tab - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_editor_rebalances_after_one_requirement_is_changed - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[complete] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[first_withheld] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4931_dynamic_allocation_and_reasoning.py::test_actual_streamlit_ranking_and_individual_why_render_with_two_candidates[all_withheld] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4933_partial_batch_survival.py::test_background_progress_caption_updates_without_streamlit_calls_from_worker - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4933_partial_batch_survival.py::test_identical_invalid_model_rows_pause_without_another_cloud_retry - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4933_partial_batch_survival.py::test_provider_rate_limit_keeps_cooldown_instead_of_blind_validation_pause - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4939_individual_decision_why.py::test_streamlit_individual_requirements_show_why_in_table_and_expander - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4945_security_and_concurrency.py::test_local_access_gate_runs_in_streamlit_without_external_identity - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4945_security_and_concurrency.py::test_supervisor_full_app_renders_under_safe_local_policy - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v494_transferable_root_contract.py::test_complete_pipeline_and_display_keep_related_degree_as_unscored_transfer - cv_ranker.llm.LLMError: Unified semantic assessment requires the configured LLM; cannot silently use fallback
+FAILED tests/test_v494_transferable_root_contract.py::test_full_pipeline_higher_level_degree_is_unscored_transfer - cv_ranker.llm.LLMError: Unified semantic assessment requires the configured LLM; cannot silently use fallback
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_custom_result_cards_follow_selected_streamlit_theme[light-#183025-#EFF5EF] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_custom_result_cards_follow_selected_streamlit_theme[dark-#EDF7EF-#1B2D23] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_all_primary_buttons_get_explicit_high_contrast_palette[light-#12613C-#FFFFFF] - ModuleNotFoundError: No module named 'streamlit'
+FAILED tests/test_v4951_contrast_and_prompt_budget.py::test_all_primary_buttons_get_explicit_high_contrast_palette[dark-#6FDEAA-#092017] - ModuleNotFoundError: No module named 'streamlit'
+ERROR tests/test_v4912_auto_resume.py
+ERROR tests/test_v4914_batch_resume_and_skill_recall.py
+ERROR tests/test_v4929_background_recovery.py
+ERROR tests/test_v4930_reliability_repairs.py
+ERROR tests/test_v493_broad_semantic_contract.py
+ERROR tests/test_v4940_visual_refresh.py
+ERROR tests/test_v4941_supervisor_readability.py
+ERROR tests/test_v4944_portable_recovery_and_e2e.py
+ERROR tests/test_v4946_bounded_independent_recovery.py
+ERROR tests/test_v4949_reliance_safe_theme.py
+22 failed, 1470 passed, 10 errors

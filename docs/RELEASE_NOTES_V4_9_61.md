@@ -1,0 +1,29 @@
+# CV Ranker v4.9.61 — Source-linked experience and higher education minimums
+
+**Released:** 12 November 2026. **Assessment protocol:** v47 (v46 results remain historical). **Build:** `phase7g-v4-9-61-experience-education-equivalence-2026-11-12`.
+
+## Incident and executable reproduction
+
+The supervisor UI displayed R001 (`Minimum 3 years of full-time professional experience in textile weaving production.`) as Not Found even though its cited source ledger contained a self-reported professional summary (`8 years 1 month of full-time air-jet and rapier loom production experience`) and a dated weaving in-charge role (`Sep 2018 - Present`). v46's specialist validator recognized the dated role but made a separate *model-cited duty* mandatory. The original CV ledger could already contain corroborating affirmative duties in the same role, but a model response citing the summary + dated header alone could be demoted to `uncertain` and then Not Found. This failure was reproduced using precisely the stated text and source-shaped synthetic data before changing the validator.
+
+A separate educational defect treated a completed Master's in the **same explicitly required academic field** as ambiguous when the JD asked for a Bachelor's academic minimum. Both are general-rule problems, not weaving/CS/person/R001 exceptions.
+
+## Code fixes
+
+1. **Source-backed professional-summary and dated-role bridge.** `experience_validation.py` recognizes longer grammatical descriptions such as `8 years 1 month of full-time air-jet and rapier loom production experience` (previously rejected by a five-token tenure parser limit). A model-supported direct relationship can now be corroborated by the CV's **original** dated role and affirmative role-specific duties without demanding that the model list each original duty segment separately. All credited months are non-overlapping; summary duration must agree with the dated interval and explicitly match the JD's work subject. The validator attaches any needed source-ledger segment IDs and explains the dates, duties, and self-reported evidence. A merely similar role title or unrelated occupation cannot prove subject-specific tenure.
+2. **Full-time status is not invented.** If the employer specifies `full-time`, neither a lengthy date interval nor a scope-specific duration lacking employment type is by itself sufficient. A corroborating single-role full-time summary or full-time evidence on every credited dated role is required. Part-time/negated claims and inconsistent intervals cannot be used as affirmative status. This closes a v46 false-positive case discovered while reproducing the user's false negative.
+3. **Higher completed academic awards can meet lower academic minimums.** `qualification_validation.py` uses the existing ordered academic rank (`associate` → `bachelor` → `master` → `doctorate`) and exact JD-named field/expressly allowed alternatives to decide when a completed higher degree meets a minimum level. A Master's in the same specified subject can satisfy a Bachelor's academic minimum; a Doctorate in the same subject can satisfy a Master's minimum. It does not assert the candidate *also possesses* the lower award. A Bachelor's cannot satisfy a Master's; an unrelated major, incomplete degree, named diploma/licence, explicitly separate AND degree requirements, and source-explicit exact-credential/accreditation constraints do **not** qualify automatically. Employer-specific equivalence still needs reviewer approval where the JD imposes a specific credential identity.
+4. **Consistent explanations.** The selected original degree level and source appear in the human-readable reason. Explicit JD alternatives (such as a named diploma) retain their correct “explicitly accepted JD qualification” explanation. Role-based experience positive decisions use the actual reconciled source/date evidence rather than retaining the outdated validator's “duties must be cited” warning.
+
+## Test evidence and scope
+
+- Newly added `tests/test_v4961_experience_education_hierarchy.py` with positive cases from weaving, hospital QA, finance, computer science, accounting, and textile engineering; mandatory negative cases for unrelated jobs, uncorroborated years, missing full-time, degree level below minimum, wrong field, pending studies, explicit degree AND and exact-accreditation limits.
+- Updated **one** superseded legacy test: a Master's in the exact subject now meets a Bachelor's educational minimum, per the newly requested policy.
+- Focused post-change education/experience/cross-domain tests and the broader dependency-independent offline suite passed. Full Windows/Streamlit, live Ollama/OpenRouter, and the actual uploaded candidate CV remain **unverified** in this container.
+- No model calls, provider credits, real applicant files, remote infrastructure, or source evidence were modified.
+
+## Compatibility, workflow and security
+
+Extract to a **new folder**, preserve v4.9.60 as rollback. Copy your private `.env` settings **manually**; never put your API key in a shared ZIP. Run `run_runtime_check.cmd`, `run_tests.cmd`, `run_ui.cmd` in Windows. Perform a fresh JD/CV analysis under protocol **v47**; older v46 snapshots are historical results, not proof the new specialist checks ran. Verify R001 source citations and the corrected academic classification in the final “Why”, score and exports. Credited qualifications are applicant-reported and should be verified by the hiring team; the application is not secure remote multi-tenant HR production software.
+
+**Remaining work:** the entire multi-phase remediation project is not finished. JD review and recovery diagnostics, unusual documents, the full Windows test suite and a held-out live-provider benchmark remain separate gates. Never mask technical Unverified as a negative finding merely to populate a leaderboard.

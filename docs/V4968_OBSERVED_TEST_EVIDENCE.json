@@ -1,0 +1,29 @@
+{
+  "build": "phase7g-v4-9-68-prompt-first-contract-evaluation-2026-11-14",
+  "assessment_protocol_version": 54,
+  "environment": "Linux Python 3.13.5",
+  "broad_suite": {
+    "command": "python -m pytest -q --continue-on-collection-errors",
+    "passed": 1510,
+    "failed": 22,
+    "collection_errors": 10,
+    "green": false,
+    "limitation": "Missing Streamlit/LangChain dependencies plus two tests requiring configured LLM"
+  },
+  "controlled_supervisor": {
+    "seven_case": {"passed": 7, "total": 7, "provider": "scripted"},
+    "cross_domain": {"passed": 15, "total": 15, "provider": "scripted"},
+    "real_model_accuracy": "not_run"
+  },
+  "prompt_first_paired_packet": {
+    "cases": 15,
+    "matching_user_packet_hashes": 15,
+    "matching_response_schema_hashes": 15,
+    "model_calls": 0,
+    "quality_comparison": "not_measured"
+  },
+  "prompt_inventory": {"definitions":13,"changed":6,"retained":7,"builders":16},
+  "cloud_calls": 0,
+  "independently_labeled_holdout": "unavailable",
+  "native_windows_qualification": "unavailable"
+}

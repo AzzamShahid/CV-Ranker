@@ -1,0 +1,13 @@
+Engineering environment: Linux, Node v22.16.0, global TypeScript compiler.
+Command: tsc --project frontend/tsconfig.offline.json --noEmit
+Observed: exit 0 (no TypeScript errors).
+Command: tsc --project frontend/tsconfig.offline.json
+Observed: exit 0 (generated frontend/dist/assets/app.js).
+Command: node --check frontend/dist/assets/app.js
+Observed: exit 0 (no JavaScript syntax error).
+Command: python scripts/generate_web_contract.py --check
+Observed: OpenAPI and client DTOs match the API.
+Command: CVR_ACCESS_MODE=local CVR_STRICT_SOURCE_HASHES=1 python -m cv_ranker.runtime_check
+Observed: strict integrity verified (see final manifest count after packaging).
+Modern Vite/Tailwind/shadcn npm production build: NOT RUN (npm registry unavailable).
+Native visual browser test: NOT RUN (administrator blocked localhost and file URLs).

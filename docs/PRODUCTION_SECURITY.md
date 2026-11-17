@@ -105,3 +105,8 @@ Do not treat an automated PASS as approval to process live applicant data.
 - [ ] Penetration testing, deployment change-control and supervisor acceptance completed.
 
 **Until the open gates are closed, keep use supervised and local. No automated hiring decisions.**
+
+
+### OIDC dependency installation (optional remote mode)
+
+`python -m pip install -r requirements-remote.txt` installs the same pinned Streamlit version with its maintained `auth` extra. The base local install remains `requirements.txt`. Run `python -m scripts.production_preflight --remote`; missing Authlib now appears as a named blocker. A passed package dependency check does not prove TLS, OIDC callbacks, session revocation, tenant isolation, or production privacy controls.

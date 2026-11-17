@@ -14,7 +14,16 @@ from .weighted_scoring import ScoreWeights, weighted_candidate, weighted_leaderb
 
 
 def _assessment_verdict(assessment: RequirementAssessment | None) -> str:
-    if assessment is None or assessment.assessment_state == "unverified" or assessment.unified_status == "Unverified":
+    if assessment is None:
+        return "Assessment incomplete"
+    if assessment.current_decision is not None:
+        return (assessment.current_decision.verdict
+                if assessment.current_decision.processing_state == "completed"
+                else "Assessment incomplete")
+    if assessment.assessment_state == "unverified":
+        return ("Unverified" if assessment.unified_status == "Unverified"
+                else "Assessment incomplete")
+    if assessment.unified_status == "Unverified":
         return "Unverified"
     if assessment.status == "matched" and assessment.unified_status in (None, "Found"):
         return "Found"
@@ -31,7 +40,7 @@ def _fallback_reason(requirement: str, verdict: str, sources: list[str]) -> str:
     if verdict == "Transferable":
         return (f"The assessment records work related to {requirement}, but not direct satisfaction "
                 "of this specific requirement; this receives no scoring credit.")
-    if verdict == "Unverified":
+    if verdict in {"Unverified", "Assessment incomplete"}:
         return f"The assessment of {requirement} is incomplete; no match or nonmatch can safely be asserted."
     return (f"The validated assessment does not establish {requirement} from this CV. "
             "This is not proof that the candidate lacks the capability.")
@@ -123,8 +132,8 @@ def candidate_reasoning(
             "earned_points": points.get("earned_points"),
             "reasoning_repaired": bool(errors),
         })
-    if candidate.primary_score is None:
-        checks.append("Assessment incomplete; no weighted score/rank is asserted")
+    if score.get("provisional"):
+        checks.append("Provisional order only: unverified criteria cannot earn points and may change placement")
     elif originals is None:
         checks.append("Original CV source ledger unavailable for independent reasoning revalidation")
     elif not contributions:
@@ -140,6 +149,12 @@ def candidate_reasoning(
     if score["score"] is None:
         summary = (f"{candidate.candidate_name}: ranking withheld because the validated "
                    "assessment is incomplete. Available reasoning is provisional.")
+    elif score.get("provisional"):
+        summary = (f"{candidate.candidate_name} is not ranked; "
+                   f"{score['score']:.2f}% is a provisional verified-credit floor. "
+                   f"The possible ceiling is {score['possible_ceiling']:.2f}%; "
+                   f"{len(score['unverified_ids'])} criterion/criteria remain unverified. "
+                   "This is not a fully verified final placement.")
     else:
         summary = (f"{candidate.candidate_name} ranks #{rank} at {score['score']:.2f}%. "
                    f"The candidate earns credit for {len(found)} verified Found criteria; "
@@ -151,12 +166,15 @@ def candidate_reasoning(
             summary += " Largest unmet requirements: " + _criterion_preview(missed, limit=2) + "."
     return {
         "candidate_index": candidate_index, "candidate": candidate.candidate_name,
-        "rank": rank, "weighted_score": score["score"], "summary": summary,
+        "rank": rank, "weighted_score": (None if score.get("provisional") else score["score"]),
+        "verified_floor": score["score"] if score.get("provisional") else None,
+        "provisional": bool(score.get("provisional")), "summary": summary,
         "strengths": found, "gaps": missed, "transferable": transferable,
         "criteria": details, "audit": {
             "checked_requirements": len(report.requirements),
             "repairs": repairs, "warnings": checks,
-            "status": "incomplete" if score["score"] is None else (
+            "status": "provisional" if score.get("provisional") else
+                      "incomplete" if score["score"] is None else (
                 "needs_review" if checks or repairs else "structurally_valid"),
             "external_reasoning_requests": 0,
             "validation_scope": "Final-decision consistency, scoring arithmetic and retained CV source IDs; free-text semantic truth still requires human review",
@@ -175,7 +193,7 @@ def comparative_reasoning(report: RankingReport, weights: ScoreWeights,
     if not ranked:
         for explanation in explanations.values():
             pending = [item["requirement"] for item in explanation["criteria"]
-                       if item["decision"] == "Unverified"]
+                       if item["decision"] in {"Unverified", "Assessment incomplete"}]
             explanation["placement_reason"] = (
                 "A reliable rank cannot be assigned while the assessment remains unverified"
                 + (": " + ", ".join(pending[:4]) if pending else "") + ".")
@@ -191,6 +209,9 @@ def comparative_reasoning(report: RankingReport, weights: ScoreWeights,
     else:
         summary = (f"{first['candidate']} is top priority with {first['weighted_score']:.2f}% "
                    "on the current approved weights and validated Found evidence.")
+    if any(row.get("provisional") for row in rows):
+        summary = ("Provisional comparison ordered by verified Found credit only; "
+                   "unverified criteria may change candidate positions. " + summary)
     comparisons = []
     for row in ranked[1:]:
         if row["candidate_index"] == first["candidate_index"]:
@@ -212,7 +233,7 @@ def comparative_reasoning(report: RankingReport, weights: ScoreWeights,
         explanation = explanations[row["candidate_index"]]
         if row["rank"] is None:
             pending = [item["requirement"] for item in explanation["criteria"]
-                       if item["decision"] == "Unverified"]
+                       if item["decision"] in {"Unverified", "Assessment incomplete"}]
             explanation["placement_reason"] = (
                 "No rank has been issued because "
                 + ("the following requirements still need a valid assessment: "
@@ -241,6 +262,12 @@ def comparative_reasoning(report: RankingReport, weights: ScoreWeights,
                    + _criterion_preview(explanation["gaps"], limit=2) + "."
                    if explanation["gaps"] else
                    "Their position follows the verified scoring contributions."))
+        if row.get("provisional"):
+            explanation["placement_reason"] = (
+                f"Official rank withheld. Provisional verified-credit floor "
+                f"{row['verified_floor']:.2f}% is not a final score. "
+                f"{row['unverified_count']} assessment(s) remain incomplete; "
+                + explanation["placement_reason"])
     return {"summary": summary,
             "top_candidate_indices": [r["candidate_index"] for r in winners],
             "comparisons": comparisons,

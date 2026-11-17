@@ -6,6 +6,7 @@ This is a configuration check, NOT a penetration test or production approval.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 from dataclasses import asdict, dataclass
 import json
 import os
@@ -84,6 +85,11 @@ def run_checks(*, remote: bool = False) -> list[Check]:
                         else "Manifest contains or cannot exclude sensitive paths"))
 
     if remote:
+        authlib_available = importlib.util.find_spec("authlib") is not None
+        checks.append(Check("Streamlit OIDC dependency", authlib_available,
+                            "Authlib available for configured Streamlit OIDC"
+                            if authlib_available else
+                            "Install optional requirements-remote.txt before enabling OIDC"))
         checks.append(Check("network authentication", mode.strip().lower() == "oidc",
                             "Remote access requires native OIDC and individual verified-email authorization"))
         # These controls cannot be inferred from a source checkout. Never

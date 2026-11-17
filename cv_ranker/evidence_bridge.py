@@ -13,6 +13,8 @@ from .text_utils import instruction_like_evidence, non_candidate_requirement_cop
 
 
 _PERFORMED_ACTION = re.compile(
+    # Legacy cue is retained for compatibility, but uncommon completed-work
+    # actions can also qualify when independently source-grounded.
     r"\b(?:built|trained|implemented|developed|designed|delivered|created|"
     r"integrated|deployed|operated|evaluated|orchestrated|automated|maintained)\b", re.I)
 _BRIDGE_COMPARISON = re.compile(
@@ -24,6 +26,11 @@ _BRIDGE_COMPARISON = re.compile(
     r"responsibilities|design|patterns?|methods?|approach|process(?:es|ing)?)\b)", re.I)
 _OVERLAP_FILLER = {"these", "those", "about", "their", "other", "which", "would", "often",
                    "using", "built", "model", "models", "functions", "tools", "platform", "system"}
+
+
+def _completed_action(text: str) -> bool:
+    from .experience_validation import _affirmative_duty
+    return bool(_PERFORMED_ACTION.search(text) or _affirmative_duty(text))
 
 
 def performed_functional_bridge(requirement: Any,
@@ -51,7 +58,7 @@ def performed_functional_bridge(requirement: Any,
             if (work_id == sid or work.section not in {"projects", "experience", "work_experience"}
                     or instruction_like_evidence(work.text)
                     or non_candidate_requirement_copy(work.text)
-                    or not _PERFORMED_ACTION.search(work.text)):
+                    or not _completed_action(work.text)):
                 continue
             shared = sorted(bridge_terms.intersection(
                 token.casefold() for token in re.findall(r"[A-Za-z][A-Za-z-]{4,}", work.text)

@@ -14,6 +14,11 @@ def _validate_coverage_contract(
     """
     frozen_ids = [item.requirement_id for item in requirements]
     assessed_ids = [item.requirement_id for item in assessments]
+    # model_copy(update=...) bypasses Pydantic validation; revalidate live
+    # canonical decision records at the authoritative score boundary.
+    for item in assessments:
+        if item.current_decision is not None:
+            RequirementAssessment.model_validate(item.model_dump(mode="python"))
     if len(frozen_ids) != len(set(frozen_ids)):
         raise ValueError("Duplicate frozen requirement ID: ranking is unsafe")
     if len(assessed_ids) != len(set(assessed_ids)):
@@ -34,7 +39,12 @@ def _coverage_for_ids(
     matched = sum(
         1
         for item in assessments
-        if item.requirement_id in ids and item.status == "matched"
+        if item.requirement_id in ids and (
+            (item.current_decision is not None and
+             item.current_decision.processing_state == "completed" and
+             item.current_decision.verdict == "Found") or
+            (item.current_decision is None and item.status == "matched")
+        )
     )
     return round((matched / total) * 100, 2), matched, total
 
@@ -50,7 +60,9 @@ def score_candidate(
 ) -> CandidateResult:
     _validate_coverage_contract(requirements, assessments)
     unverified = sorted(a.requirement_id for a in assessments
-                        if a.assessment_state == "unverified")
+                        if ((a.current_decision is not None and
+                             a.current_decision.processing_state != "completed") or
+                            (a.current_decision is None and a.assessment_state == "unverified")))
     required_ids = {r.requirement_id for r in requirements if r.priority == "required"}
     preferred_ids = {r.requirement_id for r in requirements if r.priority == "preferred"}
     unknown_ids = {r.requirement_id for r in requirements if r.priority == "unknown"}
@@ -89,7 +101,8 @@ def score_candidate(
         primary_score = required_score = preferred_score = unknown_score = None
         score_basis += " · incomplete source/model assessment"
         errors = list(errors) + [
-            "Ranking withheld: technical assessment incomplete for " + ", ".join(unverified)
+            "Official assessment incomplete; provisional verified-credit comparison "
+            "is available for " + ", ".join(unverified)
         ]
 
     allowed_modes = {"llm_assessed", "mixed", "fallback_exact", "failed"}
