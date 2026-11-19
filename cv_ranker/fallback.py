@@ -74,11 +74,19 @@ _NARRATIVE_FUTURE_RE = re.compile(
 )
 
 
+_INTRO_NARRATIVE_RE = re.compile(
+    r"(?i)^(?:we are looking for|we're looking for|the role combines|the position combines|"
+    r"in this role,?\s+you|this role is|this position is|we are seeking|we're seeking)\b"
+)
+
+
 def looks_like_non_requirement(text: str) -> bool:
     """Generic benefit/action wording; never a profession-specific skill list."""
+    clean = text.strip()
     return bool(
-        _NON_REQUIREMENT_RE.search(text)
-        or (_ACTION_START_RE.search(text) and not _REQUIREMENT_CUE_RE.search(text))
+        _NON_REQUIREMENT_RE.search(clean)
+        or _INTRO_NARRATIVE_RE.search(clean)
+        or (_ACTION_START_RE.search(clean) and not _REQUIREMENT_CUE_RE.search(clean))
     )
 
 

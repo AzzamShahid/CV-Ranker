@@ -200,15 +200,24 @@ def _sanitize_requirements(
         priority = source_priority or item.priority
         clean = JDRequirement(name=frozen_name, priority=priority, evidence=evidence)
 
+        matched_existing_key = None
         if key not in by_key:
-            by_key[key] = clean
-            order.append(key)
-            renamed = _source_key(proposed_name) != key
+            for existing_key in by_key:
+                if len(existing_key) >= 30 and len(key) >= 30 and (key.startswith(existing_key) or existing_key.startswith(key)):
+                    matched_existing_key = existing_key
+                    break
+
+        target_key = matched_existing_key or key
+
+        if target_key not in by_key:
+            by_key[target_key] = clean
+            order.append(target_key)
+            renamed = _source_key(proposed_name) != target_key
             record("accepted", "source_quote_replaced_model_name" if renamed else "source_grounded", frozen_name)
         else:
             priority_rank = {"unknown": 0, "preferred": 1, "required": 2}
-            if priority_rank[clean.priority] > priority_rank[by_key[key].priority]:
-                by_key[key] = clean
+            if priority_rank[clean.priority] > priority_rank[by_key[target_key].priority]:
+                by_key[target_key] = clean
             record("merged", "duplicate_source_identity", frozen_name)
 
     priority_rank = {"required": 0, "preferred": 1, "unknown": 2}

@@ -4,11 +4,11 @@ import {BrowserRouter,Routes,Route,Outlet,Link,useNavigate,useParams,useLocation
 import {client,initializeSession} from './api/client';
 import type {Document,ExportRecord,HistoricalRecord,JDApproval,JDDraft,Job,Settings,Weights,Workspace} from './api/client';
 import {ROUTES,NAV_ITEMS,parseWorkspaceRoute,workspacePath} from './router';
-import {ActionLink,Blank,Button,ErrorState,Loading,Panel,PageHeader,Status,FormField,Message} from './components/ui';
+import {ActionLink,Blank,Button,ErrorState,Loading,Panel,PageHeader,Status,FormField,dateString} from './components/ui';
 import {DocumentsPage,JDPage,WeightsPage,AssessmentPage} from './pages/Workflow';
 import {ProgressPage,RankingsPage,CandidatePage,ReportsPage} from './pages/Results';
 import {CockpitPage} from './pages/Cockpit';
-import {CockpitIcon, HistoryIcon, SettingsIcon, UploadIcon, DocumentIcon, SlidersIcon, PlayIcon, MenuIcon, PlusIcon} from './components/icons';
+import {CockpitIcon, HistoryIcon, SettingsIcon, UploadIcon, DocumentIcon, SlidersIcon, PlayIcon, MenuIcon, PlusIcon, SunIcon, MoonIcon, MonitorIcon} from './components/icons';
 import type {IconProps} from './components/icons';
 import './theme.css';
 
@@ -69,15 +69,32 @@ function ThemePicker(){
   });
   useEffect(()=>{
     const preference=window.matchMedia('(prefers-color-scheme: dark)');
-    const update=()=>document.documentElement.dataset.theme=theme==='system'?(preference.matches?'dark':'light'):theme;
+    const update=()=>{
+      const resolved=theme==='system'?(preference.matches?'dark':'light'):theme;
+      document.documentElement.dataset.theme=resolved;
+      let meta = document.querySelector('meta[name="color-scheme"]') as HTMLMetaElement | null;
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = 'color-scheme';
+        document.head.appendChild(meta);
+      }
+      meta.content = theme==='system'?'light dark':theme;
+    };
     update();preference.addEventListener('change',update);
     window.localStorage.setItem('textilehr-theme',theme);
     return ()=>preference.removeEventListener('change',update);
   },[theme]);
-  return <label className="theme-selector" htmlFor="theme-picker">Theme<select id="theme-picker" value={theme}
-       onChange={e=>setTheme(e.target.value as 'system'|'light'|'dark')}>
-      <option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option>
-    </select></label>;
+  return <div className="theme-toggle-group" role="group" aria-label="Theme selection">
+    <button type="button" className={'theme-toggle-btn '+(theme==='light'?'active':'')}
+      onClick={()=>setTheme('light')} title="Light mode" aria-pressed={theme==='light'}>
+      <SunIcon size={14}/><span>Light</span></button>
+    <button type="button" className={'theme-toggle-btn '+(theme==='dark'?'active':'')}
+      onClick={()=>setTheme('dark')} title="Dark mode" aria-pressed={theme==='dark'}>
+      <MoonIcon size={14}/><span>Dark</span></button>
+    <button type="button" className={'theme-toggle-btn '+(theme==='system'?'active':'')}
+      onClick={()=>setTheme('system')} title="System preference" aria-pressed={theme==='system'}>
+      <MonitorIcon size={14}/><span>Auto</span></button>
+  </div>;
 }
 
 function SessionGate({children}:{children:ReactNode}){
@@ -102,7 +119,7 @@ function ShellHeader({title,workspaceId,activePage}:{title:string;workspaceId?:s
   const isCockpitActive=!activePage||['overview','run','jd','weights','uploads','rankings','candidate','progress'].includes(activePage);
   return <header className="topbar"><div className="workspace-context">
      <img className="emblem" src="/assets/brand/RWML-Logo-Small.svg" alt="" aria-hidden="true"/>
-     <div><b>{title||settings.organization_name}</b><span className="small">TextileHR AI · Local assessment</span></div>
+     <div><b>{title||settings.organization_name}</b><span className="small">Reliance Weaving Mills AI · Recruitment Intelligence</span></div>
     </div>
     {workspaceId ? (
       <nav className="topbar-tabs" aria-label="Main application tabs">
@@ -160,9 +177,12 @@ function WorkspaceFrameContent({workspaceId,settings}:{workspaceId:string;settin
   const current=parseWorkspaceRoute(location.pathname);
   const activePage=current.kind==='workspace'?current.page:null;
   return <div className="app"><aside id="workspace-mobile-menu" className={'sidebar '+(menuOpen?'open':'')} aria-label="Primary navigation">
-     <div className="brand"><img className="logo logo--light" src="/assets/brand/RWML-Logo.svg" alt={settings.organization_name}/>
-       <img className="logo logo--dark" src="/assets/brand/RWML-Logo-Dark.svg" alt="" aria-hidden="true"/>
-       <div className="brand-note">TextileHR AI · Workforce intelligence</div></div>
+     <div className="brand">
+       <div className="brand-logo-wrap">
+         <img className="logo logo--light" src="/assets/brand/RWML-Logo.svg" alt={settings.organization_name}/>
+         <img className="logo logo--dark" src="/assets/brand/RWML-Logo-Dark.svg" alt="" aria-hidden="true"/>
+       </div>
+       <div className="brand-note">Reliance Weaving Mills Ltd. · Recruitment Intelligence</div></div>
      <nav className="nav" aria-label="Workspace pages"><div className="nav-label">Workspace</div>
        {NAV_ITEMS.map(item=>{
          const IconComp=NAV_ICONS[item.page];
@@ -196,14 +216,32 @@ function WorkspacesHome(){
     finally{setBusy(false)}
   }
   return <div className="app"><main className="main"><ShellHeader title={settings.organization_name}/><div className="body">
+    <div className="workspace-hero-banner">
+      <div className="workspace-hero-logo-wrap">
+        <img className="hero-logo hero-logo--light" src="/assets/brand/RWML-Logo.svg" alt="Reliance Weaving Mills Ltd." />
+        <img className="hero-logo hero-logo--dark" src="/assets/brand/RWML-Logo-Dark.svg" alt="Reliance Weaving Mills Ltd." />
+      </div>
+      <div className="workspace-hero-meta">
+        <div className="eyebrow" style={{marginBottom: 4, color: 'var(--brand-green)'}}>A FATIMA GROUP COMPANY · RECRUITMENT INTELLIGENCE</div>
+        <h1 style={{margin: '0 0 6px 0', fontSize: '26px'}}>Reliance Weaving Mills AI</h1>
+        <p style={{margin: 0, fontSize: '14px', maxWidth: 680}}>
+          Verifiable candidate qualification scoring, frozen employer requirement analysis, and durable audit logs.
+        </p>
+      </div>
+    </div>
     <PageHeader title="Assessment workspaces" description="Open an existing recruitment assessment or create a private local workspace."/>
     {error?<ErrorState error={error} retry={()=>{void refresh()}}/>:null}
     <div className="grid cols2"><Panel><h2>Create workspace</h2><FormField id="workspace-title" label="Recruitment workspace name">
       <input id="workspace-title" maxLength={120} value={title} onChange={e=>setTitle(e.target.value)} placeholder="Weaving Production Recruitment"/>
     </FormField><div className="toolbar" style={{marginTop:16}}><Button kind="primary" onClick={()=>{void create()}} disabled={busy||title.trim().length<2}>Create workspace</Button></div></Panel>
      <Panel><h2>Existing workspaces</h2>{items.length===0?<Blank title="No workspaces yet" description="Create a workspace to begin JD review and candidate assessments."/>:
-       items.map(item=><div className="step" key={item.id}><div style={{flex:1}}><strong>{item.title}</strong>
-          <small>Created {item.created}</small></div><ActionLink to={workspacePath(item.id,'overview')}>Open</ActionLink></div>)}</Panel>
+       items.map(item=><div className="step" key={item.id} style={{justifyContent:'space-between',alignItems:'center'}}>
+         <div style={{display:'flex',flexDirection:'column',gap:4}}>
+           <strong style={{fontSize:15}}>{item.title}</strong>
+           <small className="muted">Created {dateString(item.created)}</small>
+         </div>
+         <ActionLink kind="subtle" size="small" to={workspacePath(item.id,'overview')}>Open workspace</ActionLink>
+       </div>)}</Panel>
     </div></div></main></div>;
 }
 
@@ -227,11 +265,12 @@ export function Overview(){const {workspaceId,data,settings}=useWorkspace();
     <p className="small" style={{marginTop:21}}>Model: {settings.ollama_model} (local) · Protocol {settings.protocol}</p>
   </>;
 }
-function SettingsPage(){const {settings,workspaceId,data}=useWorkspace();const navigate=useNavigate();
+function SettingsPage(){const {settings,workspaceId}=useWorkspace();const navigate=useNavigate();
   const [confirmation,setConfirmation]=useState('');const [deleteError,setDeleteError]=useState<Error|null>(null);
   const [deleting,setDeleting]=useState(false);
+  const isConfirmed = ['DELETE', 'DELETE WORKSPACE'].includes(confirmation.trim().toUpperCase());
   async function removeWorkspace(){
-    if(confirmation!=='DELETE WORKSPACE'||deleting)return;
+    if(!isConfirmed||deleting)return;
     if(!window.confirm('Permanently delete this workspace, its uploaded documents, reports, exports, and saved assessment history?'))return;
     setDeleting(true);setDeleteError(null);
     try{await client.removeWorkspace(workspaceId);navigate('/')}
@@ -240,22 +279,81 @@ function SettingsPage(){const {settings,workspaceId,data}=useWorkspace();const n
   }
   return <><PageHeader title="System & Storage Maintenance"
      description="This read-only view never starts a model call. New jobs preserve their selected provider settings."/>
-    <div className="grid cols2"><Panel><h2>Configured models</h2><div className="step"><strong>Ollama</strong><span>{settings.ollama_model}</span></div>
-       <div className="step"><strong>OpenRouter</strong><span>{settings.openrouter_model}</span></div>
-       <div className="step"><strong>Cloud key</strong><Status value={settings.openrouter_key_configured?'Configured':'Not configured'}/></div>
-       <div className="step"><strong>Default provider</strong>{settings.configured_provider}</div></Panel>
-     <Panel><h2>Runtime policy</h2><div className="step"><strong>Build</strong><span className="mono small">{settings.engine_build}</span></div>
-       <div className="step"><strong>Protocol</strong>{settings.protocol}</div>
-       <div className="step"><strong>Deployment</strong>Single operator · loopback</div>
-       <p className="small">Applicant records and credentials are stored outside frontend assets. Cloud model selection requires organization authorization.</p></Panel></div>
-    <Panel><h2 className="danger-text">Delete workspace and private records</h2>
-      <Message kind="warn">This action removes stored CVs, JD revisions, assessment jobs, source records, and exports for this workspace. It is blocked for running or unknown-delivery jobs. External backups remain outside the application.</Message>
-      {deleteError?<ErrorState error={deleteError}/>:null}
-      <FormField id="workspace-delete-confirm" label="Enter DELETE WORKSPACE to confirm">
-        <input id="workspace-delete-confirm" value={confirmation} onChange={e=>setConfirmation(e.target.value)}
-          autoComplete="off"/></FormField><Button kind="danger" disabled={deleting||confirmation!=='DELETE WORKSPACE'}
-          onClick={()=>{void removeWorkspace()}}>Delete {data.workspace?.title??'workspace'}</Button>
-    </Panel></>}
+    <div className="stack" style={{gap: 20}}>
+      <div className="grid cols2">
+        <Panel><h2>Configured models</h2>
+          <div className="step"><strong>Ollama</strong><span>{settings.ollama_model}</span></div>
+          <div className="step"><strong>OpenRouter</strong><span>{settings.openrouter_model}</span></div>
+          <div className="step"><strong>Cloud key</strong><Status value={settings.openrouter_key_configured?'Configured':'Not configured'}/></div>
+          <div className="step"><strong>Default provider</strong>{settings.configured_provider}</div>
+        </Panel>
+        <Panel><h2>Runtime policy</h2>
+          <div className="step"><strong>Build</strong><span className="mono small">{settings.engine_build}</span></div>
+          <div className="step"><strong>Protocol</strong>{settings.protocol}</div>
+          <div className="step"><strong>Deployment</strong>Single operator · loopback</div>
+          <p className="small" style={{marginTop: 10}}>Applicant records and credentials are stored outside frontend assets. Cloud model selection requires organization authorization.</p>
+        </Panel>
+      </div>
+      <Panel className="danger-panel" style={{ padding: '24px 28px' }}>
+        <h2 className="danger-text" style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          Delete workspace and private records
+        </h2>
+
+        <div className="danger-callout" role="alert">
+          <div className="danger-callout-header">
+            <strong>Irreversible Workspace Deletion</strong>
+          </div>
+          <p className="danger-callout-text">
+            This action removes stored CVs, JD revisions, assessment jobs, source records, and exports for this workspace. It is blocked for running or unknown-delivery jobs. External backups remain outside the application.
+          </p>
+        </div>
+
+        {deleteError?<ErrorState error={deleteError}/>:null}
+
+        <div style={{maxWidth: 480, marginTop: 16}}>
+          <FormField id="workspace-delete-confirm" label="Enter DELETE to confirm deletion">
+            <input
+              id="workspace-delete-confirm"
+              value={confirmation}
+              onChange={e=>setConfirmation(e.target.value)}
+              placeholder="DELETE"
+              autoComplete="off"
+              className="mono"
+              style={{
+                fontSize: 14,
+                letterSpacing: '0.08em',
+                fontWeight: 600
+              }}
+            />
+          </FormField>
+        </div>
+
+        <div style={{marginTop: 18}}>
+          <Button
+            kind="danger"
+            disabled={deleting||!isConfirmed}
+            onClick={()=>{void removeWorkspace()}}
+            style={isConfirmed ? {
+              background: '#dc2626',
+              color: '#ffffff',
+              boxShadow: '0 2px 8px rgba(220, 38, 38, 0.45)',
+              fontWeight: 700,
+              padding: '10px 22px'
+            } : {
+              fontWeight: 600,
+              padding: '10px 22px'
+            }}
+          >
+            {deleting ? 'Deleting workspace…' : 'Delete workspace permanently'}
+          </Button>
+        </div>
+      </Panel>
+    </div></>}
 function MissingResource(){return <main className="body"><PageHeader title="Resource not found"
    description="The link is incomplete, invalid, or its saved resource is no longer available."/>
    <ActionLink to="/">Return to workspaces</ActionLink></main>}

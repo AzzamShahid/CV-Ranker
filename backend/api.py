@@ -131,6 +131,15 @@ def create_app(store: Store | None = None, *, serve_frontend: bool=True) -> Fast
         return JSONResponse(status_code=422,content={'code':'request_invalid',
                         'message':'Check required fields and value formats. Do not submit file paths or verdicts.'})
 
+    @app.exception_handler(HTTPException)
+    async def http_exception_handler(_request,exc):
+        detail = exc.detail if isinstance(exc.detail, str) else str(exc.detail)
+        return JSONResponse(status_code=exc.status_code,content={'code':'http_error','message':detail,'detail':detail})
+
+    @app.exception_handler(Exception)
+    async def unhandled_exception(_request,exc):
+        return JSONResponse(status_code=500,content={'code':'server_error','message':f'Server error: {str(exc)}'})
+
     def _origin_check(request: Request, mutation: bool):
         # Reverse-proxy/public hosting is unsupported. Trust only direct local
         # access and a single explicitly configured Vite development origin.
@@ -324,7 +333,10 @@ def create_app(store: Store | None = None, *, serve_frontend: bool=True) -> Fast
         from cv_ranker.documents import extract_text
         from cv_ranker.config import Settings
         draft=services.store.draft(workspace_id,body.draft_id)
-        doc_path=services.store.document_path(workspace_id,draft['document_id'])
+        try:
+            doc_path=services.store.document_path(workspace_id,draft['document_id'])
+        except NotFound:
+            raise HTTPException(status_code=404, detail="The original JD file is unavailable in server storage. Please re-upload the JD document to proceed.")
         approved=validate_approved_revision(draft['body'],extract_text(doc_path),
                     [row.model_dump(by_alias=True) for row in body.rows],Settings(llm_provider='ollama').max_requirements)
         validate_years(body.rows,approved)
@@ -339,7 +351,11 @@ def create_app(store: Store | None = None, *, serve_frontend: bool=True) -> Fast
         from cv_ranker.config import Settings
         if draft_id!=body.draft_id:raise ValueError('Draft ID mismatch')
         draft=services.store.draft(workspace_id,draft_id)
-        text=extract_text(services.store.document_path(workspace_id,draft['document_id']))
+        try:
+            doc_path=services.store.document_path(workspace_id,draft['document_id'])
+        except NotFound:
+            raise HTTPException(status_code=404, detail="The original JD file is unavailable in server storage. Please re-upload the JD document to proceed.")
+        text=extract_text(doc_path)
         edited=validate_approved_revision(draft['body'],text,[row.model_dump(by_alias=True) for row in body.rows],Settings(llm_provider='ollama').max_requirements)
         validate_years(body.rows,edited)
         return services.store.revise_draft(workspace_id,draft_id,body.revision,

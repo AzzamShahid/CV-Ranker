@@ -1,0 +1,35 @@
+HAMZA TARIQ, Engr.
+Junior Quality Assurance Officer · Weaving Operations
+Faisalabad, Pakistan  |  +92 345 7820194  |  hamza.tariq.ntu@gmail.com  |  PEC: TEXTILE/21490
+Career Objective
+Enthusiastic and technically driven Junior Textile Engineer with 1.5 years of practical quality control experience in a high-speed
+air-jet weaving mill. Proficient in ASTM D5430 4-Point System fabric defect inspection, in-process loom setting parameter
+checks (Toyota JAT710), and laboratory fabric weight (GSM) and pick count verification. Quick learner possessing sound
+foundational education from National Textile University, seeking to contribute actively to an advanced weaving QA team.
+Education
+B.Sc. Textile Engineering (Weaving Specialization)
+2020 – 2024
+National Textile University (NTU), Faisalabad  |  CGPA: 3.72 / 4.00 (Top 5% of Graduating Class)
+Professional Experience
+Junior QA Officer – Weaving Quality Control
+Jul 2024 – Present (1.5 yrs)
+Masood Textile Mills Limited (MTM) – Faisalabad, Pakistan
+• Perform shift-wise in-process quality audits on 80 Toyota JAT710 and JAT810 air-jet looms weaving stretch twill and poplin greige fabrics.
+• Conduct daily greige fabric defect grading under the guidance of senior QA manager following the ASTM D5430 4-Point System across 4
+inspection frames, identifying starting marks, loose ends, broken picks, and oil spots.
+• Execute daily laboratory fabric tests: cut and calculate Fabric Mass per Unit Area/GSM (ASTM D3776), verify EPI and PPI using pick
+glass, and assist in sample preparation for tensile testing (ASTM D5034).
+• Perform data entry in SAP QM module (transaction code QA32), logging roll-wise defect penalty points and tagging quarantine fabric rolls.
+• Track daily loom stop reports and collaborate with shift loom technicians to troubleshoot recurring filling insertion faults.
+• Participated as a junior team member in internal 5S audits and ISO 9001:2015 documentation reviews.
+Trainee Quality Intern – Weaving & Lab
+Jan 2024 – Jun 2024 (6 mos)
+Sitara Textiles Limited – Faisalabad, Pakistan
+• Underwent hands-on training in greige fabric inspection, yarn crimp testing, and warp sizing pick-up percentage analysis.
+• Final Year Engineering Project: 'Correlation of Warp Sizing Add-on with Air-Jet Loom Weavability and Greige Defect Generation'.
+Technical Skills & Certifications
+Loom Knowledge: Toyota JAT710/JAT810 Air-Jet Looms (In-process auditing, reed mark and filling stop checks).
+Testing & Inspection: ASTM D5430 (4-Point System), ASTM D3776 (Fabric GSM), ASTM D5034 (Basic Tensile testing
+assistance), Pick Glass Analysis.
+Software & Tools: SAP QM (Basic end-user entry in QA32), MS Excel, Minitab (Basic statistical analysis).
+Certifications: Lean Six Sigma Yellow Belt (NTU Faisalabad, 2024)  |  5S Workplace Organization Workshop (2024).

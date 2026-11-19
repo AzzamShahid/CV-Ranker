@@ -1,0 +1,50 @@
+RELIANCE WEAVING MILLS LTD.
+TECHNICAL HIRING SPECIFICATION · QUALITY ASSURANCE & LAB DIVISION
+Position: Assistant Manager – Quality Assurance (Weaving & Greige Fabric)  |  Location: Multan / Weaving Unit  |  Department: Weaving
+QA
+1. Role Overview & Plant Operational Scope
+Reliance Weaving Mills Ltd. is seeking a technically rigorous, floor-grounded Assistant Manager – Quality Assurance to lead
+process quality audit, greige fabric defect evaluation, and physical testing laboratory operations across our weaving manufacturing
+units. Operating over 250 high-speed air-jet and rapier weaving machines, the unit produces export-grade twills, sateens, poplins,
+stretch fabrics, and heavy industrial greige textiles. The incumbent reports to the Head of QA / GM Weaving and is directly
+accountable for first-pass yield, customer defect threshold compliance, and continuous root-cause mitigation.
+2. Key Operational Responsibilities
+• Loom Quality Audit & In-Process Process Control: Enforce machine setting SOPs across Toyota JAT810 and Picanol OmniPlus air-jet
+looms, auditing warp/weft tension, shedding geometry, pneumatic pick insertion, and selvedge formation to eliminate starting marks, weft
+bars, and broken ends.
+• Greige Fabric Inspection & 4-Point System Grading: Supervise fabric inspection frames running according to ASTM D5430 (Standard
+Test Methods for Visually Inspecting and Grading Fabrics). Ensure strict classification of defect points per 100 square yards (< 15 penalty
+points threshold for export grades).
+• Physical Testing Laboratory Management: Direct day-to-day fabric testing according to ASTM and ISO standards, including fabric
+weight/GSM (ASTM D3776), tensile/breaking strength (ASTM D5034 Grab Test), tear resistance (ASTM D1424 Elmendorf), and thread
+count (EPI / PPI pick glass).
+• Yarn Quality Correlation & Loom Stoppage Analysis: Review incoming warp/weft yarn quality metrics (Count CV%, CSP, Uster
+hairiness H, and imperfection indices) to correlate raw yarn quality with on-loom warp/weft stop frequencies and fabric defects.
+• CAPA & 8D Root Cause Analysis: Formulate 8D and 5-Why root cause investigations on recurring weaving defects and internal
+non-conformances, coordinating with Sizing, Weaving Production, and Maintenance departments.
+• ERP Quality Management (SAP QM): Log inspection lots, record defect notifications, approve usage decisions (UD), and maintain
+real-time QA MIS reports using SAP QM module.
+• Compliance & Audits: Ensure plant-wide adherence to ISO 9001:2015, OEKO-TEX Standard 100, and Global Organic Textile Standard
+(GOTS) customer audit criteria.
+3. Mandatory Qualifications & Requirements (Required)
+• R001: Professional Weaving QA Experience: Minimum 4 years of continuous professional quality assurance or quality control
+experience in a modern textile weaving mill or greige fabric manufacturing facility.
+• R002: Bachelor's in Textile Engineering: Completed Bachelor's degree (B.Sc. / B.E.) in Textile Engineering, Textile Technology, or
+Fabric Manufacturing from an accredited institution (PEC / HEC recognized).
+• R003: Air-Jet Weaving Technology Expertise: Demonstrated hands-on experience auditing or supervising high-speed Air-Jet loom
+weaving processes (Toyota JAT series, Picanol OmniPlus, or Tsudakoma machines).
+• R004: ASTM D5430 4-Point Defect System: In-depth operational mastery of greige fabric defect classification and penalty point grading
+under the 4-Point System (ASTM D5430).
+• R005: Fabric Physical Testing Standards: Practical testing proficiency in standard fabric physical evaluation methods: ASTM D5034
+(Breaking strength), ASTM D1424 (Tear resistance), and ASTM D3776 (Fabric GSM).
+• R006: SAP QM or Textile ERP Systems: Hands-on experience using SAP QM (Quality Management module) or equivalent enterprise
+textile ERP for inspection lot entry, defect logging, and quality release.
+4. Preferred Qualifications & Differentiators (Preferred)
+• P001: Six Sigma / Statistical Process Control: Certified Lean Six Sigma Green Belt or formal qualification in Statistical Process Control
+(SPC), 5S, and structured 8D problem-solving.
+
+
+• P002: Yarn Testing Equipment & Uster Metrics: Practical exposure to yarn testing instruments (Uster Tester 5/6, Uster Tensojet, or Lea
+CSP tester) to evaluate yarn hairiness, imperfections, and tensile impact on weaving efficiency.
+• P003: International Compliance Standards: Internal Auditor certification or audit facing experience with OEKO-TEX Standard 100,
+GOTS (Global Organic Textile Standard), or ISO 9001:2015.

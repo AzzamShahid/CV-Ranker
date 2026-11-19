@@ -200,11 +200,26 @@ async function request(path:string,options: {method?:'GET'|'POST'|'PUT'|'DELETE'
   if(options.key)headers['Idempotency-Key']=options.key;
   const response=await fetch(API+path,{method,headers,signal:options.signal,credentials:'same-origin',cache:'no-store',
     body:options.body===undefined?undefined:options.body instanceof FormData?options.body:JSON.stringify(options.body)});
-  const raw:unknown=await response.json().catch(()=>({code:'unreadable_response',message:'Service returned unreadable JSON'}));
+  const text=await response.text();
+  let raw:unknown={};
+  if(text&&text.trim().length>0){
+    try{
+      raw=JSON.parse(text);
+    }catch{
+      if(!response.ok){
+        throw new ApiError(response.status,'server_error',text.slice(0,300)||`HTTP ${response.status}`);
+      }
+      if(text.includes('<!DOCTYPE')||text.includes('<html')){
+        throw new ApiError(response.status,'backend_offline','The backend service is unavailable or restarting. Please try again.');
+      }
+      throw new ApiError(response.status,'unreadable_response','The service returned an unexpected response format.');
+    }
+  }
   if(!response.ok){
-    const parsed=z.object({code:z.string().default('http_error'),message:z.string().default('Request failed')}).safeParse(raw);
-    throw new ApiError(response.status,parsed.success?parsed.data.code:'unexpected_response',
-      parsed.success?parsed.data.message:`HTTP ${response.status}`);
+    const record=raw&&typeof raw==='object'?(raw as Record<string,unknown>):{};
+    const code=typeof record.code==='string'?record.code:(typeof record.detail==='string'?'request_error':'http_error');
+    const message=typeof record.message==='string'?record.message:(typeof record.detail==='string'?record.detail:`HTTP ${response.status}`);
+    throw new ApiError(response.status,code,message);
   }
   return raw;
 }

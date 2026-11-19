@@ -2,6 +2,7 @@ import {useCallback,useEffect,useRef,useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {client} from '../api/client';
 import {consumeSequence,isTerminalJob,newerSnapshot,nextReconnectMs} from '../api/observation';
+import {startDistinctIntent} from '../api/submissionIntent';
 import type {Job,Ranking,CandidateDetail,JobUsage,SemanticShadow,ReviewHistoryItem,RetentionSummary} from '../api/client';
 import {useWorkspace} from '../app';
 import {workspacePath} from '../router';
@@ -345,7 +346,7 @@ export function RankingsPage(){
       throw new Error('Result or weight revision changed. Reload before export.');
     const file=await client.export(workspaceId,job.id,latest.result_revision,data.weights.revision);
     const link=document.createElement('a');link.href=`/api/v1/workspaces/${workspaceId}/exports/${file.id}/download`;
-    link.download='TextileHR_Assessment.zip';document.body.append(link);link.click();link.remove();
+    link.download='Reliance_Weaving_Mills_Assessment.zip';document.body.append(link);link.click();link.remove();
   }catch(e:unknown){setExportError(e instanceof Error?e:new Error('Export failed'))}
   finally{setBusy(false)}
  };
@@ -461,6 +462,44 @@ export function RankingsPage(){
         </div>
       </div>
     </Panel>
+    {filtered?.length ? (
+      <Panel>
+        <div className="card-header">
+          <div>
+            <div className="eyebrow" style={{ marginBottom: 4 }}>Evidence-Based Ranking Rationale</div>
+            <h2 style={{ margin: '0 0 4px 0' }}>Ranking explained · Why candidates ranked this way</h2>
+            <p className="small text-muted" style={{ margin: 0 }}>
+              One clear explanation per candidate under approved JD priorities. Detailed evidence is available in candidate view.
+            </p>
+          </div>
+        </div>
+        <div className="stack" style={{ gap: 12, marginTop: 14 }}>
+          {filtered.map(row => (
+            <div key={row.candidate_id} className="why" style={{ margin: 0, padding: '14px 18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span className="num" style={{ padding: '3px 8px', fontSize: 13, fontWeight: 700, borderRadius: 6 }}>
+                    {row.rank === null ? '—' : `#${row.rank}`}
+                  </span>
+                  <strong style={{ fontSize: 14 }}>{row.candidate}</strong>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <strong style={{ fontSize: 14, color: 'var(--brand-green)' }}>
+                    {row.weighted_score === null ? 'Not ready' : `${row.weighted_score.toFixed(2)}%`}
+                  </strong>
+                  <ActionLink size="small" to={workspacePath(workspaceId, 'candidate', { jobId: job.id, candidateId: row.candidate_id })}>
+                    Why <ArrowRightIcon size={12} style={{ marginLeft: 3 }} />
+                  </ActionLink>
+                </div>
+              </div>
+              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+                {row.placement_reason || 'Verified match score under approved employer priorities.'}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Panel>
+    ) : null}
     <div className="compliance-disclaimer-card">
       <small className="disclaimer-text">
         These are evidence-grounded CV comparisons, not independent verification of professional competence. Transferable evidence earns no direct requirement credit.
@@ -541,9 +580,15 @@ export function CandidateDetailView({
 
   return <>
     <Panel>
-      <div className="card-header">
+      <div className="eyebrow" style={{ marginBottom: 4 }}>INDIVIDUAL CANDIDATE REVIEW</div>
+      <h2 style={{ margin: '0 0 4px 0' }}>Final JD-to-CV assessment</h2>
+      <p className="small text-muted" style={{ margin: '0 0 16px 0' }}>
+        Inspect each candidate's decisions, supporting evidence, and reasoning.
+      </p>
+
+      <div className="card-header" style={{ padding: '12px 16px', background: 'var(--surface-strong)', borderRadius: 12, border: '1px solid var(--border-soft)' }}>
         <div>
-          <h2>{detail.candidate.candidate_name}</h2>
+          <h3 style={{ margin: 0, fontSize: 16 }}>{detail.candidate.candidate_name}</h3>
           <span className="mono small text-muted">Document source: {detail.candidate.candidate_source}</span>
         </div>
         <div className="row" style={{gap:8}}>
@@ -561,26 +606,26 @@ export function CandidateDetailView({
         </div>
       </div>
 
-      <div className="candidate-metric-grid">
+      <div className="candidate-metric-grid" style={{ marginTop: 14 }}>
         <div className="candidate-metric-box">
           <span className="metric-label">Weighted Score</span>
           <span className="metric-val">{weighted?.weighted_score!=null?`${weighted.weighted_score.toFixed(1)}%`:'—'}</span>
           <span className="metric-sub">{weighted?.rank?`Official Rank #${weighted.rank}`:'Incomplete'}</span>
         </div>
         <div className="candidate-metric-box">
-          <span className="metric-label">Required Criteria</span>
-          <span className="metric-val">{detail.candidate.matched_required} / {detail.candidate.total_required}</span>
-          <span className="metric-sub">{detail.candidate.total_required?`${Math.round((detail.candidate.matched_required/detail.candidate.total_required)*100)}% Matched`:'None specified'}</span>
+          <span className="metric-label">JD Matched</span>
+          <span className="metric-val">{detail.candidate.matched_required + detail.candidate.matched_preferred} / {detail.candidate.total_required + detail.candidate.total_preferred}</span>
+          <span className="metric-sub">Verified Found criteria</span>
         </div>
         <div className="candidate-metric-box">
-          <span className="metric-label">Preferred Criteria</span>
-          <span className="metric-val">{detail.candidate.matched_preferred} / {detail.candidate.total_preferred}</span>
-          <span className="metric-sub">{detail.candidate.total_preferred?`${Math.round((detail.candidate.matched_preferred/detail.candidate.total_preferred)*100)}% Matched`:'None specified'}</span>
+          <span className="metric-label">Transferable</span>
+          <span className="metric-val">{detail.final.Transferable ?? 0}</span>
+          <span className="metric-sub">Not counted as matched</span>
         </div>
         <div className="candidate-metric-box">
-          <span className="metric-label">Evaluation Engine</span>
-          <span className="metric-val mono" style={{fontSize:'15px'}}>{detail.candidate.evaluation_mode}</span>
-          <span className="metric-sub">Primary: {detail.candidate.primary_score!=null?`${detail.candidate.primary_score.toFixed(1)}%`:'—'}</span>
+          <span className="metric-label">Required / Preferred</span>
+          <span className="metric-val" style={{ fontSize: 18 }}>{detail.candidate.matched_required}/{detail.candidate.total_required} · {detail.candidate.matched_preferred}/{detail.candidate.total_preferred}</span>
+          <span className="metric-sub">Engine: {detail.candidate.evaluation_mode}</span>
         </div>
       </div>
 
@@ -929,24 +974,28 @@ export function ReportsPage(){
  return <><PageHeader title="Saved results & exports" description="Resume durable jobs, download exact result revisions, and inspect historical imports without reprocessing them."/>
   {error?<ErrorState error={error}/>:null}{notice?<Message kind="success">{notice}</Message>:null}
   <Panel><h2>Saved assessment jobs</h2>{data.jobs.length?<div className="table-scroller"><table>
-    <thead><tr><th>Job</th><th>Created</th><th>Progress</th><th>State</th><th>Actions</th></tr></thead>
+    <thead><tr><th>Job</th><th>Created</th><th>Progress</th><th>State</th><th>Job Controls & Details</th></tr></thead>
     <tbody>{data.jobs.map(job=><tr key={job.id}><td><strong>{job.kind==='assess'?'Candidate assessment':'JD extraction'}</strong><br/>
       <small className="mono">{job.id.slice(0,12)}</small></td><td>{dateString(job.created)}</td><td>{job.progress}/{job.total}</td>
-      <td><Status value={job.state}/></td><td><ActionLink to={workspacePath(workspaceId,'progress',{jobId:job.id})}>Progress</ActionLink>
-        {job.kind==='assess'?<ActionLink to={workspacePath(workspaceId,'rankings',{jobId:job.id})}>Rankings</ActionLink>:null}
-        {' '}<Button kind="danger" size="small" disabled={busy} onClick={()=>{
+      <td><Status value={job.state}/></td><td><div className="toolbar" style={{gap:6}}>
+        <ActionLink size="small" to={workspacePath(workspaceId,'progress',{jobId:job.id})}>Progress</ActionLink>
+        {job.kind==='assess'?<ActionLink size="small" to={workspacePath(workspaceId,'rankings',{jobId:job.id})}>Rankings</ActionLink>:null}
+        <Button kind="danger" size="small" disabled={busy} onClick={()=>{
          if(confirmDestructive('saved job '+job.id.slice(0,8)))void doAction(async()=>{
-           await client.removeJob(workspaceId,job.id);setNotice('Saved job, candidate results and associated exports deleted.');
-         })}}>Delete</Button></td></tr>)}</tbody></table></div>:
+           await client.removeJob(workspaceId,job.id);
+           startDistinctIntent(workspaceId,job.kind==='assess'?'assess':'jd_extract');
+           setNotice('Saved job, candidate results and associated exports deleted.');
+         })}}>Delete</Button>
+      </div></td></tr>)}</tbody></table></div>:
       <Blank title="No saved jobs" description="Start a JD extraction or candidate assessment."/>}</Panel>
   <Panel><h2>Generated ZIP reports</h2>{data.exports.length?<div className="table-scroller"><table><thead>
-    <tr><th>Created</th><th>Result revision</th><th>Weight revision</th><th>Size</th><th>Download / delete</th></tr></thead><tbody>
+    <tr><th>Created</th><th>Result revision</th><th>Weight revision</th><th>Size</th><th>Export Actions</th></tr></thead><tbody>
     {data.exports.map(item=><tr key={item.id}><td>{dateString(item.created)}</td><td>{item.result_revision}</td>
-      <td>{item.weight_revision}</td><td>{(item.size/1024).toFixed(1)} KB</td><td>
-       <a className="btn small" href={`/api/v1/workspaces/${workspaceId}/exports/${item.id}/download`}>Download</a>{' '}
+      <td>{item.weight_revision}</td><td>{(item.size/1024).toFixed(1)} KB</td><td><div className="toolbar" style={{gap:6}}>
+       <a className="btn small" href={`/api/v1/workspaces/${workspaceId}/exports/${item.id}/download`}>Download ZIP</a>
        <Button kind="danger" size="small" disabled={busy} onClick={()=>{if(confirmDestructive('export '+item.id.slice(0,8)))void doAction(async()=>{
          await client.removeExport(workspaceId,item.id);setNotice('Export record and file deleted. External backups are unaffected.')
-       })}}>Delete</Button></td></tr>)}</tbody></table></div>:
+       })}}>Delete</Button></div></td></tr>)}</tbody></table></div>:
        <Blank title="No exports" description="Export a completed assessment from its rankings page."/>}</Panel>
   <Panel><h2>Data Retention Policy & Purge Automation</h2>
     <p className="small">Configurable local retention. Active jobs and unknown provider deliveries are strictly protected from purge.</p>
@@ -962,7 +1011,7 @@ export function ReportsPage(){
             onChange={e=>setRetentionDays(Math.max(1,parseInt(e.target.value)||30))}/>
         </FormField>
       </div>
-      <Button kind="danger" size="small" disabled={busy} onClick={()=>void purgeOldData()}>
+      <Button kind="danger" disabled={busy} onClick={()=>void purgeOldData()}>
         Purge eligible data ({retentionDays}d)
       </Button>
     </div>

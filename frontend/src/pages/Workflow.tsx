@@ -247,17 +247,28 @@ export function JDPage(){
      <p>Required, Preferred and unresolved priorities must reflect employer wording. Experience and education restrictions and compound AND/OR obligations stay source-bound.</p>
      {draftRows.map((row,index)=><div className="why" key={row._clientKey}>
        <div className="card-header"><strong>{row.ID||'NEW'} · Requirement {index+1}</strong><Status value={row.Priority}/></div>
-       <div className="grid cols2"><FormField id={`req-${row._clientKey}`} label="Requirement text">
-        <textarea id={`req-${row._clientKey}`} value={row.Requirement} onChange={e=>modifyField(row._clientKey,'Requirement',e.target.value)}/></FormField>
-        <FormField id={`prio-${row._clientKey}`} label="Priority"><select id={`prio-${row._clientKey}`} value={row.Priority}
-          onChange={e=>modifyField(row._clientKey,'Priority',e.target.value)}><option value="required">Required</option>
-          <option value="preferred">Preferred</option><option value="unknown">Unknown — supervisor review</option></select></FormField>
-        <FormField id={`kind-${row._clientKey}`} label="Requirement type"><select id={`kind-${row._clientKey}`} value={row.Type}
-          onChange={e=>modifyField(row._clientKey,'Type',e.target.value)}>
-          {['skill','experience','education','certification','license','responsibility','eligibility','other'].map(t=><option value={t} key={t}>{t}</option>)}
-        </select></FormField><FormField id={`source-${row._clientKey}`} label="Exact employer quotation">
-          <textarea id={`source-${row._clientKey}`} value={row['JD source']} onChange={e=>modifyField(row._clientKey,'JD source',e.target.value)}/>
-        </FormField></div>
+       <div className="stack" style={{gap: 12}}>
+         <FormField id={`req-${row._clientKey}`} label="Requirement text">
+           <textarea id={`req-${row._clientKey}`} rows={2} style={{minHeight: 54}} value={row.Requirement} onChange={e=>modifyField(row._clientKey,'Requirement',e.target.value)}/>
+         </FormField>
+         <div className="grid cols2">
+           <FormField id={`prio-${row._clientKey}`} label="Priority">
+             <select id={`prio-${row._clientKey}`} value={row.Priority} onChange={e=>modifyField(row._clientKey,'Priority',e.target.value)}>
+               <option value="required">Required</option>
+               <option value="preferred">Preferred</option>
+               <option value="unknown">Unknown — supervisor review</option>
+             </select>
+           </FormField>
+           <FormField id={`kind-${row._clientKey}`} label="Requirement type">
+             <select id={`kind-${row._clientKey}`} value={row.Type} onChange={e=>modifyField(row._clientKey,'Type',e.target.value)}>
+               {['skill','experience','education','certification','license','responsibility','eligibility','other'].map(t=><option value={t} key={t}>{t}</option>)}
+             </select>
+           </FormField>
+         </div>
+         <FormField id={`source-${row._clientKey}`} label="Exact employer quotation">
+           <textarea id={`source-${row._clientKey}`} rows={2} style={{minHeight: 54}} value={row['JD source']} onChange={e=>modifyField(row._clientKey,'JD source',e.target.value)}/>
+         </FormField>
+       </div>
         <details><summary>Approved compound conditions and qualification constraints</summary>
          <div className="grid cols2"><FormField id={`mandatory-${row._clientKey}`} label="Mandatory JD parts ( | separated)">
           <textarea id={`mandatory-${row._clientKey}`} value={row['Mandatory JD parts']??''}
@@ -279,9 +290,11 @@ export function JDPage(){
            <Button size="small" disabled={index===draftRows.length-1} onClick={()=>moveCriterion(index,index+1)}><ArrowDownIcon size={13} style={{marginRight:4}} />Move down</Button>
          </div>
        </div>)}
-       <div className="toolbar"><Button onClick={addCriterion}><PlusIcon size={14} style={{marginRight:6}} />Add source-backed criterion</Button>
+       <div className="toolbar" style={{ marginTop: 20, marginBottom: 8, gap: 12 }}>
+         <Button onClick={addCriterion}><PlusIcon size={14} style={{marginRight:6}} />Add source-backed criterion</Button>
        <Button disabled={action.busy||draftRows.length===0||isStaleDraft} onClick={()=>save(false)}>Save new revision</Button>
-       <Button kind="primary" disabled={action.busy||draftRows.length===0||isStaleDraft||Boolean(dirty&&data.approved?.draft_id===data.draft.id)} onClick={()=>save(true)}>Approve and freeze JD</Button></div>
+       <Button kind="primary" disabled={action.busy||draftRows.length===0||isStaleDraft||Boolean(dirty&&data.approved?.draft_id===data.draft.id)} onClick={()=>save(true)}>Approve and freeze JD</Button>
+       </div>
     </Panel>:<div style={{marginTop:18}}><Blank title="No extracted JD draft" description="Choose a source, then use the worker to extract employer requirements."/></div>}
     {data.approved?<Message kind="success">Approved revision {data.approved.revision}: {data.approved.body.requirements.length} frozen criteria.
       Existing jobs retain the revision they started with.</Message>:null}
@@ -327,6 +340,53 @@ export function WeightEditor({
     setDraft(w=>({...w,requirement_shares_percent_of_category:shares}));
   });
 
+  const getCategory = (req: (typeof requirements)[0]): 'experience' | 'education' | 'jd' => {
+    const c = (req as { constraint?: { kind?: string } }).constraint;
+    if (c?.kind === 'experience') return 'experience';
+    if (c?.kind === 'education') return 'education';
+    const lower = req.name.toLowerCase();
+    if (lower.includes('years of') || lower.includes('years professional') || lower.includes('full-time professional experience')) return 'experience';
+    if (lower.includes("bachelor's") || lower.includes("master's") || lower.includes('degree') || lower.includes('bachelor') || lower.includes('phd')) return 'education';
+    return 'jd';
+  };
+
+  const byCategory = {
+    experience: requirements.filter(r => getCategory(r) === 'experience'),
+    education: requirements.filter(r => getCategory(r) === 'education'),
+    jd: requirements.filter(r => getCategory(r) === 'jd'),
+  };
+
+  const categoryWeights = {
+    experience: draft.experience,
+    education: draft.education,
+    jd: draft.jd,
+  };
+
+  const activeWeight = (byCategory.experience.length ? categoryWeights.experience : 0) +
+                       (byCategory.education.length ? categoryWeights.education : 0) +
+                       (byCategory.jd.length ? categoryWeights.jd : 0);
+
+  const calculatePotential = (req: (typeof requirements)[0], cat: 'experience' | 'education' | 'jd', share: number) => {
+    const catEntries = byCategory[cat];
+    if (!catEntries.length || activeWeight <= 0) return 0;
+    if (cat === 'jd' && draft.jd_allocation === 'weighted_split') {
+      const isReq = req.priority.toLowerCase() === 'required';
+      const sameGroup = catEntries.filter(r => (r.priority.toLowerCase() === 'required') === isReq);
+      const sameGroupSum = sameGroup.reduce((acc, r) => {
+        const s = draft.requirement_shares_percent_of_category[r.requirement_id] ?? (100.0 / catEntries.length);
+        return acc + s;
+      }, 0);
+      const selected = draft.jd_required_share ?? 80;
+      const groupAlloc = isReq ? selected : (100 - selected);
+      const hasReq = catEntries.some(r => r.priority.toLowerCase() === 'required');
+      const hasPref = catEntries.some(r => r.priority.toLowerCase() !== 'required');
+      const activeAlloc = (hasReq ? selected : 0) + (hasPref ? (100 - selected) : 0);
+      const normGroupAlloc = activeAlloc > 0 ? (groupAlloc / activeAlloc) : 1;
+      return (100.0 * categoryWeights[cat] / activeWeight) * normGroupAlloc * (sameGroupSum > 0 ? (share / sameGroupSum) : 0);
+    }
+    return (100.0 * categoryWeights[cat] / activeWeight) * (share / 100.0);
+  };
+
   return <>
     <Panel><div className="card-header"><h2>Category weights</h2><Status value={'Revision '+current.revision}/></div>
      <div className="grid cols3">{(['experience','education','jd'] as const).map(key=><FormField key={key} id={'weight-'+key}
@@ -341,18 +401,148 @@ export function WeightEditor({
        {draft.jd_allocation==='weighted_split'?<FormField id="weight-required" label="Required share (%)">
         <input id="weight-required" type="number" min={0} max={100} step={1} value={draft.jd_required_share}
           onChange={e=>change('jd_required_share',Number(e.target.value))}/></FormField>:null}</div></Panel>
-     <Panel><h2>Per-requirement allocation</h2><p>Shares are distributed within each engine-defined category. Enter a share and leave the field to rebalance its peers using backend rules.</p>
-      <div className="table-scroller"><table><thead><tr><th>ID</th><th>Requirement</th><th>Priority</th><th>Share (%)</th></tr></thead>
-      <tbody>{requirements.map(req=><tr key={req.requirement_id}><td className="mono small">{req.requirement_id}</td>
-       <td>{req.name}</td><td><Status value={req.priority}/></td><td style={{maxWidth:145}}>
-        <input type="number" aria-label={`Share of ${req.name}`} min={0} max={100} step={0.01}
-          value={draft.requirement_shares_percent_of_category[req.requirement_id]??''}
-          onChange={e=>setDraft(w=>({...w,requirement_shares_percent_of_category:{...w.requirement_shares_percent_of_category,
-             [req.requirement_id]:Number(e.target.value)}}))}
-          onBlur={e=>{if(e.target.value!==''&&Number.isFinite(Number(e.target.value)))rebalance(req.requirement_id,Number(e.target.value))}}/>
-       </td></tr>)}</tbody></table></div>
-     </Panel><div className="toolbar"><Button disabled={action.busy} onClick={even}>Reset to equal shares</Button>
-       <Button kind="primary" disabled={action.busy||total!==100} onClick={save}>Save weight revision</Button></div>
+     <Panel>
+       <div className="card-header">
+         <div>
+           <div className="eyebrow" style={{ marginBottom: 4 }}>Review & prioritize</div>
+           <h2 style={{ margin: '0 0 4px 0' }}>Step 5 · Edit individual JD allocations</h2>
+           <p className="small text-muted" style={{ margin: 0 }}>
+             Give individual requirements more or less influence within their category.
+           </p>
+         </div>
+       </div>
+
+       <div style={{ marginTop: 12, padding: '12px 14px', background: 'var(--bg-soft)', borderRadius: 10, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+         Changing one share automatically rebalances the other items in its category. Items keep their reviewed shares of their category. In pooled mode, Required and Preferred share one Requirements pool; in weighted-split mode, their groups receive the selected allocation before item shares are normalized.
+       </div>
+
+       <div className="allocation-categories-container" style={{ marginTop: 18 }}>
+         {(['experience', 'education', 'jd'] as const).map(cat => {
+           const entries = byCategory[cat];
+           if (!entries.length) return null;
+           const catLabel = cat === 'jd' ? 'Jd' : cat.charAt(0).toUpperCase() + cat.slice(1);
+           return (
+             <div key={cat} className="allocation-category-card" style={{ marginBottom: 18 }}>
+               <div className="allocation-category-header font-bold" style={{ fontSize: 14, marginBottom: 10, color: 'var(--text-primary)' }}>
+                 {catLabel} · {entries.length} requirement(s) · 100% of this category
+               </div>
+               <div className="allocation-items-list" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                 {entries.map(req => {
+                   const defaultShare = Number((100.0 / entries.length).toFixed(2));
+                   const currentShare = draft.requirement_shares_percent_of_category[req.requirement_id] ?? defaultShare;
+                   const potential = calculatePotential(req, cat, currentShare);
+
+                   return (
+                     <div
+                       key={req.requirement_id}
+                       className="allocation-item-card"
+                       style={{
+                         display: 'flex',
+                         alignItems: 'center',
+                         justifyContent: 'space-between',
+                         gap: 16,
+                         padding: '12px 16px',
+                         background: 'var(--surface-strong)',
+                         border: '1px solid var(--border-soft)',
+                         borderRadius: 10,
+                       }}
+                     >
+                       <div className="allocation-item-info" style={{ flex: 1, minWidth: 0 }}>
+                         <div className="allocation-item-title" style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.4 }}>
+                           <span className="mono" style={{ color: 'var(--text-muted)', marginRight: 6 }}>{req.requirement_id}</span>
+                           <span>{req.name}</span>
+                           {cat === 'jd' ? (
+                             <span className="badge small" style={{ marginLeft: 8 }}>
+                               {req.priority.charAt(0).toUpperCase() + req.priority.slice(1)}
+                             </span>
+                           ) : null}
+                         </div>
+                         <div className="allocation-item-potential mono" style={{ fontSize: 12, color: 'var(--accent)', marginTop: 4 }}>
+                           Possible overall score: {potential.toFixed(2)} / 100 points
+                         </div>
+                       </div>
+
+                       <div className="allocation-item-stepper" style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+                         <button
+                           type="button"
+                           className="stepper-btn"
+                           disabled={action.busy || entries.length === 1}
+                           onClick={() => {
+                             const nextVal = Math.max(0, Math.round((currentShare - 1) * 100) / 100);
+                             rebalance(req.requirement_id, nextVal);
+                           }}
+                           aria-label="Decrease share"
+                         >
+                           −
+                         </button>
+                         <input
+                           type="number"
+                           className="stepper-input mono"
+                           aria-label={`Share of ${req.name}`}
+                           min={0}
+                           max={100}
+                           step={0.01}
+                           value={Number(currentShare.toFixed(2))}
+                           onChange={e => {
+                             const val = Number(e.target.value);
+                             setDraft(w => ({
+                               ...w,
+                               requirement_shares_percent_of_category: {
+                                 ...w.requirement_shares_percent_of_category,
+                                 [req.requirement_id]: val,
+                               },
+                             }));
+                           }}
+                           onBlur={e => {
+                             const val = Number(e.target.value);
+                             if (Number.isFinite(val)) {
+                               rebalance(req.requirement_id, val);
+                             }
+                           }}
+                         />
+                         <button
+                           type="button"
+                           className="stepper-btn"
+                           disabled={action.busy || entries.length === 1}
+                           onClick={() => {
+                             const nextVal = Math.min(100, Math.round((currentShare + 1) * 100) / 100);
+                             rebalance(req.requirement_id, nextVal);
+                           }}
+                           aria-label="Increase share"
+                         >
+                           +
+                         </button>
+                       </div>
+                     </div>
+                   );
+                 })}
+               </div>
+             </div>
+           );
+         })}
+       </div>
+     </Panel>
+     <div className="toolbar" style={{ marginTop: 24, marginBottom: 44, gap: 12 }}>
+       <Button disabled={action.busy} onClick={even}>Reset to equal shares</Button>
+       <Button kind="primary" disabled={action.busy||total!==100} onClick={save}>Save weight revision</Button>
+       <ActionLink
+         to={workspacePath(workspaceId,'run')}
+         style={{
+           border: '1.5px solid var(--brand-green)',
+           color: 'var(--brand-green)',
+           background: 'transparent',
+           fontWeight: 600,
+           borderRadius: 8,
+           padding: '9px 18px',
+           display: 'inline-flex',
+           alignItems: 'center',
+           minHeight: 40,
+           textDecoration: 'none'
+         }}
+       >
+         Proceed to assessment &rarr;
+       </ActionLink>
+     </div>
   </>;
 }
 
@@ -405,31 +595,38 @@ export function AssessmentPage(){
       <FormField id="run-provider" label="Model provider"><select id="run-provider" value={config.provider}
        onChange={e=>setConfig(v=>({...v,provider:e.target.value as RunSettings['provider']}))}>
        <option value="ollama">Local Ollama</option><option value="openrouter">OpenRouter cloud</option></select></FormField>
-      <label className="row"><input type="checkbox" checked={config.use_llm} onChange={e=>setConfig(v=>({...v,use_llm:e.target.checked,unified:e.target.checked&&v.unified}))}/>
-        Enable AI evaluation</label><label className="row"><input type="checkbox" checked={config.unified}
-         disabled={!config.use_llm} onChange={e=>setConfig(v=>({...v,unified:e.target.checked}))}/>Unified assessment</label>
-      <FormField id="run-yake" label="YAKE candidate-phrase limit"><input type="number" id="run-yake" min={1} max={150}
-        value={config.yake_top_k} onChange={e=>setConfig(v=>({...v,yake_top_k:Number(e.target.value)}))}/></FormField>
-      {config.provider==='openrouter'&&config.use_llm?<>
-        <Message kind="warn">Cloud mode can transmit authorized applicant evidence and incur charges. Limits cannot exceed server safety settings.</Message>
-        <div className="grid cols2">
-         <FormField id="cloud-context" label="Context token ceiling"><input id="cloud-context" type="number" min={2048}
-           max={settings.openrouter_context_tokens} value={config.openrouter_context_tokens??settings.openrouter_context_tokens}
-           onChange={e=>setConfig(v=>({...v,openrouter_context_tokens:Number(e.target.value)}))}/></FormField>
-         <FormField id="cloud-output" label="Output token ceiling"><input id="cloud-output" type="number" min={1}
-           max={settings.openrouter_output_tokens} value={config.openrouter_output_tokens??settings.openrouter_output_tokens}
-           onChange={e=>setConfig(v=>({...v,openrouter_output_tokens:Number(e.target.value)}))}/></FormField>
-         <FormField id="cloud-requests" label="Maximum requests per assessment"><input id="cloud-requests" type="number" min={1}
-           max={settings.openrouter_max_requests_per_assessment}
-           value={config.openrouter_max_requests_per_assessment??settings.openrouter_max_requests_per_assessment}
-           onChange={e=>setConfig(v=>({...v,openrouter_max_requests_per_assessment:Number(e.target.value)}))}/></FormField>
+      <details style={{marginTop:12}}><summary style={{cursor:'pointer',fontWeight:600,fontSize:13,color:'var(--accent)'}}>Engine and evaluation settings</summary>
+        <div style={{marginTop:12,display:'grid',gap:12}}>
+          <label className="row"><input type="checkbox" checked={config.use_llm} onChange={e=>setConfig(v=>({...v,use_llm:e.target.checked,unified:e.target.checked&&v.unified}))}/>
+            Enable AI evaluation</label>
+          <label className="row"><input type="checkbox" checked={config.unified}
+            disabled={!config.use_llm} onChange={e=>setConfig(v=>({...v,unified:e.target.checked}))}/>Unified assessment mode</label>
+          <FormField id="run-yake" label="YAKE candidate-phrase limit"><input type="number" id="run-yake" min={1} max={150}
+            value={config.yake_top_k} onChange={e=>setConfig(v=>({...v,yake_top_k:Number(e.target.value)}))}/></FormField>
+          {config.provider==='openrouter'&&config.use_llm?<>
+            <Message kind="warn">Cloud mode can transmit authorized applicant evidence and incur charges. Limits cannot exceed server safety settings.</Message>
+            <div className="grid cols2">
+             <FormField id="cloud-context" label="Context token ceiling"><input id="cloud-context" type="number" min={2048}
+               max={settings.openrouter_context_tokens} value={config.openrouter_context_tokens??settings.openrouter_context_tokens}
+               onChange={e=>setConfig(v=>({...v,openrouter_context_tokens:Number(e.target.value)}))}/></FormField>
+             <FormField id="cloud-output" label="Output token ceiling"><input id="cloud-output" type="number" min={1}
+               max={settings.openrouter_output_tokens} value={config.openrouter_output_tokens??settings.openrouter_output_tokens}
+               onChange={e=>setConfig(v=>({...v,openrouter_output_tokens:Number(e.target.value)}))}/></FormField>
+             <FormField id="cloud-requests" label="Maximum requests per assessment"><input id="cloud-requests" type="number" min={1}
+               max={settings.openrouter_max_requests_per_assessment}
+               value={config.openrouter_max_requests_per_assessment??settings.openrouter_max_requests_per_assessment}
+               onChange={e=>setConfig(v=>({...v,openrouter_max_requests_per_assessment:Number(e.target.value)}))}/></FormField>
+            </div>
+          </>:null}
         </div>
-      </>:null}
+      </details>
     </Panel><Panel><h2>Submission summary</h2><div className="step"><strong>Approved JD revision</strong><Status value={data.approved?String(data.approved.revision):'Not approved'}/></div>
        <div className="step"><strong>Candidate files</strong>{selected.length}</div>
-       <div className="toolbar"><Button kind="primary" disabled={action.busy||selected.length===0||!data.approved} onClick={start}>Start assessment</Button>
-       <Button disabled={action.busy} onClick={()=>{startDistinctIntent(workspaceId,'assess');action.setNotice('A new independent run has been authorized; submit again to create it.')}}>Create separate run with same inputs</Button></div>
-       <p className="help" style={{marginTop:9}}>The same submission intent always reopens its existing job, including after a lost response or browser restart. Explicitly create a separate run to reassess identical inputs. Refresh, theme and progress never start assessment calls.</p>
+       <div className="toolbar" style={{ marginTop: 18, marginBottom: 14, gap: 12 }}>
+         <Button kind="primary" disabled={action.busy||selected.length===0||!data.approved} onClick={start}>Start assessment</Button>
+         <Button disabled={action.busy} onClick={()=>{startDistinctIntent(workspaceId,'assess');action.setNotice('A new independent run has been authorized; submit again to create it.')}}>Create separate run with same inputs</Button>
+       </div>
+       <p className="help" style={{ marginTop: 12, lineHeight: 1.5 }}>The same submission intent always reopens its existing job, including after a lost response or browser restart. Explicitly create a separate run to reassess identical inputs. Refresh, theme and progress never start assessment calls.</p>
     </Panel></div></div>
   </>;
 }

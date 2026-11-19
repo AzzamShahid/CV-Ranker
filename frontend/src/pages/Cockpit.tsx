@@ -388,7 +388,7 @@ export function CockpitPage(){
       const exp = await client.export(workspaceId, observedJob.id, latest.result_revision, data.weights.revision);
       const a = document.createElement('a');
       a.href = `/api/v1/workspaces/${workspaceId}/exports/${exp.id}/download`;
-      a.download = 'TextileHR_Assessment.zip';
+      a.download = 'Reliance_Weaving_Mills_Assessment.zip';
       document.body.append(a); a.click(); a.remove();
       setExportNotice('Export archive generated and downloaded.');
     } catch (e: unknown) {
@@ -980,6 +980,7 @@ export function CockpitPage(){
 
         {/* RANKINGS LEADERBOARD TABLE */}
         <Panel className="table-panel">
+
           {rankings.rows.length ? (
             <div className="table-scroller">
               <table className="cockpit-table">

@@ -310,14 +310,26 @@ async function request(path, options = {}) {
     cache: "no-store",
     body: options.body === void 0 ? void 0 : options.body instanceof FormData ? options.body : JSON.stringify(options.body)
   });
-  const raw = await response.json().catch(() => ({ code: "unreadable_response", message: "Service returned unreadable JSON" }));
+  const text = await response.text();
+  let raw = {};
+  if (text && text.trim().length > 0) {
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      if (!response.ok) {
+        throw new ApiError(response.status, "server_error", text.slice(0, 300) || `HTTP ${response.status}`);
+      }
+      if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+        throw new ApiError(response.status, "backend_offline", "The backend service is unavailable or restarting. Please try again.");
+      }
+      throw new ApiError(response.status, "unreadable_response", "The service returned an unexpected response format.");
+    }
+  }
   if (!response.ok) {
-    const parsed = z.object({ code: z.string().default("http_error"), message: z.string().default("Request failed") }).safeParse(raw);
-    throw new ApiError(
-      response.status,
-      parsed.success ? parsed.data.code : "unexpected_response",
-      parsed.success ? parsed.data.message : `HTTP ${response.status}`
-    );
+    const record = raw && typeof raw === "object" ? raw : {};
+    const code = typeof record.code === "string" ? record.code : typeof record.detail === "string" ? "request_error" : "http_error";
+    const message = typeof record.message === "string" ? record.message : typeof record.detail === "string" ? record.detail : `HTTP ${response.status}`;
+    throw new ApiError(response.status, code, message);
   }
   return raw;
 }
@@ -643,13 +655,21 @@ function startDistinctIntent(workspace2, kind) {
   localStorage.removeItem(locationFor(workspace2, kind));
 }
 async function submitOnce(workspace2, kind, payload, lookup, submit) {
-  const intent = await submissionIntent(workspace2, kind, payload);
+  let intent = await submissionIntent(workspace2, kind, payload);
   let missing = false;
   try {
     const existing = await lookup(intent.key);
     markAccepted(intent, existing.id);
     return existing;
   } catch (error) {
+    const isConflict = Boolean(error && typeof error === "object" && ("status" in error && error.status === 409 || "message" in error && typeof error.message === "string" && error.message.includes("deliberately deleted")));
+    if (isConflict) {
+      startDistinctIntent(workspace2, kind);
+      intent = await submissionIntent(workspace2, kind, payload);
+      const job2 = await submit(intent.key);
+      markAccepted(intent, job2.id);
+      return job2;
+    }
     missing = Boolean(error && typeof error === "object" && "status" in error && error.status === 404);
     if (!missing) throw error;
   }
@@ -658,6 +678,14 @@ async function submitOnce(workspace2, kind, payload, lookup, submit) {
     markAccepted(intent, job2.id);
     return job2;
   } catch (original) {
+    const isConflict = Boolean(original && typeof original === "object" && ("status" in original && original.status === 409 || "message" in original && typeof original.message === "string" && original.message.includes("deliberately deleted")));
+    if (isConflict) {
+      startDistinctIntent(workspace2, kind);
+      const freshIntent = await submissionIntent(workspace2, kind, payload);
+      const job2 = await submit(freshIntent.key);
+      markAccepted(freshIntent, job2.id);
+      return job2;
+    }
     try {
       const job2 = await lookup(intent.key);
       markAccepted(intent, job2.id);
@@ -721,7 +749,7 @@ function Panel({ children, className = "", style, id }) {
 function PageHeader({ title, description, actions }) {
   return /* @__PURE__ */ jsxs("header", { className: "pageheading", children: [
     /* @__PURE__ */ jsxs("div", { children: [
-      /* @__PURE__ */ jsx("div", { className: "eyebrow", children: "TextileHR AI · Workforce intelligence" }),
+      /* @__PURE__ */ jsx("div", { className: "eyebrow", children: "Reliance Weaving Mills AI · Recruitment Intelligence" }),
       /* @__PURE__ */ jsx("h1", { children: title }),
       /* @__PURE__ */ jsx("p", { children: description })
     ] }),
@@ -731,8 +759,8 @@ function PageHeader({ title, description, actions }) {
 function Button({ children, kind = "default", size = "regular", ...rest }) {
   return /* @__PURE__ */ jsx("button", { type: "button", ...rest, className: "btn " + (kind === "default" ? "" : kind) + " " + (size === "small" ? "small" : "") + " " + (rest.className ?? ""), children });
 }
-function ActionLink({ children, to, kind = "default", size = "regular", className = "" }) {
-  return /* @__PURE__ */ jsx(Link, { className: "btn " + (kind === "default" ? "" : kind) + " " + (size === "small" ? "small" : "") + " " + className, to, children });
+function ActionLink({ children, to, kind = "default", size = "regular", className = "", style }) {
+  return /* @__PURE__ */ jsx(Link, { style, className: "btn " + (kind === "default" ? "" : kind) + " " + (size === "small" ? "small" : "") + " " + className, to, children });
 }
 function Status({ value }) {
   const raw = value ?? "Not ready";
@@ -1113,31 +1141,17 @@ function JDPage() {
           ] }),
           /* @__PURE__ */ jsx(Status, { value: row.Priority })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "grid cols2", children: [
-          /* @__PURE__ */ jsx(FormField, { id: `req-${row._clientKey}`, label: "Requirement text", children: /* @__PURE__ */ jsx("textarea", { id: `req-${row._clientKey}`, value: row.Requirement, onChange: (e) => modifyField(row._clientKey, "Requirement", e.target.value) }) }),
-          /* @__PURE__ */ jsx(FormField, { id: `prio-${row._clientKey}`, label: "Priority", children: /* @__PURE__ */ jsxs(
-            "select",
-            {
-              id: `prio-${row._clientKey}`,
-              value: row.Priority,
-              onChange: (e) => modifyField(row._clientKey, "Priority", e.target.value),
-              children: [
-                /* @__PURE__ */ jsx("option", { value: "required", children: "Required" }),
-                /* @__PURE__ */ jsx("option", { value: "preferred", children: "Preferred" }),
-                /* @__PURE__ */ jsx("option", { value: "unknown", children: "Unknown — supervisor review" })
-              ]
-            }
-          ) }),
-          /* @__PURE__ */ jsx(FormField, { id: `kind-${row._clientKey}`, label: "Requirement type", children: /* @__PURE__ */ jsx(
-            "select",
-            {
-              id: `kind-${row._clientKey}`,
-              value: row.Type,
-              onChange: (e) => modifyField(row._clientKey, "Type", e.target.value),
-              children: ["skill", "experience", "education", "certification", "license", "responsibility", "eligibility", "other"].map((t) => /* @__PURE__ */ jsx("option", { value: t, children: t }, t))
-            }
-          ) }),
-          /* @__PURE__ */ jsx(FormField, { id: `source-${row._clientKey}`, label: "Exact employer quotation", children: /* @__PURE__ */ jsx("textarea", { id: `source-${row._clientKey}`, value: row["JD source"], onChange: (e) => modifyField(row._clientKey, "JD source", e.target.value) }) })
+        /* @__PURE__ */ jsxs("div", { className: "stack", style: { gap: 12 }, children: [
+          /* @__PURE__ */ jsx(FormField, { id: `req-${row._clientKey}`, label: "Requirement text", children: /* @__PURE__ */ jsx("textarea", { id: `req-${row._clientKey}`, rows: 2, style: { minHeight: 54 }, value: row.Requirement, onChange: (e) => modifyField(row._clientKey, "Requirement", e.target.value) }) }),
+          /* @__PURE__ */ jsxs("div", { className: "grid cols2", children: [
+            /* @__PURE__ */ jsx(FormField, { id: `prio-${row._clientKey}`, label: "Priority", children: /* @__PURE__ */ jsxs("select", { id: `prio-${row._clientKey}`, value: row.Priority, onChange: (e) => modifyField(row._clientKey, "Priority", e.target.value), children: [
+              /* @__PURE__ */ jsx("option", { value: "required", children: "Required" }),
+              /* @__PURE__ */ jsx("option", { value: "preferred", children: "Preferred" }),
+              /* @__PURE__ */ jsx("option", { value: "unknown", children: "Unknown — supervisor review" })
+            ] }) }),
+            /* @__PURE__ */ jsx(FormField, { id: `kind-${row._clientKey}`, label: "Requirement type", children: /* @__PURE__ */ jsx("select", { id: `kind-${row._clientKey}`, value: row.Type, onChange: (e) => modifyField(row._clientKey, "Type", e.target.value), children: ["skill", "experience", "education", "certification", "license", "responsibility", "eligibility", "other"].map((t) => /* @__PURE__ */ jsx("option", { value: t, children: t }, t)) }) })
+          ] }),
+          /* @__PURE__ */ jsx(FormField, { id: `source-${row._clientKey}`, label: "Exact employer quotation", children: /* @__PURE__ */ jsx("textarea", { id: `source-${row._clientKey}`, rows: 2, style: { minHeight: 54 }, value: row["JD source"], onChange: (e) => modifyField(row._clientKey, "JD source", e.target.value) }) })
         ] }),
         /* @__PURE__ */ jsxs("details", { children: [
           /* @__PURE__ */ jsx("summary", { children: "Approved compound conditions and qualification constraints" }),
@@ -1198,7 +1212,7 @@ function JDPage() {
           ] })
         ] })
       ] }, row._clientKey)),
-      /* @__PURE__ */ jsxs("div", { className: "toolbar", children: [
+      /* @__PURE__ */ jsxs("div", { className: "toolbar", style: { marginTop: 20, marginBottom: 8, gap: 12 }, children: [
         /* @__PURE__ */ jsxs(Button, { onClick: addCriterion, children: [
           /* @__PURE__ */ jsx(PlusIcon, { size: 14, style: { marginRight: 6 } }),
           "Add source-backed criterion"
@@ -1247,6 +1261,46 @@ function WeightEditor({
     const shares = await client.rebalance(workspaceId);
     setDraft((w) => ({ ...w, requirement_shares_percent_of_category: shares }));
   });
+  const getCategory = (req) => {
+    const c = req.constraint;
+    if (c?.kind === "experience") return "experience";
+    if (c?.kind === "education") return "education";
+    const lower = req.name.toLowerCase();
+    if (lower.includes("years of") || lower.includes("years professional") || lower.includes("full-time professional experience")) return "experience";
+    if (lower.includes("bachelor's") || lower.includes("master's") || lower.includes("degree") || lower.includes("bachelor") || lower.includes("phd")) return "education";
+    return "jd";
+  };
+  const byCategory = {
+    experience: requirements.filter((r) => getCategory(r) === "experience"),
+    education: requirements.filter((r) => getCategory(r) === "education"),
+    jd: requirements.filter((r) => getCategory(r) === "jd")
+  };
+  const categoryWeights = {
+    experience: draft.experience,
+    education: draft.education,
+    jd: draft.jd
+  };
+  const activeWeight = (byCategory.experience.length ? categoryWeights.experience : 0) + (byCategory.education.length ? categoryWeights.education : 0) + (byCategory.jd.length ? categoryWeights.jd : 0);
+  const calculatePotential = (req, cat, share) => {
+    const catEntries = byCategory[cat];
+    if (!catEntries.length || activeWeight <= 0) return 0;
+    if (cat === "jd" && draft.jd_allocation === "weighted_split") {
+      const isReq = req.priority.toLowerCase() === "required";
+      const sameGroup = catEntries.filter((r) => r.priority.toLowerCase() === "required" === isReq);
+      const sameGroupSum = sameGroup.reduce((acc, r) => {
+        const s = draft.requirement_shares_percent_of_category[r.requirement_id] ?? 100 / catEntries.length;
+        return acc + s;
+      }, 0);
+      const selected = draft.jd_required_share ?? 80;
+      const groupAlloc = isReq ? selected : 100 - selected;
+      const hasReq = catEntries.some((r) => r.priority.toLowerCase() === "required");
+      const hasPref = catEntries.some((r) => r.priority.toLowerCase() !== "required");
+      const activeAlloc = (hasReq ? selected : 0) + (hasPref ? 100 - selected : 0);
+      const normGroupAlloc = activeAlloc > 0 ? groupAlloc / activeAlloc : 1;
+      return 100 * categoryWeights[cat] / activeWeight * normGroupAlloc * (sameGroupSum > 0 ? share / sameGroupSum : 0);
+    }
+    return 100 * categoryWeights[cat] / activeWeight * (share / 100);
+  };
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsxs(Panel, { children: [
       /* @__PURE__ */ jsxs("div", { className: "card-header", children: [
@@ -1306,43 +1360,142 @@ function WeightEditor({
       ] })
     ] }),
     /* @__PURE__ */ jsxs(Panel, { children: [
-      /* @__PURE__ */ jsx("h2", { children: "Per-requirement allocation" }),
-      /* @__PURE__ */ jsx("p", { children: "Shares are distributed within each engine-defined category. Enter a share and leave the field to rebalance its peers using backend rules." }),
-      /* @__PURE__ */ jsx("div", { className: "table-scroller", children: /* @__PURE__ */ jsxs("table", { children: [
-        /* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", { children: [
-          /* @__PURE__ */ jsx("th", { children: "ID" }),
-          /* @__PURE__ */ jsx("th", { children: "Requirement" }),
-          /* @__PURE__ */ jsx("th", { children: "Priority" }),
-          /* @__PURE__ */ jsx("th", { children: "Share (%)" })
-        ] }) }),
-        /* @__PURE__ */ jsx("tbody", { children: requirements.map((req) => /* @__PURE__ */ jsxs("tr", { children: [
-          /* @__PURE__ */ jsx("td", { className: "mono small", children: req.requirement_id }),
-          /* @__PURE__ */ jsx("td", { children: req.name }),
-          /* @__PURE__ */ jsx("td", { children: /* @__PURE__ */ jsx(Status, { value: req.priority }) }),
-          /* @__PURE__ */ jsx("td", { style: { maxWidth: 145 }, children: /* @__PURE__ */ jsx(
-            "input",
-            {
-              type: "number",
-              "aria-label": `Share of ${req.name}`,
-              min: 0,
-              max: 100,
-              step: 0.01,
-              value: draft.requirement_shares_percent_of_category[req.requirement_id] ?? "",
-              onChange: (e) => setDraft((w) => ({ ...w, requirement_shares_percent_of_category: {
-                ...w.requirement_shares_percent_of_category,
-                [req.requirement_id]: Number(e.target.value)
-              } })),
-              onBlur: (e) => {
-                if (e.target.value !== "" && Number.isFinite(Number(e.target.value))) rebalance(req.requirement_id, Number(e.target.value));
-              }
-            }
-          ) })
-        ] }, req.requirement_id)) })
-      ] }) })
+      /* @__PURE__ */ jsx("div", { className: "card-header", children: /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("div", { className: "eyebrow", style: { marginBottom: 4 }, children: "Review & prioritize" }),
+        /* @__PURE__ */ jsx("h2", { style: { margin: "0 0 4px 0" }, children: "Step 5 · Edit individual JD allocations" }),
+        /* @__PURE__ */ jsx("p", { className: "small text-muted", style: { margin: 0 }, children: "Give individual requirements more or less influence within their category." })
+      ] }) }),
+      /* @__PURE__ */ jsx("div", { style: { marginTop: 12, padding: "12px 14px", background: "var(--bg-soft)", borderRadius: 10, fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.5 }, children: "Changing one share automatically rebalances the other items in its category. Items keep their reviewed shares of their category. In pooled mode, Required and Preferred share one Requirements pool; in weighted-split mode, their groups receive the selected allocation before item shares are normalized." }),
+      /* @__PURE__ */ jsx("div", { className: "allocation-categories-container", style: { marginTop: 18 }, children: ["experience", "education", "jd"].map((cat) => {
+        const entries = byCategory[cat];
+        if (!entries.length) return null;
+        const catLabel = cat === "jd" ? "Jd" : cat.charAt(0).toUpperCase() + cat.slice(1);
+        return /* @__PURE__ */ jsxs("div", { className: "allocation-category-card", style: { marginBottom: 18 }, children: [
+          /* @__PURE__ */ jsxs("div", { className: "allocation-category-header font-bold", style: { fontSize: 14, marginBottom: 10, color: "var(--text-primary)" }, children: [
+            catLabel,
+            " · ",
+            entries.length,
+            " requirement(s) · 100% of this category"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "allocation-items-list", style: { display: "flex", flexDirection: "column", gap: 10 }, children: entries.map((req) => {
+            const defaultShare = Number((100 / entries.length).toFixed(2));
+            const currentShare = draft.requirement_shares_percent_of_category[req.requirement_id] ?? defaultShare;
+            const potential = calculatePotential(req, cat, currentShare);
+            return /* @__PURE__ */ jsxs(
+              "div",
+              {
+                className: "allocation-item-card",
+                style: {
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 16,
+                  padding: "12px 16px",
+                  background: "var(--surface-strong)",
+                  border: "1px solid var(--border-soft)",
+                  borderRadius: 10
+                },
+                children: [
+                  /* @__PURE__ */ jsxs("div", { className: "allocation-item-info", style: { flex: 1, minWidth: 0 }, children: [
+                    /* @__PURE__ */ jsxs("div", { className: "allocation-item-title", style: { fontSize: 13, fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.4 }, children: [
+                      /* @__PURE__ */ jsx("span", { className: "mono", style: { color: "var(--text-muted)", marginRight: 6 }, children: req.requirement_id }),
+                      /* @__PURE__ */ jsx("span", { children: req.name }),
+                      cat === "jd" ? /* @__PURE__ */ jsx("span", { className: "badge small", style: { marginLeft: 8 }, children: req.priority.charAt(0).toUpperCase() + req.priority.slice(1) }) : null
+                    ] }),
+                    /* @__PURE__ */ jsxs("div", { className: "allocation-item-potential mono", style: { fontSize: 12, color: "var(--accent)", marginTop: 4 }, children: [
+                      "Possible overall score: ",
+                      potential.toFixed(2),
+                      " / 100 points"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxs("div", { className: "allocation-item-stepper", style: { display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }, children: [
+                    /* @__PURE__ */ jsx(
+                      "button",
+                      {
+                        type: "button",
+                        className: "stepper-btn",
+                        disabled: action.busy || entries.length === 1,
+                        onClick: () => {
+                          const nextVal = Math.max(0, Math.round((currentShare - 1) * 100) / 100);
+                          rebalance(req.requirement_id, nextVal);
+                        },
+                        "aria-label": "Decrease share",
+                        children: "−"
+                      }
+                    ),
+                    /* @__PURE__ */ jsx(
+                      "input",
+                      {
+                        type: "number",
+                        className: "stepper-input mono",
+                        "aria-label": `Share of ${req.name}`,
+                        min: 0,
+                        max: 100,
+                        step: 0.01,
+                        value: Number(currentShare.toFixed(2)),
+                        onChange: (e) => {
+                          const val = Number(e.target.value);
+                          setDraft((w) => ({
+                            ...w,
+                            requirement_shares_percent_of_category: {
+                              ...w.requirement_shares_percent_of_category,
+                              [req.requirement_id]: val
+                            }
+                          }));
+                        },
+                        onBlur: (e) => {
+                          const val = Number(e.target.value);
+                          if (Number.isFinite(val)) {
+                            rebalance(req.requirement_id, val);
+                          }
+                        }
+                      }
+                    ),
+                    /* @__PURE__ */ jsx(
+                      "button",
+                      {
+                        type: "button",
+                        className: "stepper-btn",
+                        disabled: action.busy || entries.length === 1,
+                        onClick: () => {
+                          const nextVal = Math.min(100, Math.round((currentShare + 1) * 100) / 100);
+                          rebalance(req.requirement_id, nextVal);
+                        },
+                        "aria-label": "Increase share",
+                        children: "+"
+                      }
+                    )
+                  ] })
+                ]
+              },
+              req.requirement_id
+            );
+          }) })
+        ] }, cat);
+      }) })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "toolbar", children: [
+    /* @__PURE__ */ jsxs("div", { className: "toolbar", style: { marginTop: 24, marginBottom: 44, gap: 12 }, children: [
       /* @__PURE__ */ jsx(Button, { disabled: action.busy, onClick: even, children: "Reset to equal shares" }),
-      /* @__PURE__ */ jsx(Button, { kind: "primary", disabled: action.busy || total !== 100, onClick: save, children: "Save weight revision" })
+      /* @__PURE__ */ jsx(Button, { kind: "primary", disabled: action.busy || total !== 100, onClick: save, children: "Save weight revision" }),
+      /* @__PURE__ */ jsx(
+        ActionLink,
+        {
+          to: workspacePath(workspaceId, "run"),
+          style: {
+            border: "1.5px solid var(--brand-green)",
+            color: "var(--brand-green)",
+            background: "transparent",
+            fontWeight: 600,
+            borderRadius: 8,
+            padding: "9px 18px",
+            display: "inline-flex",
+            alignItems: "center",
+            minHeight: 40,
+            textDecoration: "none"
+          },
+          children: "Proceed to assessment →"
+        }
+      )
     ] })
   ] });
 }
@@ -1429,71 +1582,76 @@ function AssessmentPage() {
               ]
             }
           ) }),
-          /* @__PURE__ */ jsxs("label", { className: "row", children: [
-            /* @__PURE__ */ jsx("input", { type: "checkbox", checked: config.use_llm, onChange: (e) => setConfig((v) => ({ ...v, use_llm: e.target.checked, unified: e.target.checked && v.unified })) }),
-            "Enable AI evaluation"
-          ] }),
-          /* @__PURE__ */ jsxs("label", { className: "row", children: [
-            /* @__PURE__ */ jsx(
-              "input",
-              {
-                type: "checkbox",
-                checked: config.unified,
-                disabled: !config.use_llm,
-                onChange: (e) => setConfig((v) => ({ ...v, unified: e.target.checked }))
-              }
-            ),
-            "Unified assessment"
-          ] }),
-          /* @__PURE__ */ jsx(FormField, { id: "run-yake", label: "YAKE candidate-phrase limit", children: /* @__PURE__ */ jsx(
-            "input",
-            {
-              type: "number",
-              id: "run-yake",
-              min: 1,
-              max: 150,
-              value: config.yake_top_k,
-              onChange: (e) => setConfig((v) => ({ ...v, yake_top_k: Number(e.target.value) }))
-            }
-          ) }),
-          config.provider === "openrouter" && config.use_llm ? /* @__PURE__ */ jsxs(Fragment, { children: [
-            /* @__PURE__ */ jsx(Message, { kind: "warn", children: "Cloud mode can transmit authorized applicant evidence and incur charges. Limits cannot exceed server safety settings." }),
-            /* @__PURE__ */ jsxs("div", { className: "grid cols2", children: [
-              /* @__PURE__ */ jsx(FormField, { id: "cloud-context", label: "Context token ceiling", children: /* @__PURE__ */ jsx(
+          /* @__PURE__ */ jsxs("details", { style: { marginTop: 12 }, children: [
+            /* @__PURE__ */ jsx("summary", { style: { cursor: "pointer", fontWeight: 600, fontSize: 13, color: "var(--accent)" }, children: "Engine and evaluation settings" }),
+            /* @__PURE__ */ jsxs("div", { style: { marginTop: 12, display: "grid", gap: 12 }, children: [
+              /* @__PURE__ */ jsxs("label", { className: "row", children: [
+                /* @__PURE__ */ jsx("input", { type: "checkbox", checked: config.use_llm, onChange: (e) => setConfig((v) => ({ ...v, use_llm: e.target.checked, unified: e.target.checked && v.unified })) }),
+                "Enable AI evaluation"
+              ] }),
+              /* @__PURE__ */ jsxs("label", { className: "row", children: [
+                /* @__PURE__ */ jsx(
+                  "input",
+                  {
+                    type: "checkbox",
+                    checked: config.unified,
+                    disabled: !config.use_llm,
+                    onChange: (e) => setConfig((v) => ({ ...v, unified: e.target.checked }))
+                  }
+                ),
+                "Unified assessment mode"
+              ] }),
+              /* @__PURE__ */ jsx(FormField, { id: "run-yake", label: "YAKE candidate-phrase limit", children: /* @__PURE__ */ jsx(
                 "input",
                 {
-                  id: "cloud-context",
                   type: "number",
-                  min: 2048,
-                  max: settings.openrouter_context_tokens,
-                  value: config.openrouter_context_tokens ?? settings.openrouter_context_tokens,
-                  onChange: (e) => setConfig((v) => ({ ...v, openrouter_context_tokens: Number(e.target.value) }))
+                  id: "run-yake",
+                  min: 1,
+                  max: 150,
+                  value: config.yake_top_k,
+                  onChange: (e) => setConfig((v) => ({ ...v, yake_top_k: Number(e.target.value) }))
                 }
               ) }),
-              /* @__PURE__ */ jsx(FormField, { id: "cloud-output", label: "Output token ceiling", children: /* @__PURE__ */ jsx(
-                "input",
-                {
-                  id: "cloud-output",
-                  type: "number",
-                  min: 1,
-                  max: settings.openrouter_output_tokens,
-                  value: config.openrouter_output_tokens ?? settings.openrouter_output_tokens,
-                  onChange: (e) => setConfig((v) => ({ ...v, openrouter_output_tokens: Number(e.target.value) }))
-                }
-              ) }),
-              /* @__PURE__ */ jsx(FormField, { id: "cloud-requests", label: "Maximum requests per assessment", children: /* @__PURE__ */ jsx(
-                "input",
-                {
-                  id: "cloud-requests",
-                  type: "number",
-                  min: 1,
-                  max: settings.openrouter_max_requests_per_assessment,
-                  value: config.openrouter_max_requests_per_assessment ?? settings.openrouter_max_requests_per_assessment,
-                  onChange: (e) => setConfig((v) => ({ ...v, openrouter_max_requests_per_assessment: Number(e.target.value) }))
-                }
-              ) })
+              config.provider === "openrouter" && config.use_llm ? /* @__PURE__ */ jsxs(Fragment, { children: [
+                /* @__PURE__ */ jsx(Message, { kind: "warn", children: "Cloud mode can transmit authorized applicant evidence and incur charges. Limits cannot exceed server safety settings." }),
+                /* @__PURE__ */ jsxs("div", { className: "grid cols2", children: [
+                  /* @__PURE__ */ jsx(FormField, { id: "cloud-context", label: "Context token ceiling", children: /* @__PURE__ */ jsx(
+                    "input",
+                    {
+                      id: "cloud-context",
+                      type: "number",
+                      min: 2048,
+                      max: settings.openrouter_context_tokens,
+                      value: config.openrouter_context_tokens ?? settings.openrouter_context_tokens,
+                      onChange: (e) => setConfig((v) => ({ ...v, openrouter_context_tokens: Number(e.target.value) }))
+                    }
+                  ) }),
+                  /* @__PURE__ */ jsx(FormField, { id: "cloud-output", label: "Output token ceiling", children: /* @__PURE__ */ jsx(
+                    "input",
+                    {
+                      id: "cloud-output",
+                      type: "number",
+                      min: 1,
+                      max: settings.openrouter_output_tokens,
+                      value: config.openrouter_output_tokens ?? settings.openrouter_output_tokens,
+                      onChange: (e) => setConfig((v) => ({ ...v, openrouter_output_tokens: Number(e.target.value) }))
+                    }
+                  ) }),
+                  /* @__PURE__ */ jsx(FormField, { id: "cloud-requests", label: "Maximum requests per assessment", children: /* @__PURE__ */ jsx(
+                    "input",
+                    {
+                      id: "cloud-requests",
+                      type: "number",
+                      min: 1,
+                      max: settings.openrouter_max_requests_per_assessment,
+                      value: config.openrouter_max_requests_per_assessment ?? settings.openrouter_max_requests_per_assessment,
+                      onChange: (e) => setConfig((v) => ({ ...v, openrouter_max_requests_per_assessment: Number(e.target.value) }))
+                    }
+                  ) })
+                ] })
+              ] }) : null
             ] })
-          ] }) : null
+          ] })
         ] }),
         /* @__PURE__ */ jsxs(Panel, { children: [
           /* @__PURE__ */ jsx("h2", { children: "Submission summary" }),
@@ -1505,14 +1663,14 @@ function AssessmentPage() {
             /* @__PURE__ */ jsx("strong", { children: "Candidate files" }),
             selected.length
           ] }),
-          /* @__PURE__ */ jsxs("div", { className: "toolbar", children: [
+          /* @__PURE__ */ jsxs("div", { className: "toolbar", style: { marginTop: 18, marginBottom: 14, gap: 12 }, children: [
             /* @__PURE__ */ jsx(Button, { kind: "primary", disabled: action.busy || selected.length === 0 || !data.approved, onClick: start, children: "Start assessment" }),
             /* @__PURE__ */ jsx(Button, { disabled: action.busy, onClick: () => {
               startDistinctIntent(workspaceId, "assess");
               action.setNotice("A new independent run has been authorized; submit again to create it.");
             }, children: "Create separate run with same inputs" })
           ] }),
-          /* @__PURE__ */ jsx("p", { className: "help", style: { marginTop: 9 }, children: "The same submission intent always reopens its existing job, including after a lost response or browser restart. Explicitly create a separate run to reassess identical inputs. Refresh, theme and progress never start assessment calls." })
+          /* @__PURE__ */ jsx("p", { className: "help", style: { marginTop: 12, lineHeight: 1.5 }, children: "The same submission intent always reopens its existing job, including after a lost response or browser restart. Explicitly create a separate run to reassess identical inputs. Refresh, theme and progress never start assessment calls." })
         ] })
       ] })
     ] })

@@ -310,14 +310,26 @@ async function request(path, options = {}) {
     cache: "no-store",
     body: options.body === void 0 ? void 0 : options.body instanceof FormData ? options.body : JSON.stringify(options.body)
   });
-  const raw = await response.json().catch(() => ({ code: "unreadable_response", message: "Service returned unreadable JSON" }));
+  const text = await response.text();
+  let raw = {};
+  if (text && text.trim().length > 0) {
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      if (!response.ok) {
+        throw new ApiError(response.status, "server_error", text.slice(0, 300) || `HTTP ${response.status}`);
+      }
+      if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+        throw new ApiError(response.status, "backend_offline", "The backend service is unavailable or restarting. Please try again.");
+      }
+      throw new ApiError(response.status, "unreadable_response", "The service returned an unexpected response format.");
+    }
+  }
   if (!response.ok) {
-    const parsed = z.object({ code: z.string().default("http_error"), message: z.string().default("Request failed") }).safeParse(raw);
-    throw new ApiError(
-      response.status,
-      parsed.success ? parsed.data.code : "unexpected_response",
-      parsed.success ? parsed.data.message : `HTTP ${response.status}`
-    );
+    const record = raw && typeof raw === "object" ? raw : {};
+    const code = typeof record.code === "string" ? record.code : typeof record.detail === "string" ? "request_error" : "http_error";
+    const message = typeof record.message === "string" ? record.message : typeof record.detail === "string" ? record.detail : `HTTP ${response.status}`;
+    throw new ApiError(response.status, code, message);
   }
   return raw;
 }
@@ -494,6 +506,18 @@ function consumeSequence(last, incoming) {
 function nextReconnectMs(consecutiveErrors) {
   return Math.min(3e4, 1e3 * 2 ** Math.max(0, Math.min(5, consecutiveErrors)));
 }
+const prefix = "textilehr:submission-intent:v1:";
+function locationFor(workspace2, kind) {
+  return `${prefix}${workspace2}:${kind}`;
+}
+function epochFor(workspace2, kind) {
+  return `${prefix}epoch:${workspace2}:${kind}`;
+}
+function startDistinctIntent(workspace2, kind) {
+  const old = Number(localStorage.getItem(epochFor(workspace2, kind)) ?? "0");
+  localStorage.setItem(epochFor(workspace2, kind), String(Number.isSafeInteger(old) && old >= 0 ? old + 1 : 1));
+  localStorage.removeItem(locationFor(workspace2, kind));
+}
 const ROUTES = {
   overview: "",
   uploads: "uploads",
@@ -584,7 +608,7 @@ function Panel({ children, className = "", style, id }) {
 function PageHeader({ title, description, actions }) {
   return /* @__PURE__ */ jsxs("header", { className: "pageheading", children: [
     /* @__PURE__ */ jsxs("div", { children: [
-      /* @__PURE__ */ jsx("div", { className: "eyebrow", children: "TextileHR AI · Workforce intelligence" }),
+      /* @__PURE__ */ jsx("div", { className: "eyebrow", children: "Reliance Weaving Mills AI · Recruitment Intelligence" }),
       /* @__PURE__ */ jsx("h1", { children: title }),
       /* @__PURE__ */ jsx("p", { children: description })
     ] }),
@@ -594,8 +618,8 @@ function PageHeader({ title, description, actions }) {
 function Button({ children, kind = "default", size = "regular", ...rest }) {
   return /* @__PURE__ */ jsx("button", { type: "button", ...rest, className: "btn " + (kind === "default" ? "" : kind) + " " + (size === "small" ? "small" : "") + " " + (rest.className ?? ""), children });
 }
-function ActionLink({ children, to, kind = "default", size = "regular", className = "" }) {
-  return /* @__PURE__ */ jsx(Link, { className: "btn " + (kind === "default" ? "" : kind) + " " + (size === "small" ? "small" : "") + " " + className, to, children });
+function ActionLink({ children, to, kind = "default", size = "regular", className = "", style }) {
+  return /* @__PURE__ */ jsx(Link, { style, className: "btn " + (kind === "default" ? "" : kind) + " " + (size === "small" ? "small" : "") + " " + className, to, children });
 }
 function Status({ value }) {
   const raw = value ?? "Not ready";
@@ -1184,7 +1208,7 @@ function RankingsPage() {
       const file = await client.export(workspaceId, job2.id, latest.result_revision, data.weights.revision);
       const link = document.createElement("a");
       link.href = `/api/v1/workspaces/${workspaceId}/exports/${file.id}/download`;
-      link.download = "TextileHR_Assessment.zip";
+      link.download = "Reliance_Weaving_Mills_Assessment.zip";
       document.body.append(link);
       link.click();
       link.remove();
@@ -1399,6 +1423,29 @@ function RankingsPage() {
           ] })
         ] })
       ] }),
+      filtered?.length ? /* @__PURE__ */ jsxs(Panel, { children: [
+        /* @__PURE__ */ jsx("div", { className: "card-header", children: /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx("div", { className: "eyebrow", style: { marginBottom: 4 }, children: "Evidence-Based Ranking Rationale" }),
+          /* @__PURE__ */ jsx("h2", { style: { margin: "0 0 4px 0" }, children: "Ranking explained · Why candidates ranked this way" }),
+          /* @__PURE__ */ jsx("p", { className: "small text-muted", style: { margin: 0 }, children: "One clear explanation per candidate under approved JD priorities. Detailed evidence is available in candidate view." })
+        ] }) }),
+        /* @__PURE__ */ jsx("div", { className: "stack", style: { gap: 12, marginTop: 14 }, children: filtered.map((row) => /* @__PURE__ */ jsxs("div", { className: "why", style: { margin: 0, padding: "14px 18px" }, children: [
+          /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 6 }, children: [
+            /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", gap: 10 }, children: [
+              /* @__PURE__ */ jsx("span", { className: "num", style: { padding: "3px 8px", fontSize: 13, fontWeight: 700, borderRadius: 6 }, children: row.rank === null ? "—" : `#${row.rank}` }),
+              /* @__PURE__ */ jsx("strong", { style: { fontSize: 14 }, children: row.candidate })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", gap: 8 }, children: [
+              /* @__PURE__ */ jsx("strong", { style: { fontSize: 14, color: "var(--brand-green)" }, children: row.weighted_score === null ? "Not ready" : `${row.weighted_score.toFixed(2)}%` }),
+              /* @__PURE__ */ jsxs(ActionLink, { size: "small", to: workspacePath(workspaceId, "candidate", { jobId: job2.id, candidateId: row.candidate_id }), children: [
+                "Why ",
+                /* @__PURE__ */ jsx(ArrowRightIcon, { size: 12, style: { marginLeft: 3 } })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("p", { style: { margin: 0, fontSize: 13, lineHeight: 1.5, color: "var(--text-secondary)" }, children: row.placement_reason || "Verified match score under approved employer priorities." })
+        ] }, row.candidate_id)) })
+      ] }) : null,
       /* @__PURE__ */ jsx("div", { className: "compliance-disclaimer-card", children: /* @__PURE__ */ jsx("small", { className: "disclaimer-text", children: "These are evidence-grounded CV comparisons, not independent verification of professional competence. Transferable evidence earns no direct requirement credit." }) })
     ] })
   ] });
@@ -1467,9 +1514,12 @@ function CandidateDetailView({
   if (!detail) return /* @__PURE__ */ jsx(Loading, {});
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsxs(Panel, { children: [
-      /* @__PURE__ */ jsxs("div", { className: "card-header", children: [
+      /* @__PURE__ */ jsx("div", { className: "eyebrow", style: { marginBottom: 4 }, children: "INDIVIDUAL CANDIDATE REVIEW" }),
+      /* @__PURE__ */ jsx("h2", { style: { margin: "0 0 4px 0" }, children: "Final JD-to-CV assessment" }),
+      /* @__PURE__ */ jsx("p", { className: "small text-muted", style: { margin: "0 0 16px 0" }, children: "Inspect each candidate's decisions, supporting evidence, and reasoning." }),
+      /* @__PURE__ */ jsxs("div", { className: "card-header", style: { padding: "12px 16px", background: "var(--surface-strong)", borderRadius: 12, border: "1px solid var(--border-soft)" }, children: [
         /* @__PURE__ */ jsxs("div", { children: [
-          /* @__PURE__ */ jsx("h2", { children: detail.candidate.candidate_name }),
+          /* @__PURE__ */ jsx("h3", { style: { margin: 0, fontSize: 16 }, children: detail.candidate.candidate_name }),
           /* @__PURE__ */ jsxs("span", { className: "mono small text-muted", children: [
             "Document source: ",
             detail.candidate.candidate_source
@@ -1491,36 +1541,40 @@ function CandidateDetailView({
           ] }) : null
         ] })
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: "candidate-metric-grid", children: [
+      /* @__PURE__ */ jsxs("div", { className: "candidate-metric-grid", style: { marginTop: 14 }, children: [
         /* @__PURE__ */ jsxs("div", { className: "candidate-metric-box", children: [
           /* @__PURE__ */ jsx("span", { className: "metric-label", children: "Weighted Score" }),
           /* @__PURE__ */ jsx("span", { className: "metric-val", children: weighted?.weighted_score != null ? `${weighted.weighted_score.toFixed(1)}%` : "—" }),
           /* @__PURE__ */ jsx("span", { className: "metric-sub", children: weighted?.rank ? `Official Rank #${weighted.rank}` : "Incomplete" })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "candidate-metric-box", children: [
-          /* @__PURE__ */ jsx("span", { className: "metric-label", children: "Required Criteria" }),
+          /* @__PURE__ */ jsx("span", { className: "metric-label", children: "JD Matched" }),
           /* @__PURE__ */ jsxs("span", { className: "metric-val", children: [
-            detail.candidate.matched_required,
+            detail.candidate.matched_required + detail.candidate.matched_preferred,
             " / ",
-            detail.candidate.total_required
+            detail.candidate.total_required + detail.candidate.total_preferred
           ] }),
-          /* @__PURE__ */ jsx("span", { className: "metric-sub", children: detail.candidate.total_required ? `${Math.round(detail.candidate.matched_required / detail.candidate.total_required * 100)}% Matched` : "None specified" })
+          /* @__PURE__ */ jsx("span", { className: "metric-sub", children: "Verified Found criteria" })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "candidate-metric-box", children: [
-          /* @__PURE__ */ jsx("span", { className: "metric-label", children: "Preferred Criteria" }),
-          /* @__PURE__ */ jsxs("span", { className: "metric-val", children: [
+          /* @__PURE__ */ jsx("span", { className: "metric-label", children: "Transferable" }),
+          /* @__PURE__ */ jsx("span", { className: "metric-val", children: detail.final.Transferable ?? 0 }),
+          /* @__PURE__ */ jsx("span", { className: "metric-sub", children: "Not counted as matched" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "candidate-metric-box", children: [
+          /* @__PURE__ */ jsx("span", { className: "metric-label", children: "Required / Preferred" }),
+          /* @__PURE__ */ jsxs("span", { className: "metric-val", style: { fontSize: 18 }, children: [
+            detail.candidate.matched_required,
+            "/",
+            detail.candidate.total_required,
+            " · ",
             detail.candidate.matched_preferred,
-            " / ",
+            "/",
             detail.candidate.total_preferred
           ] }),
-          /* @__PURE__ */ jsx("span", { className: "metric-sub", children: detail.candidate.total_preferred ? `${Math.round(detail.candidate.matched_preferred / detail.candidate.total_preferred * 100)}% Matched` : "None specified" })
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "candidate-metric-box", children: [
-          /* @__PURE__ */ jsx("span", { className: "metric-label", children: "Evaluation Engine" }),
-          /* @__PURE__ */ jsx("span", { className: "metric-val mono", style: { fontSize: "15px" }, children: detail.candidate.evaluation_mode }),
           /* @__PURE__ */ jsxs("span", { className: "metric-sub", children: [
-            "Primary: ",
-            detail.candidate.primary_score != null ? `${detail.candidate.primary_score.toFixed(1)}%` : "—"
+            "Engine: ",
+            detail.candidate.evaluation_mode
           ] })
         ] })
       ] }),
@@ -1852,7 +1906,7 @@ function ReportsPage() {
           /* @__PURE__ */ jsx("th", { children: "Created" }),
           /* @__PURE__ */ jsx("th", { children: "Progress" }),
           /* @__PURE__ */ jsx("th", { children: "State" }),
-          /* @__PURE__ */ jsx("th", { children: "Actions" })
+          /* @__PURE__ */ jsx("th", { children: "Job Controls & Details" })
         ] }) }),
         /* @__PURE__ */ jsx("tbody", { children: data.jobs.map((job2) => /* @__PURE__ */ jsxs("tr", { children: [
           /* @__PURE__ */ jsxs("td", { children: [
@@ -1867,17 +1921,17 @@ function ReportsPage() {
             job2.total
           ] }),
           /* @__PURE__ */ jsx("td", { children: /* @__PURE__ */ jsx(Status, { value: job2.state }) }),
-          /* @__PURE__ */ jsxs("td", { children: [
-            /* @__PURE__ */ jsx(ActionLink, { to: workspacePath(workspaceId, "progress", { jobId: job2.id }), children: "Progress" }),
-            job2.kind === "assess" ? /* @__PURE__ */ jsx(ActionLink, { to: workspacePath(workspaceId, "rankings", { jobId: job2.id }), children: "Rankings" }) : null,
-            " ",
+          /* @__PURE__ */ jsx("td", { children: /* @__PURE__ */ jsxs("div", { className: "toolbar", style: { gap: 6 }, children: [
+            /* @__PURE__ */ jsx(ActionLink, { size: "small", to: workspacePath(workspaceId, "progress", { jobId: job2.id }), children: "Progress" }),
+            job2.kind === "assess" ? /* @__PURE__ */ jsx(ActionLink, { size: "small", to: workspacePath(workspaceId, "rankings", { jobId: job2.id }), children: "Rankings" }) : null,
             /* @__PURE__ */ jsx(Button, { kind: "danger", size: "small", disabled: busy, onClick: () => {
               if (confirmDestructive("saved job " + job2.id.slice(0, 8))) void doAction(async () => {
                 await client.removeJob(workspaceId, job2.id);
+                startDistinctIntent(workspaceId, job2.kind === "assess" ? "assess" : "jd_extract");
                 setNotice("Saved job, candidate results and associated exports deleted.");
               });
             }, children: "Delete" })
-          ] })
+          ] }) })
         ] }, job2.id)) })
       ] }) }) : /* @__PURE__ */ jsx(Blank, { title: "No saved jobs", description: "Start a JD extraction or candidate assessment." })
     ] }),
@@ -1889,7 +1943,7 @@ function ReportsPage() {
           /* @__PURE__ */ jsx("th", { children: "Result revision" }),
           /* @__PURE__ */ jsx("th", { children: "Weight revision" }),
           /* @__PURE__ */ jsx("th", { children: "Size" }),
-          /* @__PURE__ */ jsx("th", { children: "Download / delete" })
+          /* @__PURE__ */ jsx("th", { children: "Export Actions" })
         ] }) }),
         /* @__PURE__ */ jsx("tbody", { children: data.exports.map((item) => /* @__PURE__ */ jsxs("tr", { children: [
           /* @__PURE__ */ jsx("td", { children: dateString(item.created) }),
@@ -1899,16 +1953,15 @@ function ReportsPage() {
             (item.size / 1024).toFixed(1),
             " KB"
           ] }),
-          /* @__PURE__ */ jsxs("td", { children: [
-            /* @__PURE__ */ jsx("a", { className: "btn small", href: `/api/v1/workspaces/${workspaceId}/exports/${item.id}/download`, children: "Download" }),
-            " ",
+          /* @__PURE__ */ jsx("td", { children: /* @__PURE__ */ jsxs("div", { className: "toolbar", style: { gap: 6 }, children: [
+            /* @__PURE__ */ jsx("a", { className: "btn small", href: `/api/v1/workspaces/${workspaceId}/exports/${item.id}/download`, children: "Download ZIP" }),
             /* @__PURE__ */ jsx(Button, { kind: "danger", size: "small", disabled: busy, onClick: () => {
               if (confirmDestructive("export " + item.id.slice(0, 8))) void doAction(async () => {
                 await client.removeExport(workspaceId, item.id);
                 setNotice("Export record and file deleted. External backups are unaffected.");
               });
             }, children: "Delete" })
-          ] })
+          ] }) })
         ] }, item.id)) })
       ] }) }) : /* @__PURE__ */ jsx(Blank, { title: "No exports", description: "Export a completed assessment from its rankings page." })
     ] }),
@@ -1941,7 +1994,7 @@ function ReportsPage() {
             onChange: (e) => setRetentionDays(Math.max(1, parseInt(e.target.value) || 30))
           }
         ) }) }),
-        /* @__PURE__ */ jsxs(Button, { kind: "danger", size: "small", disabled: busy, onClick: () => void purgeOldData(), children: [
+        /* @__PURE__ */ jsxs(Button, { kind: "danger", disabled: busy, onClick: () => void purgeOldData(), children: [
           "Purge eligible data (",
           retentionDays,
           "d)"

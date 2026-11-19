@@ -1,0 +1,38 @@
+FARHAN AHMED SIDDIQUI
+Senior Quality Assurance Engineer · Automotive & Precision Manufacturing
+Lahore, Pakistan  |  +92 333 4109825  |  farhan.siddiqui.mech@gmail.com  |  PEC: MECH/28491
+Professional Summary
+Dedicated and detail-driven Senior Quality Engineer with 6 years of experience in automotive precision manufacturing, sheet
+metal forming, and industrial packaging quality assurance. Strong foundation in dimensional metrology, tensile and yield
+strength testing of engineering alloys (ASTM E8), SAP QM module, and automotive core quality tools (APQP, PPAP, FMEA, SPC,
+MSA). Proven expertise in leading ISO 9001:2015 and IATF 16949 quality audits.
+Education
+B.Sc. Mechanical Engineering
+2014 – 2018
+University of Engineering and Technology (UET), Taxila  |  CGPA: 3.48 / 4.00
+Professional Experience
+Senior Quality Assurance Engineer
+Aug 2020 – Present (4.0 yrs)
+Millat Tractors Limited – Transmission & Machining Plant, Lahore
+• Oversee in-process and receiving quality assurance for casting, CNC machining, and transmission assembly lines producing tractor
+gearboxes and hydraulic housings.
+• Direct the Mechanical Testing & Metrology Lab: coordinate Coordinate Measuring Machine (CMM) dimensional verification, surface
+roughness testing, and mechanical tensile/yield testing under ASTM E8 (Metals Tensile Testing).
+• Lead 8D Problem Solving teams for assembly defect reduction, lowering machining defect rates from 2.8% to 0.9%.
+• Supervise SAP QM implementation: manage inspection plans, catalog codes, non-conformance reports, and usage decisions across 12
+machining work centers.
+• Lead internal quality audit teams for IATF 16949:2016 and ISO 9001:2015 compliance.
+• Facilitate weekly Statistical Process Control (SPC) reviews using X-bar and R charts for critical machining tolerances (Cp/Cpk > 1.33).
+Quality Control Engineer – Folding Cartons & Packaging
+Jul 2018 – Jul 2020 (2.0 yrs)
+Packages Limited – Consumer Packaging Division, Lahore
+• Managed physical quality testing on paperboard and packaging cartons including bursting strength (TAPPI T403), puncture resistance,
+and barcode verification.
+• Enforced raw material incoming inspection standards and conducted vendor quality audits across 15 packaging substrate suppliers.
+• Prepared daily QA shift performance reports and initiated corrective action requests (CAR) for off-spec printing lots.
+Technical Skills & Certifications
+Engineering & Metrology: Coordinate Measuring Machine (CMM), Optical Profile Projector, Vernier/Micrometers, ASTM E8 Tensile
+Testing.
+Quality Tools: APQP, PPAP, FMEA, SPC (Cp, Cpk), MSA, 8D Root Cause Analysis, 5-Why Analysis.
+Systems & Software: SAP QM (Usage Decisions, Defect Recording), Minitab 19, AutoCAD, SolidWorks.
+Certifications: Lean Six Sigma Green Belt (PIQC, 2021)  |  ISO 9001:2015 Internal Auditor  |  IATF 16949:2016 Awareness Training.

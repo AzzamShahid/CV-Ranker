@@ -68,13 +68,27 @@ export async function submitOnce<T extends {id:string}>(
   workspace:string, kind:IntentKind, payload:unknown,
   lookup:(key:string)=>Promise<T>, submit:(key:string)=>Promise<T>,
 ):Promise<T> {
-  const intent=await submissionIntent(workspace,kind,payload);
+  let intent=await submissionIntent(workspace,kind,payload);
   let missing=false;
   try {
     const existing=await lookup(intent.key);
     markAccepted(intent,existing.id);
     return existing;
   }catch(error:unknown) {
+    // If the submission was tombstoned / deliberately deleted on the server,
+    // advance to a new distinct intent epoch and submit a fresh job.
+    const isConflict = Boolean(error && typeof error==='object' && (
+      ('status' in error && (error as {status:unknown}).status===409) ||
+      ('message' in error && typeof (error as {message:string}).message==='string' &&
+        (error as {message:string}).message.includes('deliberately deleted'))
+    ));
+    if (isConflict) {
+      startDistinctIntent(workspace,kind);
+      intent=await submissionIntent(workspace,kind,payload);
+      const job=await submit(intent.key);
+      markAccepted(intent,job.id);
+      return job;
+    }
     // Only a definite HTTP 404 authorizes a new POST. A disconnected
     // lookup could mean the server already accepted the original request.
     missing=Boolean(error && typeof error==='object' && 'status' in error &&
@@ -86,6 +100,18 @@ export async function submitOnce<T extends {id:string}>(
     markAccepted(intent,job.id);
     return job;
   }catch(original:unknown) {
+    const isConflict = Boolean(original && typeof original==='object' && (
+      ('status' in original && (original as {status:unknown}).status===409) ||
+      ('message' in original && typeof (original as {message:string}).message==='string' &&
+        (original as {message:string}).message.includes('deliberately deleted'))
+    ));
+    if (isConflict) {
+      startDistinctIntent(workspace,kind);
+      const freshIntent=await submissionIntent(workspace,kind,payload);
+      const job=await submit(freshIntent.key);
+      markAccepted(freshIntent,job.id);
+      return job;
+    }
     // The POST response may have been lost after the DB transaction committed.
     // A read can recover the durable job without another assessment request.
     try {

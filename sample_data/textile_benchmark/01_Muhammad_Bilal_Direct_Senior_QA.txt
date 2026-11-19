@@ -1,0 +1,54 @@
+MUHAMMAD BILAL TARIQ, Engr.
+Senior Quality Assurance Engineer · Weaving & Greige Fabric Specialist
+Multan / Lahore, Pakistan  |  +92 301 5849201  |  bilal.tariq.textile@gmail.com  |  PEC Reg: TEXTILE/14829
+Professional Summary
+Results-oriented Senior Textile Engineer with over 6 years of hands-on quality assurance and fabric testing laboratory
+leadership in export-oriented weaving manufacturing plants. Recognized expert in high-speed Air-Jet weaving quality control
+(Toyota JAT810, Picanol OmniPlus-i), in-process loom setting optimization, and ASTM D5430 4-Point System greige fabric
+defect grading. Proficient in physical testing standards (ASTM D5034, D1424, D3776), SAP QM module, Six Sigma defect
+reduction, and OEKO-TEX Standard 100 audit compliance.
+Education
+B.Sc. Textile Engineering (Weaving Specialization)
+2014 – 2018
+National Textile University (NTU), Faisalabad  |  CGPA: 3.64 / 4.00  |  PEC Accredited
+Professional Experience
+Senior QA Engineer – Weaving Division
+Jul 2021 – Present (3.5 yrs)
+Crescent Bahuman Limited (CBL) – Pindi Bhattian, Pakistan
+• Direct floor quality assurance for a high-volume weaving shed running 160 Toyota JAT810 and 48 Picanol OmniPlus-i high-speed air-jet
+looms producing twill, canvas, and high-density stretch greige fabrics.
+• Supervise a team of 14 fabric inspection operators on motorized frames executing ASTM D5430 4-Point System defect grading; lowered
+plant average penalty points from 16.8 to 10.9 points/100 sq yds.
+• Supervise the Weaving Physical Testing Laboratory, conducting routine testing for Fabric GSM (ASTM D3776), Grab Breaking Strength
+(ASTM D5034 using Instron Tensile Tester), and Elmendorf Tear Force (ASTM D1424).
+• Lead root-cause troubleshooting for recurrent air-jet weaving defects including filling stops, starting marks, reed marks, loose warp ends,
+and pneumatic pressure drop non-conformances.
+• Act as SAP QM Key User for Weaving: manage inspection lots (QA01/QA32), record defect classifications, perform usage decisions (UD),
+and generate daily rejection analytics.
+• Correlate warp/weft yarn quality parameters from Uster Tester 6 (hairiness, Count CV%, CSP) with on-loom warp break frequency per
+100,000 picks, achieving a 14% drop in stoppage downtime.
+• Successfully cleared 4 customer technical audits including OEKO-TEX Standard 100 and GOTS organic certification renewals.
+Quality Assurance Engineer – Weaving & Greige Inspection
+Jul 2018 – Jun 2021 (3.0 yrs)
+Kohinoor Mills Limited (KML) – Raiwind, Lahore, Pakistan
+• Managed in-process quality audits on 96 Picanol OmniPlus air-jet looms and 32 Picanol OptiMax rapier looms manufacturing high-count
+cotton poplin and yarn-dyed shirting fabric.
+• Conducted daily greige fabric inspection audits under ASTM D5430 4-point method, inspecting 45,000 meters/day across 8 inspection
+tables.
+• Performed daily physical lab tests: fabric tensile strength (ASTM D5034), Elmendorf tear strength (ASTM D1424), and fabric weight GSM
+(ASTM D3776).
+• Logged defect data and internal reject notifications in SAP QM module; compiled monthly QA Key Performance Indicator (KPI)
+dashboards for senior executive review.
+• Conducted 8D and Ishikawa (fishbone) investigations on weft bar and temple mark defects, achieving an 18% reduction in second-grade
+fabric inventory.
+• Participated actively in ISO 9001:2015 internal quality management system surveillance audits.
+
+
+Technical Competencies & Certifications
+Loom Technologies: Toyota JAT710/JAT810 Air-Jet, Picanol OmniPlus-i Air-Jet, Picanol OptiMax Rapier.
+Inspection & Lab Standards: ASTM D5430 (4-Point System), ASTM D5034 (Tensile), ASTM D1424 (Elmendorf Tear), ASTM
+D3776 (GSM), ISO 13934-1, ISO 13937-1.
+Yarn Testing: Uster Tester 6 (Hairiness, CV%, IPI), Lea Strength Tester (CSP), Yarn Count verification.
+Software & ERP: SAP QM (Certified Key User), BMS Vision Loom Monitoring, Minitab, MS Excel (Advanced).
+Certifications: Lean Six Sigma Green Belt (PIQC Institute of Quality, 2021)  |  ISO 9001:2015 Lead Auditor (IRCA Certified, 2020)  | 
+OEKO-TEX Standard 100 Auditor Training (2022).

@@ -6,15 +6,15 @@ export function Panel({children,className='',style,id}:{children:ReactNode;class
   return <section id={id} style={style} className={'card '+className}>{children}</section>;
 }
 export function PageHeader({title,description,actions}:{title:string;description:string;actions?:ReactNode}){
-  return <header className="pageheading"><div><div className="eyebrow">TextileHR AI · Workforce intelligence</div>
+  return <header className="pageheading"><div><div className="eyebrow">Reliance Weaving Mills AI · Recruitment Intelligence</div>
     <h1>{title}</h1><p>{description}</p></div>{actions}</header>;
 }
 export function Button({children,kind='default',size='regular',...rest}:
   ButtonHTMLAttributes<HTMLButtonElement>&{kind?:'default'|'primary'|'subtle'|'danger'|'ghost';size?:'regular'|'small'}){
   return <button type="button" {...rest} className={'btn '+(kind==='default'?'':kind)+' '+(size==='small'?'small':'')+' '+(rest.className??'')}>{children}</button>;
 }
-export function ActionLink({children,to,kind='default',size='regular',className=''}:{children:ReactNode;to:string;kind?:'default'|'primary'|'subtle';size?:'regular'|'small';className?:string}){
-  return <Link className={'btn '+(kind==='default'?'':kind)+' '+(size==='small'?'small':'')+' '+className} to={to}>{children}</Link>;
+export function ActionLink({children,to,kind='default',size='regular',className='',style}:{children:ReactNode;to:string;kind?:'default'|'primary'|'subtle';size?:'regular'|'small';className?:string;style?:CSSProperties}){
+  return <Link style={style} className={'btn '+(kind==='default'?'':kind)+' '+(size==='small'?'small':'')+' '+className} to={to}>{children}</Link>;
 }
 export function Status({value}:{value:string|null|undefined}){
   const raw=value??'Not ready';
